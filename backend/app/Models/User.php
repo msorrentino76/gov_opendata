@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use App\Models\Identity;
+use App\Models\Group;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -18,7 +21,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'cf',
         'email',
         'password',
     ];
@@ -42,4 +45,17 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+    public function username(){
+        return 'cf';
+    }
+    
+    public function identity(){
+        return $this->hasOne(Identity::class);
+    }
+    
+    public function groups(){
+        return $this->belongsToMany(Group::class);
+    }
+    
 }
