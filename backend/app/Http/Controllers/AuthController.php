@@ -51,7 +51,7 @@ class AuthController extends Controller
              * @todo cf validator!!!!!
              */
             //'cf' => 'required|cf',
-            'cf'       => 'required',
+            'username' => 'required',
             'password' => 'required',
         ]);
 
@@ -69,7 +69,7 @@ class AuthController extends Controller
             
             $user->tokens()->delete();
 
-            return ['user' => $user, 'token' => $user->createToken($request->cf, json_decode($user->abilities))->plainTextToken];
+            return ['user' => $user, 'token' => $user->createToken($request->username, json_decode($user->abilities))->plainTextToken];
             
         }
 

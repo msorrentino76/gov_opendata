@@ -15,8 +15,28 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         \App\Models\User::create([
-            'cf'        => 'SRRMRC76T06G273G',
+            'username'  => 'msorrentino',
             'email'     => 'msorrentino.cinf@gmail.com',
+            'name'      => 'Marco',
+            'surname'   => 'Sorrentino',
+            'password'  => bcrypt('password'),
+            'abilities' => json_encode(["system:admin"]),
+        ]);
+        
+        \App\Models\User::create([
+            'username'  => 'mladiega',
+            'email'     => 'staff@marcoladiega.it',
+            'name'      => 'Marco',
+            'surname'   => 'La Diega',
+            'password'  => bcrypt('password'),
+            'abilities' => json_encode(["system:admin"]),
+        ]);
+
+        \App\Models\User::create([
+            'username'  => 'mtestaverde',
+            'email'     => 'commerciale@macrosis.it',
+            'name'      => 'Marcello',
+            'surname'   => 'Testaverde',
             'password'  => bcrypt('password'),
             'abilities' => json_encode(["system:admin"]),
         ]);
