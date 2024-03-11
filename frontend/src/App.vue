@@ -1,26 +1,72 @@
+
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+
+    <el-container v-if="$store.state.logged">
+
+        <el-aside :class="classMenu">
+          <AsideComponent :collapseMenu="collapseMenu" :menuToggle="menuToggle"/>
+        </el-aside>
+
+        <el-container>
+
+          <el-header>
+            <HeaderComponent :menuToggle="menuToggle"/>
+          </el-header>
+        
+          <el-main>
+            <MainComponent/>
+          </el-main>
+
+        </el-container>
+      
+    </el-container>
+    
+    <el-container v-if="!$store.state.logged">
+      <LoginView />
+    </el-container>
+    
+    <el-footer>
+      <FooterComponent/>
+    </el-footer>
+      
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<style>
+@import './assets/css/global.css';
+</style>
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
+
+<script setup>
+
+import HeaderComponent from './layout/Header.vue';
+import AsideComponent  from './layout/Aside.vue';
+import MainComponent   from './layout/Main.vue';
+import FooterComponent from './layout/Footer.vue';
+
+import LoginView from './views/Login.vue';
+
+import { ref } from 'vue';
+
+const collapseMenu = ref(true);
+const classMenu    = ref('start-menu');
+
+function menuToggle(){
+  collapseMenu.value = !collapseMenu.value;
+  classMenu.value = collapseMenu.value ? 'close-menu' : 'open-menu';
 }
+
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  .start-menu {
+    width: 64px !important;
+  }
+  .open-menu {
+    width: 200px !important;
+    transition: width 0.1s ease;
+  }
+  .close-menu {
+    width: 64px !important;
+    transition: width 0.1s ease;
+  } 
 </style>

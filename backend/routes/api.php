@@ -19,11 +19,18 @@ use App\Http\Controllers\api\v1\admin\UserController;
 |
 */
 
-Route::post('register' , [AuthController::class, 'register']);
-Route::post('login'    , [AuthController::class, 'login']);
+//Route::post('register' , [AuthController::class, 'register']);
+//Route::post('login'    , [AuthController::class, 'login']);
+
+/* LOGIN */
 Route::post('token'    , [AuthController::class, 'token']);
-//Route::delete('revoke' , [AuthController::class, 'revoke']);
-Route::delete('logout' , [AuthController::class, 'logout']);
+
+//Route::delete('logout' , [AuthController::class, 'logout']);
+
+/* LOGOUT */
+Route::middleware('auth:sanctum')->group(function () {
+    Route::delete('revoke' , [AuthController::class, 'revoke']);
+});
 
 Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {
 
