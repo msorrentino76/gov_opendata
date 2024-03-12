@@ -70,7 +70,8 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    // https://www.w3schools.com/php/php_ref_timezones.asp#europe
+    'timezone' => 'Europe/Rome',// 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +84,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'it',
 
     /*
     |--------------------------------------------------------------------------
@@ -96,7 +97,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'it',
 
     /*
     |--------------------------------------------------------------------------
@@ -109,7 +110,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'it_IT',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,6 +169,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Jenssegers\Agent\AgentServiceProvider::class,
+        
     ])->toArray(),
 
     /*

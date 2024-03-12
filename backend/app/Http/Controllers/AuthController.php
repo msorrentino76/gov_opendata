@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 use App\Models\User;
+use App\Models\StoricoLogin;
 
 use Illuminate\Support\Facades\Auth;
 
@@ -61,6 +62,8 @@ class AuthController extends Controller
             
             $user = Auth::user();
             
+            StoricoLogin::store($request, $user);
+
             /*
             $tokens = $user->tokens;           
             foreach($tokens as $token) {

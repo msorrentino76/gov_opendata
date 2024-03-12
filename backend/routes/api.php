@@ -5,8 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 
-use App\Http\Controllers\api\v1\admin\GroupController;
-use App\Http\Controllers\api\v1\admin\UserController;
+use App\Http\Controllers\api\v1\NotificaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,12 +31,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('revoke' , [AuthController::class, 'revoke']);
 });
 
-Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {
-
-    Route::get   ('groups'    , [GroupController::class, 'index']);
-    Route::post  ('group'     , [GroupController::class, 'store']);
-    Route::get   ('group/{id}', [GroupController::class, 'show']);
-    Route::put   ('group/{id}', [GroupController::class, 'update']);
-    Route::delete('group/{id}', [GroupController::class, 'destroy']);
-    
+Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
+    Route::get('all'      , [NotificaController::class, 'all']);
+    Route::get('unread'   , [NotificaController::class, 'unread']);
+    Route::put('mark/{id}', [NotificaController::class, 'markAsRead']);
 });
+
+//Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {
+//
+//    Route::get   ('groups'    , [GroupController::class, 'index']);
+//    Route::post  ('group'     , [GroupController::class, 'store']);
+//    Route::get   ('group/{id}', [GroupController::class, 'show']);
+//    Route::put   ('group/{id}', [GroupController::class, 'update']);
+//    Route::delete('group/{id}', [GroupController::class, 'destroy']);
+//    
+//});
