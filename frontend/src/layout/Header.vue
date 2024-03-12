@@ -21,7 +21,7 @@
 
     </header>
     
-    <el-drawer v-model="openDrawer" direction="rtl" :size="mode=='notification'? '25%' : '50%'">
+    <el-drawer v-model="openDrawer" direction="rtl" :size="mode=='notification'? '25%' : '75%'">
 
         <template #header>
           <h4 v-if="mode=='profile'">Profilo</h4>

@@ -81,10 +81,10 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
 }
 
  export const list = async (endpoint) => {  
-    console.log('list', endpoint)   
+    //console.log('list', endpoint)   
       try {
         const response = await axiosInstance.get(endpoint);
-        console.log('resp', endpoint)  
+        //console.log('resp', endpoint)  
         return await response.data;
       } catch (error) {
         return errorHandler(error, 'list');

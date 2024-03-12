@@ -6,7 +6,9 @@
     :model="data"
     :disabled="formModel.disabled"
     :rules="formRules"
-    label-position="top">
+    label-position="top"
+    status-icon
+    >
     
         <el-row :gutter="20" v-for="(rows, rowidx) in formModel.fields" :key="rowidx">
 
