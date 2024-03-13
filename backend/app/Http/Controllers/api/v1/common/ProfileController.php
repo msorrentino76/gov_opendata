@@ -9,13 +9,48 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Validator;
 
+use App\Models\User;
+
 class ProfileController extends Controller
 {
-    public function account(Request $request){
+    public function account(Request $request, string $id){
         
-        return Auth::user()->notifications->take(25);
+        $request->validate([
+            'name'     => 'required',
+            'surname'  => 'required',
+            'username' => 'required',
+            'email'    => 'required|email',
+        ]); 
+        
+        $user = Auth::user();
+        
+        $erroreVue3 = [];
+        
+        if(User::where('username', $request->username)->where('id', '!=', $user->id)->count()){
+            $erroreVue3['username'] = 'Username in uso';
+        }
+        
+        if(User::where('email', $request->email)->where('id', '!=', $user->id)->count()){
+            $erroreVue3['email'] = 'Email in uso';
+        }
+        
+        if(count($erroreVue3) != 0) {
+            return response()->json([
+                'errors' => $erroreVue3,
+            ], 422); 
+        }
+        
+        $user->name     = $request->name;
+        $user->surname  = $request->surname;
+        $user->username = $request->username;
+        $user->email    = $request->email;
+        $user->notify_email = $request->notify_email;
+        
+        $user->save();
+        
+        return response($user, 200);
     }
-    
+
     public function password(Request $request, string $id){
         
         $request->validate([

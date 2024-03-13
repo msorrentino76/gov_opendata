@@ -201,8 +201,16 @@
 
       formLoading.value = true;
       
-      // AXIOS
-      console.log('onSubmitAnagrafica PADRE:', data);
+      data = {...data, id: Auth.state.user.id};
+
+      let resp = await update('profile/account', data);
+      if(resp){ 
+        if(resp.errors){
+          errorsForm.value = resp.errors;
+        } else {
+          Auth.commit('updateUser', resp);
+        }
+      }
 
       formLoading.value = false;
 
@@ -225,7 +233,7 @@
       data = {...data, id: Auth.state.user.id};
 
       let resp = await update('profile/password', data);
-      if(resp){
+      if(resp){ 
         if(resp.errors){
           errorsFormPass.value = resp.errors;
         } else {

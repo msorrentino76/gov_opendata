@@ -48,15 +48,7 @@ class User extends Authenticatable
     ];
     
     public function username(){
-        return 'cf';
-    }
-    
-    public function identity(){
-        return $this->hasOne(Identity::class);
-    }
-    
-    public function groups(){
-        return $this->belongsToMany(Group::class);
+        return 'username';
     }
     
 }
