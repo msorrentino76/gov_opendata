@@ -4,7 +4,7 @@
 
   <br>
 
-  <FormEl :formModel="formModel" :rules="rules" :errors="[]" :formData="Auth.state.user" :action="[]" :formLoading="false"/>
+  <FormEl :formModel="formModel" :rules="rules" :errors="errorsForm" :formData="Auth.state.user" :action="[]" :formLoading="formLoading"/>
 
   <br><br><br>
 
@@ -12,7 +12,7 @@
 
   <br>
 
-  <FormEl :formModel="formModelPass" :rules="rulesPass" :errors="[]" :formData="[]" :action="[]" :formLoading="false"/>
+  <FormEl :formModel="formModelPass" :rules="rulesPass" :errors="errorsFormPass" :formData="dataFormPass" :action="[]" :formLoading="formPassLoading"/>
 
 </template>
 
@@ -20,12 +20,20 @@
 
   import Auth from '@/store/Auth';
 
-  import {defineComponent} from 'vue';
+  import {defineComponent, ref} from 'vue';
   import FormEl from '../../components/Form.vue';
+
+  const errorsForm = ref([]);
+  const errorsFormPass = ref([]);
+
+  const dataFormPass = ref([]);
+
+  const formLoading = ref(false);
+  const formPassLoading = ref(false);
 
   const formModel = {
 
-    submit: (data) => {onSubmit(data);},
+    submit: (data, formRef) => {onSubmitAnagrafica(data, formRef)},
 
     disabled: false,
 
@@ -39,7 +47,7 @@
                 label: 'Nome',
                 name: 'name',
                 prepend: {
-                  icon: 'Avatar'
+                  icon: 'avatar'
                 },
                 space: 8,                  
               },
@@ -48,7 +56,7 @@
                 label: 'Cognome',
                 name: 'surname',
                 prepend: {
-                  icon: 'Avatar'
+                  icon: 'avatar'
                 },
                 space: 8,
               }
@@ -79,13 +87,25 @@
         ]
       },
 
+      // row 2
+      {
+        row: [
+              {
+                type: 'switch',
+                activeText: 'Ricevi notifiche anche via email',
+                name: 'notify_email',
+                space: 8,                  
+              },
+        ]
+      },
+
     ]
 
   };
 
   const formModelPass = {
 
-    submit: (data) => {onSubmit(data);},
+    submit: (data, formRef) => {onSubmitChangePass(data, formRef)},
 
     disabled: false,
 
@@ -113,6 +133,7 @@
               type: 'password',
               label: 'Nuova password',
               name: 'new_password',
+              showMeter: true,
               prepend: {
                 icon: 'key'
               },
@@ -169,10 +190,43 @@
       ],                  
     }
 
-    const onSubmit = (data) => {
-      console.log('onSubmit PADRE:', data);
-    }
+    const onSubmitAnagrafica = (async(data, formRef) => {
 
+      errorsForm.value = {};
+
+      const val = await formRef.validate((valid) => valid);
+      if(!val) return false;
+
+      formLoading.value = true;
+      
+      // AXIOS
+      console.log('onSubmitAnagrafica PADRE:', data);
+
+      formLoading.value = false;
+
+    })
+
+    const onSubmitChangePass = (async(data, formRef) => {
+
+      errorsFormPass.value = {};
+
+      const val = await formRef.validate((valid) => valid);
+      if(!val) return false;
+
+      if(data.new_password != data.confirm_new_password) {
+        errorsFormPass.value = {'confirm_new_password': 'La nuova password non coincide con il campo di conferma'}
+        return false;
+      }
+
+      formPassLoading.value = true;
+
+      // AXIOS
+      console.log('onSubmitChangePass PADRE:', data);
+
+      formPassLoading.value = false;
+
+    })  
+    
     defineComponent({
       name: 'ProfiloView',
     })

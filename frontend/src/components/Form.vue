@@ -54,13 +54,25 @@
                         </el-input>
                     </el-form-item>
 
+                    <el-text        v-if="field.showMeter" class="mx-1" size="small">Complessita password: {{ score_pass_complex }}</el-text>
+                    <password-meter v-if="field.showMeter" @score="onScore" :password="data[field.name]" />
+
+                    <!-- CHECKBOX -->
+                    <el-form-item
+                        v-if="field.type=='switch'"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >
+                        <el-switch v-model="data[field.name]" :active-text="field.activeText ? field.activeText : ''" :inactive-text="field.inactiveText ? field.inactiveText : ''" />
+                    </el-form-item>
+
                 </template>
 
             </el-col>
 
         </el-row>
 
-        <el-button v-if="!formModel.disabled" type="success" @click="submit(ruleFormRef)">Invia</el-button>
+        <el-button v-if="!formModel.disabled" type="success" @click="submit(ruleFormRef)">Salva</el-button>
 
     </el-form>
 
@@ -70,6 +82,8 @@
 <script setup>
 
 import {ref, defineProps, defineComponent, onUpdated} from 'vue';
+
+import PasswordMeter from 'vue-simple-password-meter';
 
 import IconEl from './Icon.vue'; 
 
@@ -93,7 +107,7 @@ import IconEl from './Icon.vue';
         action     : Array, // 'create', 'read', 'update', 'delete';
         formLoading: Boolean,
         rules      : Object,
-        errors     : Array,
+        errors     : {},
     });
 
     // data è uno stato array in modo da utilizzare la dinamicità della sua chiave.
@@ -114,4 +128,20 @@ import IconEl from './Icon.vue';
         formRules.value   = props.rules;
     })
 
+    const score_pass_complex = ref('');
+
+    const onScore = (payload) => {
+      //console.log(payload.score); // from 0 to 4
+      //console.log(payload.strength); // one of : 'risky', 'guessable', 'weak', 'safe' , 'secure'
+      switch (payload.score) {
+        case 0: score_pass_complex.value = 'rischiosa'; break;
+        case 1: score_pass_complex.value = 'prevedibile'; break;
+        case 2: score_pass_complex.value = 'debole'; break;
+        case 3: score_pass_complex.value = 'sicura'; break;
+        case 4: score_pass_complex.value = 'molto sicura'; break;
+        default: score_pass_complex.value = ''; break;
+      }
+      
+    };
+    
 </script>

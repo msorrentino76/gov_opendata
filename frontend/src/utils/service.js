@@ -59,9 +59,13 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
   export const token = async (endpoint, data) => {
     try {
         // COME PRIMA COSA CHIEDO L'X-CSRF TOKEN sanctum/csrf-cookie
+        /*
         await axiosInstance.get(applicationBaseURL + '/sanctum/csrf-cookie').then(response => {
           console.log('csrf-cookie', response);
         });
+        */
+        await axiosInstance.get(applicationBaseURL + '/sanctum/csrf-cookie');
+
         const response = await axiosInstance.post(endpoint, data);
         auth.commit('login', response.data);
         return await response.data;

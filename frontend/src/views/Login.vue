@@ -38,13 +38,18 @@
     const formData = ref([]);
     const action   = ref([]);
     const formLoading = ref(false);
-    const errorsForm = ref([])
+    const errorsForm = ref({});
 
     const rules = {
+        /*
         email: [
             { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            {/* type: 'email', message: 'Inserire una email valida', trigger: 'blur' */},
+            { type: 'email', message: 'Inserire una email valida', trigger: 'blur' },
         ], 
+        */
+        username: [
+            { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        ],       
         password: [
             { required: true, message: 'Campo richiesto', trigger: 'blur' },
         ],               
@@ -95,6 +100,8 @@
     };
 
     const onSubmit = (async(data, formRef) => {
+
+            errorsForm.value = {};
 
             const val = await formRef.validate((valid) => valid);
             if(!val) return false;
