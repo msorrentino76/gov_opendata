@@ -18,6 +18,9 @@ export default createStore({
         state.logged = false;
         state.token  = null;
         state.user   = null;
+      },
+      updateUser(state, user) {
+        state.user   = user;
       }
     },    
     plugins: [createPersistedState()]

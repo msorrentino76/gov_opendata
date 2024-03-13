@@ -23,7 +23,9 @@
   import {defineComponent, ref} from 'vue';
   import FormEl from '../../components/Form.vue';
 
-  const errorsForm = ref([]);
+  import {update} from '../../utils/service.js';
+
+  const errorsForm     = ref([]);
   const errorsFormPass = ref([]);
 
   const dataFormPass = ref([]);
@@ -220,8 +222,16 @@
 
       formPassLoading.value = true;
 
-      // AXIOS
-      console.log('onSubmitChangePass PADRE:', data);
+      data = {...data, id: Auth.state.user.id};
+
+      let resp = await update('profile/password', data);
+      if(resp){
+        if(resp.errors){
+          errorsFormPass.value = resp.errors;
+        } else {
+          Auth.commit('updateUser', resp);
+        }
+      }
 
       formPassLoading.value = false;
 

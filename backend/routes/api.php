@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\AuthController;
 
-use App\Http\Controllers\api\v1\NotificaController;
+use App\Http\Controllers\api\v1\common\NotificaController;
+use App\Http\Controllers\api\v1\common\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,11 @@ Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
     Route::get('all'      , [NotificaController::class, 'all']);
     Route::get('unread'   , [NotificaController::class, 'unread']);
     Route::put('mark/{id}', [NotificaController::class, 'markAsRead']);
+});
+
+Route::middleware('auth:sanctum')->prefix('profile')->group(function () {
+    Route::put('account/{id}' , [ProfileController::class, 'account']);
+    Route::put('password/{id}', [ProfileController::class, 'password']);
 });
 
 //Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {

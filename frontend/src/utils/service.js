@@ -127,7 +127,7 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
 
   export const update = async (endpoint, data, mute = false) => {
     try {
-        const response = await axiosInstance.put(endpoint + '/' + data.id  + '?XDEBUG_SESSION_START=netbeans-xdebug', data);
+        const response = await axiosInstance.put(endpoint + '/' + data.id  /*+ '?XDEBUG_SESSION_START=netbeans-xdebug'*/, data);
         if(!mute) elNotifySuccess();
         return await response.data;
     } catch (error) {
@@ -171,7 +171,7 @@ const errorHandler = ((error, api_call) => {
 
   // Handler degli errori FORM
   if(error.response && error.response.status == 422){
-    console.log('error.response.data', error.response.data)
+    //console.log('error.response.data', error.response.data)
     return error.response.data;
   }
 
