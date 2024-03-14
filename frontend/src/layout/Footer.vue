@@ -1,6 +1,6 @@
 <template>
     <footer>
-      <p>@2024 - Numiport by Numìe</p>
+      <p>@2024 - Numieport by Numìe</p>
     </footer>
   </template>
   

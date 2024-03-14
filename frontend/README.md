@@ -1,4 +1,4 @@
-# Numiport
+# Numieport
 
 ## Project setup
 ```
