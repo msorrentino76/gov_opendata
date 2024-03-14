@@ -92,8 +92,8 @@
 
 <script setup>
 
-import {list1, create, read, update, del } from '../utils/service.js'; 
-import {ref, onMounted, computed, defineComponent, defineProps} from 'vue';
+import {list, create, read, update, del } from '../utils/service.js'; 
+import {ref, onMounted, onUpdated, computed, defineComponent, defineProps} from 'vue';
 
 import { Delete, Edit, Search, Plus} from '@element-plus/icons-vue'
 
@@ -103,6 +103,7 @@ const props = defineProps({
     details: {}, 
     entity   : {},
     endpoints: {},
+    external_row: [],
     header   : {},
     actions  : {},
     form     : {},
@@ -116,8 +117,10 @@ const formModel = ref(props.form);
 
 const openDrawer  = ref(false);
 const drawerTitle = ref('');
-const loading     = ref(true)
+const loading     = ref(true);
+
 const rows        = ref([]);
+//const external_row = ref([]);
 const search      = ref('');
 
 const formData = ref({});
@@ -286,10 +289,17 @@ const defaultSubmit = (async(data, formRef) => {
 });
 
 onMounted(async ()=>{
-   rows.value    = await list1(props.endpoints.list);   
+   rows.value    = props.endpoints && props.endpoints.list ? await list(props.endpoints.list) : props.external_row;   
    loading.value = false;
-   formModel.value.submit = props.form.submit ? props.form.submit : defaultSubmit;
+   formModel.value.submit = props.form && props.form.submit ? props.form.submit : defaultSubmit;
+   console.log('rows.value', rows.value)
  })
+
+ onUpdated( () => {
+    if(props.external_row){
+        rows.value = props.external_row;
+    }
+})
 
 defineComponent({
     name: 'TableEl',

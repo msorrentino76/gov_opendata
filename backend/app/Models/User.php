@@ -8,9 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-use App\Models\Identity;
-use App\Models\Group;
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -50,5 +47,13 @@ class User extends Authenticatable
     public function username(){
         return 'username';
     }
+  
+    public function acts(){
+        return $this->hasMany(Act::class);
+    }    
+    
+    public function storico(){
+        return $this->hasMany(StoricoLogin::class);
+    }  
     
 }

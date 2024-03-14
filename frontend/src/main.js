@@ -2,6 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 
 import ElementPlus from 'element-plus';
+import it from 'element-plus/dist/locale/it.mjs'
+
+import 'dayjs/locale/it';
+
 import 'element-plus/dist/index.css';
 
 import { createRouter, createWebHistory } from 'vue-router';
@@ -29,8 +33,11 @@ const routes = [
 
   const app = createApp(App);
 
-  app.use(ElementPlus)
+  app.use(ElementPlus, {
+    locale: it,
+  })
   app.use(router);
   app.use(auth);
+
 
   app.mount('#app');

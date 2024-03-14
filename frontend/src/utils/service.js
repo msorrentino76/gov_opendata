@@ -95,14 +95,13 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
       }
   }
 
-  export const list1 = async (endpoint) => {  
-    console.log('list1', endpoint)   
+  export const filteredList = async (endpoint, filter) => {  
       try {
-        const response = await axiosInstance.get(endpoint);
-        console.log('resp1', endpoint)  
+        const response = await axiosInstance.get(endpoint, { params: filter });
+        console.log('filteredList', endpoint)  
         return await response.data;
       } catch (error) {
-        return errorHandler(error, 'list');
+        return errorHandler(error, 'filteredList');
       }
   }
 

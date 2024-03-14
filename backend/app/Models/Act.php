@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Act extends Model
+{
+    use HasFactory, SoftDeletes;
+    
+    protected $table = 'activities';
+    
+    protected $fillable = [
+        'data',
+        'descrizione',
+        'ore',
+    ];
+    
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    
+}

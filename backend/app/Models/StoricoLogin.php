@@ -69,4 +69,9 @@ class StoricoLogin extends Model
         StoricoLogin::create($track_data);
                 
     }
+    
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+    
 }

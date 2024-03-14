@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             'name'      => 'Marco',
             'surname'   => 'Sorrentino',
             'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:admin"]),
+            'abilities' => json_encode(["system:admin", "system:user"]),
         ]);
         
         \App\Models\User::create([
@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
             'name'      => 'Marco',
             'surname'   => 'La Diega',
             'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:admin"]),
+            'abilities' => json_encode(["system:user"]),
         ]);
 
         \App\Models\User::create([
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'name'      => 'Marcello',
             'surname'   => 'Testaverde',
             'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:admin"]),
+            'abilities' => json_encode(["system:user"]),
         ]);
         
     }
