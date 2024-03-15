@@ -4,8 +4,10 @@ namespace App\Http\Controllers\api\v1\user;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
+use App\Models\Act;
 
 use Carbon\Carbon;
 
@@ -46,7 +48,16 @@ class ActController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
+        $request->validate([
+            'data' => 'required|date|before_or_equal:today',
+            'ore' => 'required|integer|min:1|max:24',
+            'descrizione' => 'required|string|max:512',
+        ]);
+        
+        $data = $request->only('data', 'ore', 'descrizione');
+        $data['user_id'] = Auth::user()->id;
+        return Act::create($data);
     }
 
     /**

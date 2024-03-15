@@ -24,7 +24,7 @@ return [
     'array' => ':attribute deve essere un array.',
     'ascii' => ':attribute deve contenere solo caratteri alfanumerici e simboli a byte singolo.',
     'before' => ':attribute deve essere una data antecedente a :date.',
-    'before_or_equal' => ':attribute deve essere una data antecedente o uguale a :date.',
+    'before_or_equal' => ':attribute deve essere una data antecedente o uguale alla data odierna',
     'between' => [
         'array' => ':attribute deve essere compreso tra :min and :max elementi.',
         'file' => ':attribute deve essere compreso tra :min e :max kilobytes.',
@@ -180,10 +180,16 @@ return [
     */
 
     'attributes' => [
-        'name' => 'Nome',
-        'surname' => 'Cognome',
-        'email' => 'Email',
-        'username' => 'Username'
+        'name'     => 'Nome',
+        'surname'  => 'Cognome',
+        'email'    => 'Email',
+        'username' => 'Username',
+        
+        'data' => 'Data attività',
+        'ore'  => 'Ore impiegate',
+        'descrizione' => 'Descrizione attività',
+        
+        'today' => 'oggi'
     ],
 
 ];

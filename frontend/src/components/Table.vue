@@ -123,8 +123,8 @@ const rows        = ref([]);
 //const external_row = ref([]);
 const search      = ref('');
 
-const formData = ref({});
-const action   = ref(Array);
+const formData = ref([]);
+const action   = ref({});
 const formLoading = ref(false);
 
 const errorsForm = ref([])
@@ -292,7 +292,6 @@ onMounted(async ()=>{
    rows.value    = props.endpoints && props.endpoints.list ? await list(props.endpoints.list) : props.external_row;   
    loading.value = false;
    formModel.value.submit = props.form && props.form.submit ? props.form.submit : defaultSubmit;
-   console.log('rows.value', rows.value)
  })
 
  onUpdated( () => {

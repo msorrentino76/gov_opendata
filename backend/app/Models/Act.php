@@ -13,6 +13,7 @@ class Act extends Model
     protected $table = 'activities';
     
     protected $fillable = [
+        'user_id',
         'data',
         'descrizione',
         'ore',

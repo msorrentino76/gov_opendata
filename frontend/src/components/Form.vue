@@ -66,6 +66,48 @@
                         <el-switch v-model="data[field.name]" :active-text="field.activeText ? field.activeText : ''" :inactive-text="field.inactiveText ? field.inactiveText : ''" />
                     </el-form-item>
 
+                    <!-- INPUT NUMERIC -->
+                    <el-form-item
+                        v-if="field.type=='input-numeric'"
+                        :label="field.label"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >
+                        <el-input-number v-model="data[field.name]" :min="field.min" :max="field.max" :label="field.label"/>
+                    </el-form-item>
+
+                    <!-- DATA PICKER -->
+                    <el-form-item
+                        v-if="field.type=='datapicker'"
+                        :label="field.label"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >
+                        <el-date-picker
+                            v-model="data[field.name]"
+                            type="date"
+                            placeholder="Data attività"
+                            format="DD/MM/YYYY"
+                            value-format="YYYY-MM-DD"
+                        />
+                    </el-form-item>
+
+                    <!-- TEXT -->
+                    <el-form-item
+                        v-if="field.type=='text'"
+                        :label="field.label"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >
+                        <el-input
+                            v-model="data[field.name]"
+                            maxlength="512"
+                            placeholder="Descrizione dell'attività svolta"
+                            show-word-limit
+                            type="textarea"
+                        />
+                    </el-form-item>
+
                 </template>
 
             </el-col>

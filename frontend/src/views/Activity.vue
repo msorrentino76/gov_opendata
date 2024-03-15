@@ -24,6 +24,7 @@
         <el-tabs v-model="activeName" class="act-tabs" @tab-click="handleClick" type="border-card" v-loading="loading">
           <el-tab-pane :label="usr.subject" :key="idx" :name="usr.id" v-for="(usr, idx) in activities">
             <TableEl
+              entity="Attività"
               :header="[
                     {
                       field: 'data',
@@ -42,7 +43,40 @@
                     }                
                 ]"
               :external_row="usr.activities"  
-              :form="{submit: () => {}}" 
+              :actions="{...(Auth.state.user.id == usr.id ? { create:{} } : {} ),}"  
+              :form="{
+                fields: [
+                  {
+                    row: [
+                      {
+                        type: 'datapicker',
+                        label: 'Data attività',
+                        name: 'data',
+                        space: 12,                  
+                      },
+                      {
+                        type: 'input-numeric',
+                        min: 1,
+                        max:24,
+                        label: 'Ore impiegate',
+                        name: 'ore',
+                        space: 12,
+                      }
+                    ]
+                  },
+                  {
+                    row: [
+                      {
+                        type: 'text',
+                        label: 'Descrizione dell\'attività',
+                        name: 'descrizione',
+                        space: 24,
+                      }
+                    ]
+                  }
+                ]
+                }"
+                :endpoints="{create: 'user/act',}" 
             />
           </el-tab-pane>
         </el-tabs>
