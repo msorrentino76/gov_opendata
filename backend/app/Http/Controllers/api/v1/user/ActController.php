@@ -11,6 +11,8 @@ use App\Models\Act;
 
 use Carbon\Carbon;
 
+use App\Notifications\ActionNotification;
+
 class ActController extends Controller
 {
     /**
@@ -35,7 +37,7 @@ class ActController extends Controller
             $prepare_resp[] = [
                 'id'       => $u->id,
                 'subject'  => $u->name . ' ' . $u->surname,
-                'activities' => $u->acts()->whereBetween('data', [$data_from, $data_to])->orderBy('data')->get(),
+                'activities' => $u->acts()->whereBetween('data', [$data_from, $data_to])->orderBy('id')->get(),
                 ];
         }
         
@@ -55,9 +57,24 @@ class ActController extends Controller
             'descrizione' => 'required|string|max:512',
         ]);
         
+        $user = Auth::user();
+        
         $data = $request->only('data', 'ore', 'descrizione');
-        $data['user_id'] = Auth::user()->id;
-        return Act::create($data);
+        $data['user_id'] = $user->id;
+        
+        $act = Act::create($data);
+        
+        try{
+            foreach(User::all() as $u){
+                if($u->id != $user->id){
+                    $u->notify(new ActionNotification($user, $u, ActionNotification::ATTIVITA, $act->id)   
+                     );
+                }
+            }
+        } catch (Exception $ex) {
+            // do nothing
+        }
+        return $act;
     }
 
     /**

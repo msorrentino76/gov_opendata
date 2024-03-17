@@ -27,6 +27,13 @@
               entity="Attività"
               :header="[
                     {
+                      field: 'id',
+                      label: '#ID',
+                      align: 'right',
+                      sortable: true,
+                      width: 64
+                    },                
+                    {
                       field: 'data',
                       label: 'Data attività',
                       format: 'data',
@@ -36,10 +43,12 @@
                       field: 'ore',
                       label: 'Ore impiegate',
                       format: 'numeric',
+                      align: 'right',
                     },
                     {
                       field: 'descrizione',
-                      label: 'Descrizione attività',                      
+                      label: 'Descrizione attività',
+                      width: 1024
                     }                
                 ]"
               :external_row="usr.activities"  
@@ -73,10 +82,44 @@
                         space: 24,
                       }
                     ]
+                  },
+                  {
+                    row: [
+                      {
+                        type: 'alert-warning',
+                        text: 'Attenzione! Dopo il salvataggio non sarà più possibile modificare o cancellare l\'attività inserita. Verifica i dati prima di procedere.',
+                        space: 24,
+                      }
+                    ]
                   }
                 ]
                 }"
+                :rules="{
+                  data: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    { type: 'date',  message: 'Inserire una data valida', trigger: ['blur', 'change'] },
+                  ],     
+                  ore: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    { type: 'number',  message: 'Inserire valore intero', trigger: ['blur', 'change'] },
+                  ], 
+                  descrizione: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    { type: 'string',  message: 'Inserire un testo valido', trigger: ['blur', 'change'] },
+                  ],                    
+                }"
                 :endpoints="{create: 'user/act',}" 
+                :tableCellStyle="(( { row, column, rowIndex, columnIndex } ) => {
+                  console.log(row, column, rowIndex, columnIndex)
+                  if(columnIndex == 0 || columnIndex == 2) {
+                    return {'text-align': 'right'};
+                  }
+                  if(columnIndex == 1) {
+                    return {'text-align': 'center'};
+                  }                    
+                  return {'text-align': 'left'}              
+                  })"
+
             />
           </el-tab-pane>
         </el-tabs>

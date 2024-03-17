@@ -108,12 +108,22 @@
                         />
                     </el-form-item>
 
+                    <!-- ALERT -->
+
+                    <el-alert v-if="field.type=='alert-success'" :title="field.text" show-icon type="success" />
+                    <el-alert v-if="field.type=='alert-info'"    :title="field.text" show-icon type="info" />
+                    <el-alert v-if="field.type=='alert-warning'" :title="field.text" show-icon type="warning" />
+                    <el-alert v-if="field.type=='alert-success'" :title="field.text" show-icon type="error" />
+
+
                 </template>
 
             </el-col>
 
         </el-row>
 
+        <br>
+        
         <el-button v-if="!formModel.disabled" type="success" @click="submit(ruleFormRef)">Salva</el-button>
 
     </el-form>

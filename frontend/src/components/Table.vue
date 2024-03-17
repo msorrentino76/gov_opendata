@@ -1,12 +1,25 @@
 
 <template>
     
-    <el-button v-if="actions && actions.create"
-        type="success"
-        :icon="Plus"
-        @click="handleCreate()"
-        :disabled="actions.create.disabled ? actions.create.disabled() : false"
-    >Aggiungi</el-button>
+    <el-row>
+        <el-col :span="4">
+            <el-button v-if="actions && actions.create"
+                type="success"
+                :icon="Plus"
+                @click="handleCreate()"
+                :disabled="actions.create.disabled ? actions.create.disabled() : false"
+            >Aggiungi</el-button>        
+        </el-col>
+        <el-col :span="4"></el-col>
+        <el-col :span="4"></el-col>
+        <el-col :span="4"></el-col>
+        <el-col :span="4"></el-col>
+        <el-col :span="4">
+            <el-input v-model="search" placeholder="Cerca..." @input="handleSearch"></el-input>
+        </el-col>
+    </el-row>
+
+    <br>
 
     <el-table
         v-loading="loading" 
@@ -25,13 +38,16 @@
             :key="indexth"
             :prop="th.field"
             :label="th.label"
-            v-for="(th, indexth) in header"/>
+            v-for="(th, indexth) in header"
+            :align="th.align ? th.align : 'center'"
+            :width="th.width ? th.width : ''"
+            />
     
-        <el-table-column align="right">
+        <el-table-column align="right" v-if="action && (action.read || action.update || action.delete)">
                 
-            <template #header>
+            <!--template #header>
                 <el-input v-model="search" size="small" placeholder="Cerca" />
-            </template>
+            </template-->
 
             <template #default="scope">
 
@@ -129,6 +145,10 @@ const formLoading = ref(false);
 
 const errorsForm = ref([])
 
+const handleSearch = ((value) => {
+  search.value = value;
+});
+
 const filterTableData = computed(() =>
     rows.value.filter( (data) => {
         for(const h of props.header){
@@ -153,12 +173,12 @@ const formatter = (row, column) => {
         const opzioniFormattazione = format == 'data' ?
             {
                 year: 'numeric',
-                month: 'numeric', //'long',
-                day: 'numeric',
+                month: '2-digit', //'long',
+                day: '2-digit',
             } : {
                 year: 'numeric',
-                month: 'numeric', //'long',
-                day: 'numeric',
+                month: '2-digit', //'long',
+                day: '2-digit',
                 hour: 'numeric',
                 minute: 'numeric',
                 hour12: false,
@@ -166,7 +186,7 @@ const formatter = (row, column) => {
         return value ? data.toLocaleString('it-IT', opzioniFormattazione) : '';
     }
     
-    if(format == 'numeric') {
+    if(format == 'decimal') {
         return value !== null ? new Intl.NumberFormat('it-IT', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2,
