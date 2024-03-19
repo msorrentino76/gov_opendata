@@ -130,6 +130,7 @@
                                 ref="upload"
                                 :action="Auth.state.config.applicationBaseURL + '/api' + field.uploadEndpoint +'?XDEBUG_SESSION_START=netbeans-xdebug'"
                                 :headers="uploadHeader"
+                                :accept="field.accept.mime"
                                 multiple
                                 drag
                                 :limit="field.limit"
@@ -149,7 +150,7 @@
                                 </div>
                                 <template #tip>
                                 <div class="el-upload__tip">
-                                    Accettati file .pdf di massimo {{ field.maxmbsize }} Megabyte
+                                    Accettati file {{ field.accept.label }} di massimo {{ field.maxmbsize }} Megabyte
                                 </div>
                                 </template>
                             </el-upload>                            

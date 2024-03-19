@@ -17,7 +17,6 @@ class Sell extends Model
         'data',
         'descrizione',
         'importo',
-        'allegato'
     ];
     
     public function user(){

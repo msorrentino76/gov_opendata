@@ -82,7 +82,11 @@
                       limit: 3,
                       uploadEndpoint: '/document/upload',
                       removeEndpoint: '/document/remove',
-                      maxmbsize: 2
+                      maxmbsize: 2,
+                      accept: {
+                        label: 'pdf',
+                        mime: 'application/pdf'
+                      }
                     }
                   ]
                 },

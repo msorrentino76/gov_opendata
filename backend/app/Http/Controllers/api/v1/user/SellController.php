@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 use App\Models\User;
 use App\Models\Sell;
+use App\Models\Document;
 
 use Carbon\Carbon;
 
@@ -69,6 +70,13 @@ class SellController extends Controller
         $data['user_id'] = $user->id;
         
         $sell = Sell::create($data);
+        
+        foreach($data['allegati'] as $allegato){
+            $documento = Document::where(['id' => $allegato['response']['id'], 'user_id' => $user->id])->first();
+            if(!is_null($documento)) {
+                $documento->toMorph($sell);
+            }
+        }
         
         try{
             foreach(User::all() as $u){

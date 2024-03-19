@@ -23,6 +23,12 @@ class Document extends Model
         'description',
     ];
     
+    public function toMorph($entity) {
+        $this->documentable_type = get_class($entity);
+        $this->documentable_id = $entity->id;
+        $this->save();
+    }
+    
     public function user(){
         return $this->belongsTo(User::class);
     }
