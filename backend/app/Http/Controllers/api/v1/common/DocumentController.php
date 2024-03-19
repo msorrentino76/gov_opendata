@@ -21,14 +21,13 @@ class DocumentController extends Controller
         $file = $request->file('file');
 
         $path = $file->getRealPath();
-        $size = $file->getClientSize();
+        $size = $file->getSize();
         $data = file_get_contents($path);
         $base64 = base64_encode(addslashes($data));
 
         $documento = new Document();
             
         $documento->user_id = Auth::user()->id;
-        $documento->uid = '??';
         //$documento->documentable_type
         //$documento->documentable_id
         $documento->name    = $file->getClientOriginalName();
@@ -39,16 +38,19 @@ class DocumentController extends Controller
                 
         $documento->save();
 
-        return response(['id' => $documento->id, 'uid' => $documento->uid], 201);
+        return response(['id' => $documento->id], 201);
     }
     
     public function remove(Request $request, string $id) {
         
         /*
-         * @todo validation owner
+         * Solo l'owner può cancellare!
+         * Non viene fatto alcun controllo:
+         * 1 - parte un garbage collector per i files privi di morph
+         * 2 - se un file non viene trovato non esiste già
          */
-        
-        return response(['uuid' => 'SDASDFAS'], 200);
+        Document::where(['id' => $id, 'user_id' => Auth::user()->id])->forceDelete();        
+        return response(null, 200);
     }
     
 }

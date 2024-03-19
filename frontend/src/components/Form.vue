@@ -128,20 +128,20 @@
                     >                                            
                             <el-upload                      
                                 ref="upload"
-                                :action="Auth.state.config.applicationBaseURL + '/api' + field.uploadEndpoint"
+                                :action="Auth.state.config.applicationBaseURL + '/api' + field.uploadEndpoint +'?XDEBUG_SESSION_START=netbeans-xdebug'"
                                 :headers="uploadHeader"
                                 multiple
                                 drag
                                 :limit="field.limit"
                                 v-model:file-list="data[field.name]"
-                                :before-upload="(rawFile)=>{
+                                :before-upload="(rawFile)=>{                                    
                                     if(field.maxmbsize && (rawFile.size / 1024 / 1024) > field.maxmbsize) {
                                         formErrors[field.name] = 'Il file ' + rawFile.name + ' supera la dimensione massima consentita di ' + field.maxmbsize + ' Mb';
                                         return false;
                                     }
                                     return true;
                                 }"
-                                :before-remove="(rawFile)=>{removeFile(field.removeEndpoint, rawFile.uid)}"
+                                :before-remove="(rawFile)=>{removeFile(field.removeEndpoint, rawFile.response.id)}"
                                 >
                                 <el-icon class="el-icon--upload"><IconEl icon="upload-filled" /></el-icon>
                                 <div class="el-upload__text">

@@ -58,7 +58,7 @@ class SellController extends Controller
         
         $user = Auth::user();
         
-        $data = $request->only('data', 'importo', 'descrizione', 'allegato');
+        $data = $request->only('data', 'importo', 'descrizione', 'allegati');
         
         if( !isset($data['allegati']) || count($data['allegati']) == 0 ){
             return response()->json([

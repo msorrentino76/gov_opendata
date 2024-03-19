@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             
-            $table->uuid('id')->primary();
+            //$table->uuid('id')->primary();            
+            $table->id();            
             
-            $table->unsignedBigInteger('uid');
-            
-            $table->morphs('documentable');
+            //$table->morphs('documentable');
+            $table->nullableMorphs('documentable');
             
             $table->string('name');
             $table->unsignedBigInteger('size');
