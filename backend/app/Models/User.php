@@ -52,6 +52,14 @@ class User extends Authenticatable
         return $this->hasMany(Act::class);
     }    
     
+    public function sells(){
+        return $this->hasMany(Sell::class);
+    } 
+    
+    public function documents(){
+        return $this->hasMany(Document::class);
+    } 
+    
     public function storico(){
         return $this->hasMany(StoricoLogin::class);
     }  

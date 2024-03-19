@@ -31,7 +31,7 @@
                       label: '#ID',
                       align: 'right',
                       sortable: true,
-                      width: 64
+                      width: 128
                     },                
                     {
                       field: 'data',

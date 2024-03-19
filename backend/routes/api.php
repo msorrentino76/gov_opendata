@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\api\v1\common\NotificaController;
 use App\Http\Controllers\api\v1\common\ProfileController;
+use App\Http\Controllers\api\v1\common\DocumentController;
 
 use App\Http\Controllers\api\v1\user\ActController;
 use App\Http\Controllers\api\v1\user\SellController;
@@ -46,6 +47,11 @@ Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
 Route::middleware('auth:sanctum')->prefix('profile')->group(function () {
     Route::put('account/{id}' , [ProfileController::class, 'account']);
     Route::put('password/{id}', [ProfileController::class, 'password']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
+    Route::post('upload', [DocumentController::class, 'upload']);
+    Route::delete('remove/{id}', [DocumentController::class, 'remove']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:system:user'])->prefix('user')->group(function () {

@@ -6,6 +6,9 @@ export default createStore({
       logged: false,
       token : null,
       user  : null,
+      config: {
+        applicationBaseURL: 'http://localhost/NumiPort/backend/public',
+      }
     },
     mutations: {
       login(state, data) {

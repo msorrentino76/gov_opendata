@@ -187,7 +187,7 @@ return [
         
         'data' => 'Data attività',
         'ore'  => 'Ore impiegate',
-        'descrizione' => 'Descrizione attività',
+        'descrizione' => 'Descrizione',
         
         'today' => 'oggi'
     ],

@@ -269,10 +269,10 @@ const defaultDelete = (async(id, row) => {
 
 const defaultSubmit = (async(data, formRef) => {
 
+    console.log('onSubmit Table:', data);
+
     const val = await formRef.validate((valid) => valid);
     if(!val) return false;
-
-    //console.log('onSubmit Table:', data);
 
     formLoading.value = true;  
 

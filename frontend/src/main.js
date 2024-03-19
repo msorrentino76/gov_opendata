@@ -39,5 +39,4 @@ const routes = [
   app.use(router);
   app.use(auth);
 
-
   app.mount('#app');

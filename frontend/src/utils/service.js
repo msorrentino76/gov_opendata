@@ -3,9 +3,9 @@ import {ElMessage, ElNotification } from 'element-plus';
 
 import axios from 'axios';
 
-import auth from '../store/Auth.js'; 
+import auth  from '../store/Auth.js'; 
 
-const applicationBaseURL = 'http://localhost/NumiPort/backend/public';
+const applicationBaseURL = auth.state.config.applicationBaseURL;
                             
 const axiosInstance = axios.create({
   baseURL: applicationBaseURL + '/api/',
@@ -98,7 +98,7 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
   export const filteredList = async (endpoint, filter) => {  
       try {
         const response = await axiosInstance.get(endpoint, { params: filter });
-        console.log('filteredList', endpoint)  
+        //console.log('filteredList', endpoint)  
         return await response.data;
       } catch (error) {
         return errorHandler(error, 'filteredList');
@@ -134,10 +134,10 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
     }
 }
 
-  export const del = async (endpoint, id) => {     
+  export const del = async (endpoint, id, mute = false) => {     
     try {
         await axiosInstance.delete(endpoint + '/' + id);
-        elNotifySuccess();
+        if(!mute) elNotifySuccess();
         return await true;
     } catch (error) {
         return errorHandler(error, 'del');

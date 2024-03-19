@@ -76,6 +76,16 @@
                         <el-input-number v-model="data[field.name]" :min="field.min" :max="field.max" :label="field.label"/>
                     </el-form-item>
 
+                    <!-- INPUT DECIMAL -->
+                    <el-form-item
+                        v-if="field.type=='input-decimal'"
+                        :label="field.label"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >
+                        <el-input type="number" v-model="data[field.name]" :precision="2" :min="0" :step="0.01" :label="field.label" />
+                    </el-form-item>                    
+                    
                     <!-- DATA PICKER -->
                     <el-form-item
                         v-if="field.type=='datapicker'"
@@ -108,6 +118,44 @@
                         />
                     </el-form-item>
 
+                    <!-- UPLOAD -->
+                    <el-divider v-if="field.type=='upload'"/>
+                    <el-form-item
+                        v-if="field.type=='upload'"
+                        :label="field.label"
+                        :prop="field.name"
+                        :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                    >                                            
+                            <el-upload                      
+                                ref="upload"
+                                :action="Auth.state.config.applicationBaseURL + '/api' + field.uploadEndpoint"
+                                :headers="uploadHeader"
+                                multiple
+                                drag
+                                :limit="field.limit"
+                                v-model:file-list="data[field.name]"
+                                :before-upload="(rawFile)=>{
+                                    if(field.maxmbsize && (rawFile.size / 1024 / 1024) > field.maxmbsize) {
+                                        formErrors[field.name] = 'Il file ' + rawFile.name + ' supera la dimensione massima consentita di ' + field.maxmbsize + ' Mb';
+                                        return false;
+                                    }
+                                    return true;
+                                }"
+                                :before-remove="(rawFile)=>{removeFile(field.removeEndpoint, rawFile.uid)}"
+                                >
+                                <el-icon class="el-icon--upload"><IconEl icon="upload-filled" /></el-icon>
+                                <div class="el-upload__text">
+                                Trascina qui i files (massimo {{field.limit}}) oppure <em>Clicca qui per caricarli</em>
+                                </div>
+                                <template #tip>
+                                <div class="el-upload__tip">
+                                    Accettati file .pdf di massimo {{ field.maxmbsize }} Megabyte
+                                </div>
+                                </template>
+                            </el-upload>                            
+                    </el-form-item>
+                    <el-divider v-if="field.type=='upload'"/>
+
                     <!-- ALERT -->
 
                     <el-alert v-if="field.type=='alert-success'" :title="field.text" show-icon type="success" />
@@ -123,7 +171,7 @@
         </el-row>
 
         <br>
-        
+
         <el-button v-if="!formModel.disabled" type="success" @click="submit(ruleFormRef)">Salva</el-button>
 
     </el-form>
@@ -133,13 +181,22 @@
 
 <script setup>
 
+import Auth from '@/store/Auth';
+
 import {ref, defineProps, defineComponent, onUpdated} from 'vue';
+import { del } from '../utils/service.js';
 
 import PasswordMeter from 'vue-simple-password-meter';
 
 import IconEl from './Icon.vue'; 
 
     const ruleFormRef = ref({});
+
+    const uploadHeader ={
+        'Authorization': `Bearer ${ Auth.state.token }` // Assicurati di modificare questo in base al tuo metodo di autenticazione
+    };
+
+    const removeFile = (async(ep, uid) => {await del(ep, uid, true)})
 
     function getFormDataObj(){
         return Object.keys(data.value).reduce((acc, key) => {
