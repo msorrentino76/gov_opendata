@@ -40,8 +40,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-        'notify_email' => 'boolean',
+        'password'          => 'hashed',
+        'notify_email'      => 'boolean',
     ];
     
     public function username(){

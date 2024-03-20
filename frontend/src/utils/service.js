@@ -2,6 +2,7 @@
 import {ElMessage, ElNotification } from 'element-plus';
 
 import axios from 'axios';
+import { saveAs } from 'file-saver';
 
 import auth  from '../store/Auth.js'; 
 
@@ -82,6 +83,18 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
     } catch (error) {
         return errorHandler(error, 'revoke');
     }
+}
+
+export const download = async (f) => {
+  try {
+    const response = await axiosInstance.get(f.content, {
+      responseType: 'blob' // Imposta il tipo di risposta come blob
+    });
+    saveAs(response.data, f.name);
+    return true;
+  } catch (error) {
+      return errorHandler(error, 'download');
+  }
 }
 
  export const list = async (endpoint) => {  

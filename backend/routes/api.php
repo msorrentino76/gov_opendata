@@ -50,7 +50,8 @@ Route::middleware('auth:sanctum')->prefix('profile')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
-    Route::post('upload', [DocumentController::class, 'upload']);
+    Route::post('upload'       , [DocumentController::class, 'upload']);
+    Route::get ('download/{id}', [DocumentController::class, 'download'])->name('download');
     Route::delete('remove/{id}', [DocumentController::class, 'remove']);
 });
 

@@ -41,6 +41,29 @@ class DocumentController extends Controller
         return response(['id' => $documento->id], 201);
     }
     
+    public function download(string $id) {
+        
+        /*
+         * ACL: tutti possono scaricare i docs di tutti
+         */
+        $documento = Document::where(['id' => $id /*, 'user_id' => Auth::user()->id*/])->first();
+        
+        $nomeFile       = $documento->name;
+        $mime           = $documento->mime;
+        $base64_content = $documento->getRawOriginal('content'); // SKIP ACCESSOR
+        $size           = $documento->size;
+        $content = stripslashes(base64_decode($base64_content));
+
+        return response($content)
+                        ->withHeaders([
+                            'Content-Transfer-Encoding' => 'binary',
+                            'Content-type' => $mime,
+                            'Content-Disposition' => sprintf('attachment; filename="%s"', $nomeFile),
+                            'Content-Length' => $size,
+                            'Accept-Ranges' => 'bytes',
+        ]);
+    }
+    
     public function remove(Request $request, string $id) {
         
         /*

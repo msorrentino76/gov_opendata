@@ -24,10 +24,10 @@ class SellController extends Controller
         $from = explode('-', $request->from);
         $to   = explode('-', $request->to);
         
-        $annoInizio = isset($from[0]) ? $from[0] : '1900';
-        $meseInizio = isset($from[1]) ? $from[1] : '01';
-        $annoFine   = isset($to[0])   ? $to[0]   : '2100';
-        $meseFine   = isset($to[1])   ? $to[1]   : '12';
+        $annoInizio = isset($from[0]) && isset($from[1]) ? $from[0] : '1900';
+        $meseInizio = isset($from[0]) && isset($from[1]) ? $from[1] : '01';
+        $annoFine   = isset($to[0])   && isset($to[1])   ? $to[0]   : '2100';
+        $meseFine   = isset($to[0])   && isset($to[1])   ? $to[1]   : '12';
         
         $data_from = Carbon::createFromDate($annoInizio, $meseInizio)->firstOfMonth()->toDateString();
         $data_to   = Carbon::createFromDate($annoFine  , $meseFine)->lastOfMonth()->toDateString();
@@ -35,10 +35,14 @@ class SellController extends Controller
         $prepare_resp = [];
         
         foreach (User::all() as $u){
+            
+            //$sells = array();
+            
             $prepare_resp[] = [
                 'id'      => $u->id,
                 'subject' => $u->name . ' ' . $u->surname,
-                'sells'   => $u->sells()->whereBetween('data', [$data_from, $data_to])->orderBy('id')->get(),
+                'sells'   => $u->sells()->with('documents')->whereBetween('sells.data', [$data_from, $data_to])->orderBy('sells.id')->get(),
+                //'sells'   => $u->with('sells.documents')->/*whereBetween('sells.data', [$data_from, $data_to])->orderBy('sells.id')->*/get(),
                 ];
         }
         
@@ -71,6 +75,9 @@ class SellController extends Controller
         
         $sell = Sell::create($data);
         
+        /*
+         *  COLLEGO GLI ALLEGATI
+         */
         foreach($data['allegati'] as $allegato){
             $documento = Document::where(['id' => $allegato['response']['id'], 'user_id' => $user->id])->first();
             if(!is_null($documento)) {
@@ -78,6 +85,9 @@ class SellController extends Controller
             }
         }
         
+        /*
+         * INVIO NOTIFICHE
+         */
         try{
             foreach(User::all() as $u){
                 if($u->id != $user->id){
@@ -88,7 +98,7 @@ class SellController extends Controller
         } catch (Exception $ex) {
             // do nothing
         }
-        return $sell;
+        return $sell->with('documents');
 
     }
     

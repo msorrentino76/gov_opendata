@@ -33,16 +33,33 @@
         >
     
         <el-table-column
+            v-for="(th, indexth) in header"
             :sortable="th.sortable"
             :formatter="formatter"
             :key="indexth"
             :prop="th.field"
-            :label="th.label"
-            v-for="(th, indexth) in header"
+            :label="th.label"            
             :align="th.align ? th.align : 'center'"
             :width="th.width ? th.width : ''"
             />
     
+        <!-- ATTACHMENTS -->
+        <el-table-column v-if="attachments && attachments.field"
+            :label="attachments.label"
+            :width="attachments.width ? attachments.width : ''"
+        >
+            <template #default="attachment">
+            <div v-for="(f, i) in attachment.row[attachments.field]" :key="i">
+                <el-button type="primary" :loading="isDownloading" text @click="downloadFile(f)"><el-icon v-if="!isDownloading"><Download /></el-icon> {{f.name}}</el-button>
+                <!--el-link :href="f.content" :icon="Download" type="primary" :underline="false" target="_blank">{{f.name}}</el-link-->
+            </div>
+            <div v-if="attachment.row[attachments.field].length == 0">
+                <i>{{ attachments.no_data }}</i>
+            </div>
+            </template>
+        </el-table-column>
+
+        <!-- ACTION -->    
         <el-table-column align="right" v-if="action && (action.read || action.update || action.delete)">
                 
             <!--template #header>
@@ -108,10 +125,10 @@
 
 <script setup>
 
-import {list, create, read, update, del } from '../utils/service.js'; 
-import {ref, onMounted, onUpdated, computed, defineComponent, defineProps} from 'vue';
+import {list, create, read, update, del, download } from '../utils/service.js'; 
+import {/*h,*/ ref, onMounted, onUpdated, computed, defineComponent, defineProps} from 'vue';
 
-import { Delete, Edit, Search, Plus} from '@element-plus/icons-vue'
+import { Delete, Edit, Search, Plus, Download} from '@element-plus/icons-vue'
 
 import FormEl from './Form.vue';
 
@@ -121,6 +138,7 @@ const props = defineProps({
     endpoints: {},
     external_row: [],
     header   : {},
+    attachments: {},
     actions  : {},
     form     : {},
     rules    : {},
@@ -131,9 +149,10 @@ const props = defineProps({
 
 const formModel = ref(props.form);
 
-const openDrawer  = ref(false);
-const drawerTitle = ref('');
-const loading     = ref(true);
+const openDrawer    = ref(false);
+const drawerTitle   = ref('');
+const loading       = ref(true);
+const isDownloading = ref(false);
 
 const rows        = ref([]);
 //const external_row = ref([]);
@@ -192,6 +211,20 @@ const formatter = (row, column) => {
             maximumFractionDigits: 2,
         }).format(value) : value;
     }
+
+    /* DON'T WORK... perchè non renderizza l'HTML
+    if(format == 'attachments') {
+        let allegati = '';
+        allegati += value.map(
+            (allegato) => {
+                // return `<div>${allegato.name}</div>` + '<br>'
+                // return h('div', { class: 'example' }, allegato.name);
+                return `<mini-map :data="${allegato.name}"></mini-map>`;
+            })
+        console.log('download', value);
+        return allegati != '' ? allegati : 'Nessun allegato';
+    }
+    */
 
     return value;
 
@@ -306,7 +339,14 @@ const defaultSubmit = (async(data, formRef) => {
 
     formLoading.value = false; 
 
-});
+    });
+
+    const downloadFile = (async (f) => {
+        isDownloading.value = true;
+        await download(f);
+        isDownloading.value = false;
+    });
+
 
 onMounted(async ()=>{
    rows.value    = props.endpoints && props.endpoints.list ? await list(props.endpoints.list) : props.external_row;   

@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
 class Document extends Model
 {
     use HasFactory, SoftDeletes;
@@ -22,6 +24,30 @@ class Document extends Model
         'content',
         'description',
     ];
+    
+    protected $hidden = [
+        'documentable_type',
+        'documentable_id',
+        'user_id',
+        'deleted_at',        
+        //'created_at',
+        //'updated_at',
+        ];
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected function content(): Attribute{
+        return Attribute::make(
+            get: fn (/*string $value*/) => $this->toLink(/*$value*/),
+        );
+    }
+    
+    private function toLink(/*$value*/){
+        return route('download', ['id' => $this->id]);
+    }
     
     public function toMorph($entity) {
         $this->documentable_type = get_class($entity);

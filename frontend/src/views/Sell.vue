@@ -49,9 +49,16 @@
                   {
                     field: 'descrizione',
                     label: 'Descrizione vendita',
-                    width: 1024
-                  },                
-              ]"        
+                    width: 728
+                  },     
+                              
+              ]"  
+            :attachments="{
+                    field: 'documents',
+                    label: 'Allegati',
+                    width: 412,
+                    no_data: 'Nessun allegato',
+                  }"      
             :external_row="usr.sells"  
             :actions="{...(Auth.state.user.id == usr.id ? { create:{} } : {} ),}"  
             :form="{

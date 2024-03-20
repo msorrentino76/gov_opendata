@@ -23,10 +23,10 @@ class ActController extends Controller
         $from = explode('-', $request->from);
         $to   = explode('-', $request->to);
         
-        $annoInizio = isset($from[0]) ? $from[0] : '1900';
-        $meseInizio = isset($from[1]) ? $from[1] : '01';
-        $annoFine   = isset($to[0])   ? $to[0]   : '2100';
-        $meseFine   = isset($to[1])   ? $to[1]   : '12';
+        $annoInizio = isset($from[0]) && isset($from[1]) ? $from[0] : '1900';
+        $meseInizio = isset($from[0]) && isset($from[1]) ? $from[1] : '01';
+        $annoFine   = isset($to[0])   && isset($to[1])   ? $to[0]   : '2100';
+        $meseFine   = isset($to[0])   && isset($to[1])   ? $to[1]   : '12';
         
         $data_from = Carbon::createFromDate($annoInizio, $meseInizio)->firstOfMonth()->toDateString();
         $data_to   = Carbon::createFromDate($annoFine  , $meseFine)->lastOfMonth()->toDateString();
