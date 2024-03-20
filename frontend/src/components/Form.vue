@@ -142,7 +142,7 @@
                                     }
                                     return true;
                                 }"
-                                :before-remove="(rawFile)=>{removeFile(field.removeEndpoint, rawFile.response.id)}"
+                                :before-remove="(rawFile)=>{removeFile(field.removeEndpoint, rawFile && rawFile.response ? rawFile.response.id : false)}"
                                 >
                                 <el-icon class="el-icon--upload"><IconEl icon="upload-filled" /></el-icon>
                                 <div class="el-upload__text">
@@ -197,7 +197,12 @@ import IconEl from './Icon.vue';
         'Authorization': `Bearer ${ Auth.state.token }` // Assicurati di modificare questo in base al tuo metodo di autenticazione
     };
 
-    const removeFile = (async(ep, uid) => {await del(ep, uid, true)})
+    const removeFile = (async(ep, uid) => {
+        if(uid !== false){
+            await del(ep, uid, true);
+        }
+        return true;
+    })
 
     function getFormDataObj(){
         return Object.keys(data.value).reduce((acc, key) => {

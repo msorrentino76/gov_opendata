@@ -98,7 +98,8 @@ class SellController extends Controller
         } catch (Exception $ex) {
             // do nothing
         }
-        return $sell->with('documents');
+        
+        return Sell::with('documents')->where(['sells.id' => $sell->id, 'sells.user_id' => $user->id])->first();
 
     }
     
