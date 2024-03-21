@@ -1,6 +1,6 @@
 <template>
   
-  <el-menu :default-active="this.$route.path" :router=true :collapse="collapseMenu">
+  <el-menu :default-active="$route.path" :router=true :collapse="collapseMenu">
 
     <el-menu-item>
       <el-icon @click="menuToggle()" v-if="collapseMenu"><Expand /></el-icon>

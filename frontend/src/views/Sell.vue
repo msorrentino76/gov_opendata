@@ -82,6 +82,16 @@
                 {
                   row: [
                     {
+                      type: 'text',
+                      label: 'Descrizione vendita',
+                      name: 'descrizione',
+                      space: 24,
+                    }
+                  ]
+                }, 
+                {
+                  row: [
+                    {
                       type: 'upload',
                       label: 'Allegati',
                       name: 'allegati',
@@ -96,17 +106,7 @@
                       }
                     }
                   ]
-                },
-                {
-                  row: [
-                    {
-                      type: 'text',
-                      label: 'Descrizione vendita',
-                      name: 'descrizione',
-                      space: 24,
-                    }
-                  ]
-                },                
+                },               
                 {
                   row: [
                     {

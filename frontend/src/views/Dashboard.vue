@@ -41,23 +41,57 @@
 
     <br><br><br>
 
-    <el-card class="box-card">      
-      <b>Benvenuto {{ Auth.state.user.name }} {{ Auth.state.user.surname }}</b>      
-      <br><br>      
-      <el-alert v-if="Auth.state.user.password_changed != true" title="La tua password è ancora quella di default. Si invita a cambiarla prima possibile." type="error" />
-      <br><br>
-      <el-row type="flex" justify="center" :gutter="20">
-        <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
-          <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">Ultimi accessi: {{ user.subject }}</el-text>
-          <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">Ultimi accessi: {{ user.subject }}</el-text>
-          <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
-            <el-table-column prop="data_ora" label="Data" :formatter="dataTimeFormatter"/>
-            <el-table-column prop="so"       label="Sistema Operativo" />
-            <el-table-column prop="browser"  label="Browser" />
-          </el-table>
-        </el-col>
-      </el-row>
-    </el-card>
+    <el-row :gutter="16">    
+      <el-col :span="6">
+        <el-card class="box-card">
+          <v-chart :option="pieActsCountDiagram" style="height: 232px;" autoresize></v-chart>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="box-card">
+          <v-chart :option="pieActsHoursDiagram" style="height: 232px;" autoresize></v-chart>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="box-card">
+          <v-chart :option="pieSellsCountDiagram" style="height: 232px;" autoresize></v-chart>
+        </el-card>
+      </el-col>
+      <el-col :span="6">
+        <el-card class="box-card">
+          <v-chart :option="pieSellsAmountDiagram" style="height: 232px;" autoresize></v-chart>
+        </el-card>
+      </el-col>
+    </el-row>      
+
+    <br>
+    
+    <el-row :gutter="16">
+      <el-col :span="18">
+        <el-card class="box-card" style="height: 350px;">      
+          <b>Benvenuto {{ Auth.state.user.name }} {{ Auth.state.user.surname }}</b>      
+          <br><br>      
+          <el-alert v-if="Auth.state.user.password_changed != true" title="La tua password è ancora quella di default. Si invita a cambiarla prima possibile." type="error" />
+          <br><br>
+          <el-row type="flex" justify="center" :gutter="20">
+            <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
+              <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">Ultimi accessi: {{ user.subject }}</el-text>
+              <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">Ultimi accessi: {{ user.subject }}</el-text>
+              <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
+                <el-table-column prop="data_ora" label="Data" :formatter="dataTimeFormatter"/>
+                <el-table-column prop="so"       label="Sistema Operativo" />
+                <el-table-column prop="browser"  label="Browser" />
+              </el-table>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-col>  
+      <el-col :span="6">
+        <el-card class="box-card">
+            <v-chart :option="pieDiskUsage" style="height: 310px;"></v-chart>
+        </el-card>
+      </el-col>
+    </el-row>
 
     <br>
 
@@ -106,6 +140,16 @@
 
   import { useTransition } from '@vueuse/core'
 
+  import { use } from 'echarts/core';
+  import { PieChart, BarChart } from 'echarts/charts';
+  import { TitleComponent, TooltipComponent, LegendComponent, GridComponent  } from 'echarts/components';
+  import { CanvasRenderer } from 'echarts/renderers';
+  import VChart from 'vue-echarts';
+
+  // Registra i componenti necessari di ECharts
+  use([TitleComponent, TooltipComponent, LegendComponent, PieChart, CanvasRenderer, BarChart, GridComponent ]);
+
+
   const loading = ref(false);
 
   const stats = ref();
@@ -120,10 +164,16 @@
   const sellsTotalcountTrans  = useTransition(sellsTotalcount , {duration: 1500,})
   const sellsTotalamountTrans = useTransition(sellsTotalamount, {duration: 1500,})
 
+  const pieActsCountDiagram   = ref(null);  
+  const pieActsHoursDiagram   = ref(null);  
+  const pieSellsCountDiagram  = ref(null);  
+  const pieSellsAmountDiagram = ref(null);  
+
+  const pieDiskUsage = ref(null);
+  
   const last_stats = ref({});
 
-  const tableRowClassName =( ( { row, rowIndex } ) => {
-    console.log(row);
+  const tableRowClassName =( ( { rowIndex } ) => {
     return rowIndex == 0 ? 'success-row' : '';
   });
 
@@ -183,6 +233,216 @@
     sellsTotalcount.value  = resp.sells.total.count;
     sellsTotalamount.value = resp.sells.total.amount;
     
+    pieDiskUsage.value = {
+        title: {
+          text: 'Spazio utilizzato: ' + amount({importo: resp.disk_usage.total}) + ' bytes',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        color: ['#b3e19d', '#f89898'],
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: [
+              { value: resp.disk_usage.usage , name: 'Spazio utile' },
+              { value: resp.disk_usage.orphan, name: 'Spazio orfano' },
+            ],
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+
+      //let x = resp.acts.users.map( u => u.subject );
+
+      pieActsCountDiagram.value = {
+        title: {
+          text: 'Numero attività',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: resp.acts.users.map( u => { return { value: u.stats.count, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+
+      pieActsHoursDiagram.value = {
+        title: {
+          text: 'Ore attività',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: resp.acts.users.map( u => { return { value: u.stats.hours, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+      
+      pieSellsCountDiagram.value = {
+        title: {
+          text: 'Numero vendite',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: resp.sells.users.map( u => { return { value: u.stats.count, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+      
+      pieSellsAmountDiagram.value = {
+        title: {
+          text: 'Importo vendite',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: resp.sells.users.map( u => { return { value: u.stats.amount, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+
+    /*
+    pieDiskUsage.value = {
+      title: {
+        text: 'Distribuzione dei dati',
+        left: 'center',
+      },
+      tooltip: {
+        trigger: 'item',
+        formatter: '{a} <br/>{b} : {c} ({d}%)'
+      },
+      legend: {
+        orient: 'vertical',
+        left: 'left',
+        data: ['Chrome', 'Firefox', 'Safari', 'Others']
+      },
+      series: [
+        {
+          name: 'Browser',
+          type: 'pie',
+          radius: '55%',
+          center: ['50%', '60%'],
+          data: [
+            { value: 335, name: 'Chrome' },
+            { value: 310, name: 'Firefox' },
+            { value: 234, name: 'Safari' },
+            { value: 135, name: 'Others' }
+          ],
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    };
+    */
+
     last_stats.value = resp.last_stats;
 
     loading.value = false;
@@ -196,6 +456,7 @@
 </script>
 
 <style scoped>
+
 :global(h2#card-usage ~ .example .example-showcase) {
   background-color: var(--el-fill-color) !important;
 }
