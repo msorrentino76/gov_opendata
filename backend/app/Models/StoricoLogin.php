@@ -16,6 +16,11 @@ class StoricoLogin extends Model
     
     protected $fillable = ['user_id', 'data_ora', 'ip', 'isp', 'org', 'as', 'country', 'zip', 'regionName', 'city', 'lat', 'lon', 'timezone', 'so', 'browser', 'device'];
 	
+    protected $hidden = [
+        'id',
+        'user_id',
+    ];
+    
     public    $timestamps = false;
         
     public static function store($request, $user) {

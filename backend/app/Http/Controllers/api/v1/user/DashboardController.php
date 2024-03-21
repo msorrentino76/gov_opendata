@@ -40,9 +40,9 @@ class DashboardController extends Controller
             $last_stats[] = [
                 'id'      => $u->id,
                 'subject' => $u->name . ' ' . $u->surname,
-                'last_logins' => $u->storico()->limit(5)->offset(1)->orderBy('data_ora', 'desc')->get(),
-                'last_acts'   => $u->acts()->limit(5)->orderBy('data', 'desc')->get(),
-                'last_sells'  => $u->sells()->limit(5)->orderBy('data', 'desc')->get(),
+                'last_logins' => $u->storico()->limit(3)->offset(1)->orderBy('data_ora', 'desc')->get(),
+                'last_acts'   => $u->acts()->limit(3)->orderBy('data', 'desc')->get(),
+                'last_sells'  => $u->sells()->limit(3)->orderBy('data', 'desc')->get(),
             ];
             
             $acts_users_stats_count = (int)Act::where(['user_id' => $u->id])->count();

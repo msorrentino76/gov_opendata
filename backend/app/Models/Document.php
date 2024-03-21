@@ -30,9 +30,9 @@ class Document extends Model
         'documentable_id',
         'user_id',
         'deleted_at',        
-        //'created_at',
-        //'updated_at',
-        ];
+        'created_at',
+        'updated_at',
+    ];
     
     /**
      * The attributes that should be cast.
