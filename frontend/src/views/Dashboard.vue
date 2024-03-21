@@ -51,7 +51,7 @@
           <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">Ultimi accessi: {{ user.subject }}</el-text>
           <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">Ultimi accessi: {{ user.subject }}</el-text>
           <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
-            <el-table-column prop="data_ora" label="Data" :formatter="dataFormatter"/>
+            <el-table-column prop="data_ora" label="Data" :formatter="dataTimeFormatter"/>
             <el-table-column prop="so"       label="Sistema Operativo" />
             <el-table-column prop="browser"  label="Browser" />
           </el-table>
@@ -68,10 +68,10 @@
         <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
           <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">{{ user.subject }}</el-text>
           <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">{{ user.subject }}</el-text>
-          <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
-            <el-table-column prop="data_ora" label="Data" :formatter="dataFormatter"/>
-            <el-table-column prop="so"       label="Sistema Operativo" />
-            <el-table-column prop="browser"  label="Browser" />
+          <el-table :data="user.last_acts" :row-class-name="tableRowClassName">
+            <el-table-column prop="data"        label="Data"        :formatter="dataFormatter"/>
+            <el-table-column prop="descrizione" label="Descrizione" :formatter="readMore" width="320"/>
+            <el-table-column prop="ore"         label="Ore"                               align="right"/>
           </el-table>
         </el-col>
       </el-row>
@@ -86,10 +86,10 @@
         <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
           <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">{{ user.subject }}</el-text>
           <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">{{ user.subject }}</el-text>
-          <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
-            <el-table-column prop="data_ora" label="Data" :formatter="dataFormatter"/>
-            <el-table-column prop="so"       label="Sistema Operativo" />
-            <el-table-column prop="browser"  label="Browser" />
+          <el-table :data="user.last_sells" :row-class-name="tableRowClassName">
+            <el-table-column prop="data"        label="Data"        :formatter="dataFormatter"/>
+            <el-table-column prop="descrizione" label="Descrizione" :formatter="readMore" width="320"/>
+            <el-table-column prop="importo"     label="Importo €"   :formatter="amount"   align="right"/>
           </el-table>
         </el-col>
       </el-row>
@@ -127,8 +127,8 @@
     return rowIndex == 0 ? 'success-row' : '';
   });
 
-  const dataFormatter = (row) => {
-    const data = new Date(row.data_ora);
+  const dataTimeFormatter = (row) => {
+    const data = new Date(row.data_ora ? row.data_ora : row.data);
     const opzioniFormattazione = 
             {
                 year: 'numeric',
@@ -139,6 +139,35 @@
                 hour12: false,
             };
     return data.toLocaleString('it-IT', opzioniFormattazione);
+  }
+
+  const dataFormatter = (row) => {
+    const data = new Date(row.data_ora ? row.data_ora : row.data);
+    const opzioniFormattazione = 
+            {
+                year: 'numeric',
+                month: '2-digit', //'long',
+                day: '2-digit',
+            };
+    return data.toLocaleString('it-IT', opzioniFormattazione);
+  }
+
+  const readMore = (row) => {
+    let str       = row.descrizione;
+    let maxLength = 48;
+    if (str.length > maxLength) {
+      return str.slice(0, maxLength) + '...';
+    } else {
+      return str;
+    }
+  }
+
+  const amount = (row) => {
+    let value = row.importo;
+    return value !== null ? new Intl.NumberFormat('it-IT', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(value) : value;
   }
 
   onMounted(async ()=>{
