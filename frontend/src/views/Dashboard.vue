@@ -13,7 +13,19 @@
 <script setup>
 
   import Auth from '@/store/Auth';
-  import {defineComponent} from 'vue';
+  import {ref, onMounted, defineComponent} from 'vue';
+
+  import {list} from '../utils/service.js';
+
+  const loading = ref(false);
+
+  const stats = ref();
+
+  onMounted(async ()=>{
+    loading.value = true;
+    stats.value = await list('user/dashboard');
+    loading.value = false;
+  });
 
   defineComponent({
       name: 'DashboardView',

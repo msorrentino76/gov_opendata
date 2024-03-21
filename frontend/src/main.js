@@ -14,6 +14,7 @@ import DashboardView from './views/Dashboard.vue';
 import ActivityView  from './views/Activity.vue';
 import SellView      from './views/Sell.vue';
 import QuoteView     from './views/Quote.vue';
+import SystemLogView from './views/SystemLog.vue';
 
 //import AdminsView from './views/Admins.vue';
 
@@ -24,6 +25,7 @@ const routes = [
     { path: '/activity', component: ActivityView },
     { path: '/sells'   , component: SellView },
     { path: '/quote'   , component: QuoteView },
+    { path: '/logs'    , component: SystemLogView },
   ];
   
   const router = createRouter({

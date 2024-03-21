@@ -166,7 +166,7 @@
 
 import Auth from '@/store/Auth';
 
-import {defineComponent, ref, onMounted} from 'vue';
+import {defineComponent, ref, onMounted, onUnmounted} from 'vue';
 
 import {filteredList} from '../utils/service.js';
 
@@ -177,7 +177,7 @@ const activeName = ref(Auth.state.user.id);
 const loading = ref(true);
 const sells   = ref([]);
 
-const data_value = ref(
+const data_value = ref(Auth.state.data_filter ? Auth.state.data_filter : 
     [
       (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0'), 
       (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0')
@@ -218,21 +218,14 @@ const shortcuts = [
 
 ]
 
-defineComponent({
-    name: 'SellView',
-})
-
 const handleClick = (tab, event) => {
   console.log(tab, event)
 }
 
 const handleDateChange = (v)  => {
+  Auth.commit('setDataFilter', data_value.value);
   filterData(v[0], v[1]);
 }
-
-onMounted(async ()=>{
-  filterData(data_value.value[0], data_value.value[1]);
-})
 
 const filterData = (async (from, to) => {
   loading.value = true;
@@ -241,6 +234,16 @@ const filterData = (async (from, to) => {
     sells.value = resp;
   }
   loading.value = false;
+})
+
+onMounted(async ()=>{
+  filterData(data_value.value[0], data_value.value[1]);
+})
+
+onUnmounted(()=>{});
+
+defineComponent({
+    name: 'SellView',
 })
 
 </script>

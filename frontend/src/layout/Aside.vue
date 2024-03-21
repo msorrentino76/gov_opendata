@@ -1,6 +1,6 @@
 <template>
   
-  <el-menu default-active="/" :router=true :collapse="collapseMenu">
+  <el-menu :default-active="this.$route.path" :router=true :collapse="collapseMenu">
 
     <el-menu-item>
       <el-icon @click="menuToggle()" v-if="collapseMenu"><Expand /></el-icon>
@@ -24,9 +24,14 @@
       <template #title>Vendite</template>
     </el-menu-item>
     
-    <el-menu-item index="/quote">
+    <el-menu-item index="/quote" v-if="Auth.state.user.abilities.includes('system:admin')">
       <el-icon><Money /></el-icon>
       <template #title>Dividendi</template>
+    </el-menu-item>
+
+    <el-menu-item index="/logs" v-if="Auth.state.user.abilities.includes('system:admin')">
+      <el-icon><Cpu /></el-icon>
+      <template #title>System Log</template>
     </el-menu-item>
 
   </el-menu>
@@ -35,9 +40,11 @@
 
   <script setup>
 
+  import Auth from '../store/Auth.js';
+
   import {defineProps, defineComponent} from 'vue';
 
-  import { Expand, Fold, Odometer, Money, Sell, Calendar } from '@element-plus/icons-vue'
+  import { Expand, Fold, Odometer, Money, Sell, Calendar, Cpu } from '@element-plus/icons-vue'
 
   defineProps({
     collapseMenu: {},

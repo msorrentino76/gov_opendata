@@ -9,6 +9,7 @@ use App\Http\Controllers\api\v1\common\NotificaController;
 use App\Http\Controllers\api\v1\common\ProfileController;
 use App\Http\Controllers\api\v1\common\DocumentController;
 
+use App\Http\Controllers\api\v1\user\DashboardController;
 use App\Http\Controllers\api\v1\user\ActController;
 use App\Http\Controllers\api\v1\user\SellController;
 
@@ -57,6 +58,8 @@ Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
 
 Route::middleware(['auth:sanctum', 'ability:system:user'])->prefix('user')->group(function () {
 
+    Route::get   ('dashboard', [DashboardController::class, 'index']);
+    
     Route::get   ('acts'    , [ActController::class, 'index']);
     Route::post  ('act'     , [ActController::class, 'store']);
     //Route::get   ('act/{id}', [ActController::class, 'show']);
