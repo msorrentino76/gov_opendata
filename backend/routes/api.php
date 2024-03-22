@@ -14,6 +14,7 @@ use App\Http\Controllers\api\v1\user\ActController;
 use App\Http\Controllers\api\v1\user\SellController;
 
 use App\Http\Controllers\api\v1\admin\QuoteController;
+use App\Http\Controllers\api\v1\admin\LogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,5 +82,9 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->gr
     Route::get   ('quote/{id}', [QuoteController::class, 'show']);
     Route::put   ('quote/{id}', [QuoteController::class, 'update']);
     Route::delete('quote/{id}', [QuoteController::class, 'destroy']);
+    
+    Route::get   ('logs'          , [LogsController::class, 'index']);
+    Route::get   ('log/{filename}', [LogsController::class, 'content']);
+    Route::delete('log/{filename}', [LogsController::class, 'delete']);
     
 });
