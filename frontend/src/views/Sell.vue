@@ -25,6 +25,7 @@
       <el-tabs v-model="activeName" class="sell-tabs" @tab-click="handleClick" type="border-card" v-loading="loading">
         <el-tab-pane :label="usr.subject" :key="idx" :name="usr.id" v-for="(usr, idx) in sells">
           <TableEl
+            showSummary="true"
             entity="Attività"
             :header="[
                   {
@@ -232,6 +233,9 @@ const filterData = (async (from, to) => {
   let resp = await filteredList('user/sells', {from: from, to: to});
   if(resp && !resp.errors){
     sells.value = resp;
+    if(Auth.state.user.abilities.includes('numie:developer')){
+      activeName.value = resp[0].id; // Se l'utente loggato non è seller allora apro il primo tab
+    }
   }
   loading.value = false;
 })

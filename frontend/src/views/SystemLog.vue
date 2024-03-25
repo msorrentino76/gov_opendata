@@ -65,7 +65,6 @@
   const logContent   = ref(null);
 
   const handleDetail = (async (index, row) => {
-    console.log(index);
     loadingContent.value = true;    
     const resp  = await read('admin/log', row.filename);
     logContent.value = resp;
@@ -74,7 +73,6 @@
   });
 
   const handleDelete = (async (index, row) => {
-    console.log(index);
     loadingList.value = true;    
     const resp  = await del('admin/log', row.filename);
     if(resp){

@@ -77,9 +77,10 @@ Route::middleware(['auth:sanctum', 'ability:system:user'])->prefix('user')->grou
 
 Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {
 
-    Route::get   ('quotes'    , [QuoteController::class, 'index']);
-    Route::post  ('quote'     , [QuoteController::class, 'store']);
-    Route::get   ('quote/{id}', [QuoteController::class, 'show']);
+    Route::get   ('quote' , [QuoteController::class, 'new']);
+    Route::post  ('quote' , [QuoteController::class, 'store']);    
+    Route::get   ('quotes', [QuoteController::class, 'historical']);
+ 
     Route::put   ('quote/{id}', [QuoteController::class, 'update']);
     Route::delete('quote/{id}', [QuoteController::class, 'destroy']);
     

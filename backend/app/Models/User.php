@@ -67,4 +67,12 @@ class User extends Authenticatable
         return $this->hasMany(StoricoLogin::class);
     }  
     
+    public function numieRole() {
+        $abilities = json_decode($this->abilities);
+        foreach($abilities as $ability){
+            $r = explode(':', $ability);
+            if($r[0] == 'numie') return $r[1];
+        }
+        return 'no_role';
+    }
 }

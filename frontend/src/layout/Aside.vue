@@ -29,7 +29,7 @@
       <template #title>Dividendi</template>
     </el-menu-item>
 
-    <el-menu-item index="/logs" v-if="Auth.state.user.abilities.includes('system:admin')">
+    <el-menu-item index="/logs" v-if="Auth.state.user.abilities.includes('numie:developer')">
       <el-icon><Cpu /></el-icon>
       <template #title>System Log</template>
     </el-menu-item>

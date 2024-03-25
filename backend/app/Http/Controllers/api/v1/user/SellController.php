@@ -36,7 +36,7 @@ class SellController extends Controller
         
         foreach (User::all() as $u){
             
-            //$sells = array();
+            if($u->numieRole() != 'seller') continue;
             
             $prepare_resp[] = [
                 'id'      => $u->id,

@@ -36,7 +36,7 @@ class DashboardController extends Controller
         $sells['users'] = array();
         
         foreach (User::all() as $u){
-            
+                       
             $last_stats[] = [
                 'id'      => $u->id,
                 'subject' => $u->name . ' ' . $u->surname,
@@ -62,16 +62,20 @@ class DashboardController extends Controller
             $sells_users_stats_count  = (int)Sell::where(['user_id' => $u->id])->count();
             $sells_users_stats_amount = (float)Sell::where(['user_id' => $u->id])->sum('importo');
             
-            $sells['users'][] = [
-                'id'      => $u->id,
-                'subject' => $u->name . ' ' . $u->surname,
-                'stats' => [
-                    'count'  => $sells_users_stats_count,
-                    'amount' => $sells_users_stats_amount,
-                    'count_perc'  => $sells_total_count  != 0 ? round(($sells_users_stats_count  / $sells_total_count)  * 100, 2) : '-',
-                    'amount_perc' => $sells_total_amount != 0 ? round(($sells_users_stats_amount / $sells_total_amount) * 100, 2) : '-'
-                ],  
-            ]; 
+            if($u->numieRole() == 'seller') {
+                
+                $sells['users'][] = [
+                    'id'      => $u->id,
+                    'subject' => $u->name . ' ' . $u->surname,
+                    'stats' => [
+                        'count'  => $sells_users_stats_count,
+                        'amount' => $sells_users_stats_amount,
+                        'count_perc'  => $sells_total_count  != 0 ? round(($sells_users_stats_count  / $sells_total_count)  * 100, 2) : '-',
+                        'amount_perc' => $sells_total_amount != 0 ? round(($sells_users_stats_amount / $sells_total_amount) * 100, 2) : '-'
+                    ],  
+                ]; 
+            
+            }
             
         }
         

@@ -30,6 +30,7 @@
         :row-class-name="tableRowClassName"
         :cell-class-name="tableCellClassName"
         :cell-style="tableCellStyle"
+        :show-summary="showSummary"
         >
     
         <el-table-column
@@ -145,6 +146,7 @@ const props = defineProps({
     tableRowClassName  : {},
     tableCellClassName : {},
     tableCellStyle     : {},
+    showSummary : {},
 })
 
 const formModel = ref(props.form);

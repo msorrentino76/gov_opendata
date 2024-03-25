@@ -24,6 +24,7 @@
         <el-tabs v-model="activeName" class="act-tabs" @tab-click="handleClick" type="border-card" v-loading="loading">
           <el-tab-pane :label="usr.subject" :key="idx" :name="usr.id" v-for="(usr, idx) in activities">
             <TableEl
+              showSummary
               entity="Attività"
               :header="[
                     {
@@ -70,6 +71,7 @@
                         label: 'Ore impiegate',
                         name: 'ore',
                         space: 12,
+                        controlsPosition: 'right'
                       }
                     ]
                   },

@@ -74,7 +74,7 @@
           <el-alert v-if="Auth.state.user.password_changed != true" title="La tua password è ancora quella di default. Si invita a cambiarla prima possibile." type="error" />
           <br><br>
           <el-row type="flex" justify="center" :gutter="20">
-            <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
+            <el-col v-for="user in last_stats" :key="user.id + '_last_login'" :span="8">
               <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">Ultimi accessi: {{ user.subject }}</el-text>
               <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">Ultimi accessi: {{ user.subject }}</el-text>
               <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
@@ -99,7 +99,7 @@
       <b>Ultime attività</b>
       <br><br>
       <el-row type="flex" justify="center" :gutter="20">
-        <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
+        <el-col v-for="user in last_stats" :key="user.id + '_last_acts'" :span="8">
           <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">{{ user.subject }}</el-text>
           <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">{{ user.subject }}</el-text>
           <el-table :data="user.last_acts" :row-class-name="tableRowClassName">
@@ -117,7 +117,7 @@
       <b>Ultime vendite</b>
       <br><br>
       <el-row type="flex" justify="center" :gutter="20">
-        <el-col v-for="user in last_stats" :key="user.id + 'last_login'" :span="8">
+        <el-col v-for="user in last_stats" :key="user.id + '_last_sells'" :span="8">
           <el-text class="mx-1" type="success" v-if="Auth.state.user.id == user.id">{{ user.subject }}</el-text>
           <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">{{ user.subject }}</el-text>
           <el-table :data="user.last_sells" :row-class-name="tableRowClassName">

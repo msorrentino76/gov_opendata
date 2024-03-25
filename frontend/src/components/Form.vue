@@ -73,7 +73,7 @@
                         :prop="field.name"
                         :error="formErrors[field.name] ? formErrors[field.name] : ''"
                     >
-                        <el-input-number v-model="data[field.name]" :min="field.min" :max="field.max" :label="field.label"/>
+                        <el-input-number v-model="data[field.name]" :min="field.min" :max="field.max" :label="field.label" :controls-position="field.controlsPosition ? field.controlsPosition : ''"/>
                     </el-form-item>
 
                     <!-- INPUT DECIMAL -->
