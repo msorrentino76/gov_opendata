@@ -382,5 +382,4 @@ defineComponent({
     .el-table .primary-row {
     --el-table-tr-bg-color: var(--el-color-primary-light-9);
     }
-
 </style>

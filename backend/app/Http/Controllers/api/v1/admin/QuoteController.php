@@ -42,8 +42,9 @@ class QuoteController extends Controller
                 'id'       => $u->id,
                 'role'     => $u->numieRole(),
                 'subject'  => $u->name . ' ' . $u->surname,
-                'activities' => $hours_per_user,
-                'amount'     => $amount_per_user,
+                'hours'    => $hours_per_user,
+                'amount'   => $amount_per_user,
+                'activities' => $u->acts()->whereBetween('data', [$data_from, $data_to])->orderBy('id')->get(),
             ];
             $hours_tot  += $hours_per_user;
             $amount_tot += $amount_per_user;
