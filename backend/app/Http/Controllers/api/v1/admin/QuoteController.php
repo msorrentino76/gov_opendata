@@ -16,8 +16,8 @@ class QuoteController extends Controller
     public function period()
     {
         $periodo_da = Quote::max('periodo_a'); // Il nuovo periodo comincia dove finisce l'ultimo
-        $periodo_da = !is_null($periodo_da) ? $periodo_da : '2024-01-01 00:00:00';
-        $periodo_da = \DateTime::createFromFormat('Y-m-d h:s:i', $periodo_da)->format('Y-m');
+        $periodo_da = !is_null($periodo_da) ? $periodo_da : '2023-12-01 00:00:00';
+        $periodo_da = \DateTime::createFromFormat('Y-m-d h:s:i', $periodo_da)->modify('+1 months')->format('Y-m');
         
         $periodo_a = \DateTime::createFromFormat('Y-m', $periodo_da)->modify('+6 months')->format('Y-m');
 
@@ -78,7 +78,35 @@ class QuoteController extends Controller
     public function store(Request $request)
     {
         $data = $request->all();
-        return;
+
+        $from = explode('-', $data['quote']['data_value'][0]);
+        $to   = explode('-', $data['quote']['data_value'][1]);
+        
+        $data_from = Carbon::createFromDate($from[0], $from[1])->firstOfMonth()->toDateString();
+        $data_to   = Carbon::createFromDate(  $to[0],   $to[1])->lastOfMonth()->toDateString();
+        
+        $quote = Quote::create([
+            'periodo_da' => $data_from,
+            'periodo_a'  => $data_to,
+            'importo_totale'            => $data['quote']['totals']['amount'],
+            'dividendo_attivita_totale' => $data['quote']['totals']['amount_acts'],
+            'dividendo_vendita_totale'  => $data['quote']['totals']['amount_sell'],
+            'importo_residuo_cassa'     => $data['quote']['totals']['amount_cash'],
+        ]);
+        
+        foreach ($data['details'] as $detail) {
+            QuoteDetail::create([
+                'quote_id' => $quote->id,
+                'user_id'  => $detail['id'],
+                'percentuale_vendita'  => $detail['acts_perc'] ,
+                'dividendo_vendita'    => $detail['acts_amount']  ,
+                'percentuale_attivita' => $detail['sell_perc'],
+                'dividendo_attivita'   => $detail['sell_amount'] ,
+            ]);
+        }
+
+        return response(['id' => $quote->id], 201);
+        
     }
 
     /**

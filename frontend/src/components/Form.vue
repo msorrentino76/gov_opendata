@@ -119,7 +119,7 @@
                     </el-form-item>
 
                     <!-- UPLOAD -->
-                    <el-divider v-if="field.type=='upload'"/>
+                    <!--el-divider v-if="field.type=='upload'"/-->
                     <el-form-item
                         v-if="field.type=='upload'"
                         :label="field.label"
@@ -155,15 +155,16 @@
                                 </template>
                             </el-upload>                            
                     </el-form-item>
-                    <el-divider v-if="field.type=='upload'"/>
+                    <!--el-divider v-if="field.type=='upload'"/-->
 
                     <!-- ALERT -->
 
                     <el-alert v-if="field.type=='alert-success'" :title="field.text" show-icon type="success" />
                     <el-alert v-if="field.type=='alert-info'"    :title="field.text" show-icon type="info" />
                     <el-alert v-if="field.type=='alert-warning'" :title="field.text" show-icon type="warning" />
-                    <el-alert v-if="field.type=='alert-success'" :title="field.text" show-icon type="error" />
+                    <el-alert v-if="field.type=='alert-error'"   :title="field.text" show-icon type="error" />
 
+                    <br>
 
                 </template>
 

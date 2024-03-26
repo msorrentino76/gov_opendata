@@ -15,11 +15,12 @@ class Quote extends Model
     protected $fillable = [
         'periodo_da',
         'periodo_a' ,
-        'importo_totale'          ,
-        'dividendo_vendita_totale',
-        'importo_residuo_cassa'   ,
+        'importo_totale'           ,
+        'dividendo_vendita_totale' ,
+        'dividendo_attivita_totale',
+        'importo_residuo_cassa'    ,
     ];
-    
+
     protected $hidden = [
         'deleted_at',        
         'created_at',

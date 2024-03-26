@@ -26,7 +26,7 @@
         <el-tab-pane :label="usr.subject" :key="idx" :name="usr.id" v-for="(usr, idx) in sells">
           <TableEl
             showSummary="true"
-            entity="Attività"
+            entity="Vendita"
             :header="[
                   {
                     field: 'id',
@@ -64,6 +64,15 @@
             :actions="{...(Auth.state.user.id == usr.id ? { create:{} } : {} ),}"  
             :form="{
               fields: [
+                {
+                  row: [
+                    {
+                      type: 'alert-info',
+                      text: 'Inserire una vendita solo se è stata liquidata.',
+                      space: 24,
+                    }
+                  ]
+                },
                 {
                   row: [
                     {

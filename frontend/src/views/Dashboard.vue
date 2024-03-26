@@ -79,7 +79,7 @@
               <el-text class="mx-1" type="warning" v-if="Auth.state.user.id != user.id">Ultimi accessi: {{ user.subject }}</el-text>
               <el-table :data="user.last_logins" :row-class-name="tableRowClassName">
                 <el-table-column prop="data_ora" label="Data" :formatter="dataTimeFormatter"/>
-                <el-table-column prop="so"       label="Sistema Operativo" />
+                <el-table-column prop="so"       label="S.O." />
                 <el-table-column prop="browser"  label="Browser" />
               </el-table>
             </el-col>

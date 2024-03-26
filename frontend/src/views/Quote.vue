@@ -17,6 +17,9 @@
                 <el-col :span="4">
                   A: <el-date-picker v-model="data_value[1]" type="month"           format="MMMM YYYY" value-format="YYYY-MM" @change="handleDateChange"/>
                 </el-col>
+                <el-col :span="4">
+                  <el-button type="primary" @click="setDataFilter">Imposta intervallo come filtro per le Attività o Vendite</el-button>
+                </el-col>
               </el-row>  
 
               <br><br>
@@ -209,6 +212,8 @@
 
 <script setup>
 
+  import Auth from '@/store/Auth';
+
   import {defineComponent, onMounted, ref, computed, h} from 'vue';
 
   import {list, filteredList, create} from '../utils/service.js';
@@ -318,7 +323,10 @@
     let resp = await create('admin/quote', data);
 
     if(resp){
-      console.log('ok');
+      window.scrollTo({top: 0, behavior: 'smooth' });
+      data_value.value = await list('admin/quote/period');
+      Auth.commit('setDataFilterQuote', data_value.value);
+      filterData(data_value.value[0], data_value.value[1]);
     }
 
     saving.value = false;
@@ -326,6 +334,7 @@
   });
 
   const handleDateChange = ()  => {
+    Auth.commit('setDataFilterQuote', data_value.value);
     filterData(data_value.value[0], data_value.value[1]);
   }
 
@@ -355,9 +364,13 @@
 
   });
 
-  onMounted(async ()=>{
+  const setDataFilter = ()  => {
+    Auth.commit('setDataFilter', data_value.value);
+  }
+
+  onMounted(async ()=>{    
     // chiedo e setto intanto il periodo di riferimento
-    data_value.value = await list('admin/quote/period');
+    data_value.value = Auth.state.data_filter_quote ? Auth.state.data_filter_quote : await list('admin/quote/period');
     filterData(data_value.value[0], data_value.value[1]);
   });
 
