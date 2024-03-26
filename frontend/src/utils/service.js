@@ -110,7 +110,7 @@ export const download = async (f) => {
 
   export const filteredList = async (endpoint, filter) => {  
       try {
-        const response = await axiosInstance.get(endpoint, { params: filter });
+        const response = await axiosInstance.get(endpoint /*+ '?XDEBUG_SESSION_START=netbeans-xdebug'*/, { params: filter });
         //console.log('filteredList', endpoint)  
         return await response.data;
       } catch (error) {

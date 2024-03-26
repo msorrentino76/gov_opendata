@@ -4,144 +4,189 @@
 
     <el-card class="box-card">
       
-      <el-card shadow="hover">
+      <el-tabs v-model="activeName" class="act-tabs"  type="border-card" >
 
-        <template #header>
-          <div class="card-header">
-            <span><b>Dividendi per vendite</b></span>
-          </div>
-        </template>
+          <el-tab-pane label="Corrente" key="current" name="current">
 
-        <el-row>
+              <el-card shadow="hover">
 
-          <el-col :span="18">
+                <template #header>
+                  <div class="card-header">
+                    <span><b>Dividendi per vendite</b></span>
+                  </div>
+                </template>
+
+                <el-row>
+
+                  <el-col :span="18">
+                  
+                    <el-table :data="users" v-loading="loading">
+                      <el-table-column prop="subject" label="Soggetto"/>
+                      <el-table-column prop="role"    label="Ruolo Numie"/>
+                      <el-table-column prop="amount"  label="Importo per Vendite" align="right" :formatter="amount"/>        
+
+                      <el-table-column>
+                        <template #header>Percentuale riconosciuta</template>
+                        <template #default="scope">
+                          <el-input-number :disabled="saving" v-model="scope.row.sell_perc" :min="0" :max="100" label="%" @change="sellPercFunct(scope.row)"/>          
+                        </template>
+                      </el-table-column>
+
+                      <el-table-column prop="sell_amount"  label="Dividendi per Vendite" align="right" :formatter="amount"/>
+
+                    </el-table>
+
+                    <el-table :data="
+                      [
+                        {label: 'Totale Importo per Vendite'  , amount: totals.amount},
+                        {label: 'Totale Dividendi per Vendite', amount: totale_dividendi_per_vendita},
+                        {label: 'Importo Residuo per Attività', amount: importo_residuo_attivita},
+                      ]
+                      "
+                      v-if="!loading"
+                      style="width: 50%"
+                      :row-class-name="tableRowClassName"
+                      >
+                        <el-table-column prop="label" :formatter="formatBold" />
+                        <el-table-column prop="amount" align="right" :formatter="amount" />
+                    </el-table>
+
+                  </el-col>
+
+                </el-row>
+
+              </el-card>
+
+              <br>
+
+              <el-card shadow="hover">
+
+                <template #header>
+                  <div class="card-header">
+                    <span><b>Dividendi per Attività</b></span>
+                  </div>
+                </template>
+
+                <el-row>
+
+                  <el-col :span="18">
+
+                    <el-table :data="users" v-loading="loading">
+
+                      <el-table-column type="expand">
+                        <template #default="props">
+                            <el-table :data="props.row.activities">
+                            <el-table-column label="#ID"                  prop="id"   :width="64"/>
+                            <el-table-column label="Data attività"        prop="data" :width="128" :formatter="dataFormatter"/>
+                            <el-table-column label="Ore"                  prop="ore"  :width="64"/>
+                            <el-table-column label="Descrizione attività" prop="descrizione" />
+                          </el-table>
+                        </template>
+                      </el-table-column>
+
+                      <el-table-column prop="subject" label="Soggetto"/>
+                      <el-table-column prop="hours"   label="Ore complessive per attività" align="right"/>        
+
+                      <el-table-column>
+                        <template #header>Percentuale riconosciuta</template>
+                        <template #default="scope">
+                          <el-input-number :disabled="saving" v-model="scope.row.acts_perc" :min="0" :max="100" label="%" @change="sellActsFunct(scope.row)"/>          
+                        </template>
+                      </el-table-column>
+
+                      <el-table-column prop="acts_amount"  label="Dividendi per attività" align="right" :formatter="amount"/>
+
+                    </el-table>
+
+
+                    <el-table :data="
+                      [
+                        {label: 'Importo Residuo per Attività' , amount: importo_residuo_attivita},
+                        {label: 'Totale Dividendi per Attività', amount: totale_dividendi_per_attivita},
+                        {label: 'Importo Residuo per Cassa'    , amount: importo_residuo_cassa},
+                      ]
+                      "
+                      v-if="!loading"
+                      style="width: 50%"
+                      :row-class-name="tableRowClassName"
+                      >
+                        <el-table-column prop="label" :formatter="formatBold" />
+                        <el-table-column prop="amount" align="right" :formatter="amount" />
+                    </el-table>
+
+                  </el-col>
+
+                </el-row>
+
+              </el-card>
+
+              <br>
+
+              <el-card shadow="hover">
+
+                <template #header>
+                  <div class="card-header">
+                    <span><b>Quadro di sintesi</b></span>
+                  </div>
+                </template>
+
+                <el-row>
+
+                  <el-col :span="18">
+
+                    <el-table :data="users" v-loading="loading">
+                      <el-table-column prop="subject" label="Soggetto"/>
+                      <el-table-column                label="Dividendo complessivo" align="right" :formatter="amount">
+                        <template #default="scope">
+                          {{ new Intl.NumberFormat('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2,}).format(scope.row.sell_amount +  scope.row.acts_amount) }}      
+                        </template>
+                      </el-table-column> 
+                    </el-table>
+
+                    <el-table :data="
+                      [
+                        {label: 'Totale Dividendi complessivi' , amount: totale_dividendi_complessivi},
+                        {label: 'Importo Residuo per Cassa'    , amount: importo_residuo_cassa},
+                        {label: 'Totale Dividendi + Residuo per cassa', amount: totale_dividendi_complessivi + importo_residuo_cassa},                
+                      ]
+                      "
+                      v-if="!loading"
+                      style="width: 50%"
+                      :row-class-name="tableRowClassName"
+                      >
+                        <el-table-column prop="label" :formatter="formatBold" />
+                        <el-table-column prop="amount" align="right" :formatter="amount" />
+                    </el-table>
+
+                  </el-col>
+
+                </el-row>
+
+              </el-card>
+
+              <br>
+
+              <el-alert title="Attenzione! Dopo il salvataggio non sarà più possibile modificare o cancellare il Quadro dei dividendi. Verifica i dati prima di procedere." show-icon type="warning" />
+
+              <br>
+
+              <el-row>
+                <el-col :span="24">
+                  <el-popconfirm title="Procedere con il salvataggio?" @confirm="handleSubmit" confirm-button-text="Si">
+                    <template #reference>
+                      <el-button type="success" :loading="saving">Salva</el-button>  
+                    </template>
+                  </el-popconfirm>
+                </el-col>
+              </el-row>
+
+          </el-tab-pane>
+
+          <el-tab-pane label="Storico" key="history" name="history">
+
+          </el-tab-pane>
           
-            <el-table :data="users" v-loading="loading">
-              <el-table-column prop="subject" label="Soggetto"/>
-              <el-table-column prop="role"    label="Ruolo Numie"/>
-              <el-table-column prop="amount"  label="Importo per Vendite" align="right" :formatter="amount"/>        
-
-              <el-table-column>
-                <template #header>Percentuale riconosciuta</template>
-                <template #default="scope">
-                  <el-input-number v-model="scope.row.sell_perc" :min="0" :max="100" label="%" @change="sellPercFunct(scope.row)"/>          
-                </template>
-              </el-table-column>
-
-              <el-table-column prop="sell_amount"  label="Dividendi per Vendite" align="right" :formatter="amount"/>
-
-            </el-table>
-
-            <el-table :data="
-              [
-                {label: 'Totale Importo per Vendite'  , amount: totals.amount},
-                {label: 'Totale Dividendi per Vendite', amount: totale_dividendi_per_vendita},
-                {label: 'Importo Residuo per Attività', amount: importo_residuo_attivita},
-              ]
-              "
-              v-if="!loading"
-              style="width: 50%"
-              :row-class-name="tableRowClassName"
-              >
-                <el-table-column prop="label" :formatter="formatBold" />
-                <el-table-column prop="amount" align="right" :formatter="amount" />
-            </el-table>
-
-          </el-col>
-
-        </el-row>
-
-      </el-card>
-
-      <br>
-
-      <el-card shadow="hover">
-
-        <template #header>
-          <div class="card-header">
-            <span><b>Dividendi per Attività</b></span>
-          </div>
-        </template>
-
-        <el-row>
-
-          <el-col :span="18">
-
-            <el-table :data="users" v-loading="loading">
-
-              <el-table-column type="expand">
-                <template #default="props">
-                    <el-table :data="props.row.activities">
-                    <el-table-column label="#ID"                  prop="id"   :width="64"/>
-                    <el-table-column label="Data attività"        prop="data" :width="128" :formatter="dataFormatter"/>
-                    <el-table-column label="Ore"                  prop="ore"  :width="64"/>
-                    <el-table-column label="Descrizione attività" prop="descrizione" />
-                  </el-table>
-                </template>
-              </el-table-column>
-
-              <el-table-column prop="subject" label="Soggetto"/>
-              <el-table-column prop="hours"   label="Ore complessive per attività" align="right"/>        
-
-              <el-table-column>
-                <template #header>Percentuale riconosciuta</template>
-                <template #default="scope">
-                  <el-input-number v-model="scope.row.acts_perc" :min="0" :max="100" label="%" @change="sellActsFunct(scope.row)"/>          
-                </template>
-              </el-table-column>
-
-              <el-table-column prop="acts_amount"  label="Dividendi per attività" align="right" :formatter="amount"/>
-
-            </el-table>
-
-
-            <el-table :data="
-              [
-                {label: 'Importo Residuo per Attività' , amount: importo_residuo_attivita},
-                {label: 'Totale Dividendi per Attività', amount: totale_dividendi_per_attivita},
-                {label: 'Importo Residuo per Cassa'    , amount: importo_residuo_cassa},
-              ]
-              "
-              v-if="!loading"
-              style="width: 50%"
-              :row-class-name="tableRowClassName"
-              >
-                <el-table-column prop="label" :formatter="formatBold" />
-                <el-table-column prop="amount" align="right" :formatter="amount" />
-            </el-table>
-
-          </el-col>
-
-        </el-row>
-
-      </el-card>
-
-      <br>
-
-      <el-card shadow="hover">
-
-        <template #header>
-          <div class="card-header">
-            <span><b>Quadro di sintesi</b></span>
-          </div>
-        </template>
-
-        <el-row>
-
-          <el-col :span="18">
-            <el-table :data="users" v-loading="loading" show-summary>
-              <el-table-column prop="subject" label="Soggetto"/>
-              <el-table-column                label="Dividendo complessivo" align="right" :formatter="amount">
-                <template #default="scope">
-                  {{ new Intl.NumberFormat('it-IT', {minimumFractionDigits: 2, maximumFractionDigits: 2,}).format(scope.row.sell_amount +  scope.row.acts_amount) }}      
-                </template>
-              </el-table-column> 
-            </el-table>
-          </el-col>
-
-        </el-row>
-
-     </el-card>
+      </el-tabs>
 
     </el-card>
 
@@ -151,12 +196,23 @@
 
   import {defineComponent, onMounted, ref, computed, h} from 'vue';
 
-  import {list} from '../utils/service.js';
+  import {filteredList, create} from '../utils/service.js';
+
+  const data_value = ref(
+      [
+        (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0'), 
+        (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0')
+      ]
+  );
+
+  const activeName = ref('current');
 
   const loading = ref(false);
   const users   = ref([]);
-  const totals  = ref({});
-  
+  const totals  = ref({});  
+
+  const saving = ref(false);
+
   const totale_dividendi_per_vendita = computed(
     () => {
       let sum = 0;
@@ -174,13 +230,23 @@
     }
   );
 
+  const totale_dividendi_complessivi = computed(
+    () => {
+      let sum = 0;
+      users.value.forEach((obj) => { sum += obj.acts_amount + obj.sell_amount });
+      return sum;
+    }
+  );
+
   const importo_residuo_attivita = computed(() => {return totals.value.amount - totale_dividendi_per_vendita.value})
 
   const importo_residuo_cassa    = computed(() => {return importo_residuo_attivita.value - totale_dividendi_per_attivita.value})
 
-  const sellPercFunct = ( (r) => {
-      r.sell_amount = ( r.amount * r.sell_perc ) / 100;
-    });
+  const sellPercFunct = ( (r) => { 
+    r.sell_amount = ( r.amount * r.sell_perc ) / 100;
+    // i computed non sono watcher... devo richiarmarli per farli aggiornare!
+    r.acts_amount = ( importo_residuo_attivita.value * r.acts_perc ) / 100;
+  });
 
   const sellActsFunct = ( (r) => {r.acts_amount = ( importo_residuo_attivita.value * r.acts_perc ) / 100})
 
@@ -210,11 +276,50 @@
 
   const tableRowClassName = ( ({ row, rowIndex }) => {if ((rowIndex == 2) && (row.amount < 0)) return 'danger-row'; if (rowIndex == 2) return 'success-row';})
 
-  onMounted(async ()=>{
+  const handleSubmit = (async() => {
+    
+    saving.value = true;
+
+    //let reduced_users = {...users.value};
+
+    const data = {
+      quote: {
+        data_value: data_value.value,
+        totals    : {
+               amount: totals.value.amount,
+          amount_sell: totale_dividendi_per_vendita.value,
+          amount_acts: totale_dividendi_per_attivita.value,
+          amount_cash: importo_residuo_cassa.value,
+        },
+      },
+      details: users.value.map(
+        (u) => {
+          return {
+                     id: u.id,
+            acts_amount: u.acts_amount,
+            acts_perc  : u.acts_perc,
+            sell_amount: u.sell_amount,
+            sell_perc  : u.sell_perc,
+          }
+        }
+      ),
+    };
+
+    let resp = await create('admin/quote', data);
+
+    if(resp){
+      console.log('ok');
+    }
+
+    saving.value = false;
+
+  });
+
+  const filterData = (async (from, to)=>{
 
     loading.value = true;
 
-    const resp  = await list('admin/quote'); 
+    const resp  = await filteredList('admin/quote', {from: from, to: to}); 
 
     // init percentuali:
 
@@ -234,6 +339,10 @@
     
     loading.value = false;
 
+  });
+
+  onMounted(async ()=>{
+    filterData(data_value.value[0], data_value.value[1]);
   });
 
   defineComponent({

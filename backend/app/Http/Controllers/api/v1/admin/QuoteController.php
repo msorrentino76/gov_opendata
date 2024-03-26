@@ -37,7 +37,7 @@ class QuoteController extends Controller
         
         foreach (User::all() as $u){
             $hours_per_user  = (int)$u->acts()->whereBetween('data', [$data_from, $data_to])->sum('ore');
-            $amount_per_user = (int)$u->sells()->whereBetween('data', [$data_from, $data_to])->sum('importo');
+            $amount_per_user = (float)$u->sells()->whereBetween('data', [$data_from, $data_to])->sum('importo');
             $users[] = [
                 'id'       => $u->id,
                 'role'     => $u->numieRole(),
@@ -67,7 +67,8 @@ class QuoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        return;
     }
 
     /**
