@@ -81,8 +81,10 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->gr
     Route::post  ('quote' , [QuoteController::class, 'store']);    
     Route::get   ('quotes', [QuoteController::class, 'historical']);
  
-    Route::put   ('quote/{id}', [QuoteController::class, 'update']);
-    Route::delete('quote/{id}', [QuoteController::class, 'destroy']);
+    Route::get   ('quote/period', [QuoteController::class, 'period']);
+    
+    //Route::put   ('quote/{id}', [QuoteController::class, 'update']);
+    //Route::delete('quote/{id}', [QuoteController::class, 'destroy']);
     
     Route::get   ('logs'          , [LogsController::class, 'index']);
     Route::get   ('log/{filename}', [LogsController::class, 'content']);

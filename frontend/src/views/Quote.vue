@@ -3,10 +3,23 @@
     <h3>Dividendi</h3>
 
     <el-card class="box-card">
-      
+
       <el-tabs v-model="activeName" class="act-tabs"  type="border-card" >
 
           <el-tab-pane label="Corrente" key="current" name="current">
+
+              <br><br>
+
+              <el-row>
+                <el-col :span="4">
+                  Da: <el-date-picker v-model="data_value[0]" type="month" readonly format="MMMM YYYY" value-format="YYYY-MM" />
+                </el-col>
+                <el-col :span="4">
+                  A: <el-date-picker v-model="data_value[1]" type="month"           format="MMMM YYYY" value-format="YYYY-MM" @change="handleDateChange"/>
+                </el-col>
+              </el-row>  
+
+              <br><br>
 
               <el-card shadow="hover">
 
@@ -168,10 +181,10 @@
 
               <el-alert title="Attenzione! Dopo il salvataggio non sarà più possibile modificare o cancellare il Quadro dei dividendi. Verifica i dati prima di procedere." show-icon type="warning" />
 
-              <br>
+              <br><br>
 
               <el-row>
-                <el-col :span="24">
+                <el-col :span="24" style="text-align:center">
                   <el-popconfirm title="Procedere con il salvataggio?" @confirm="handleSubmit" confirm-button-text="Si">
                     <template #reference>
                       <el-button type="success" :loading="saving">Salva</el-button>  
@@ -179,6 +192,8 @@
                   </el-popconfirm>
                 </el-col>
               </el-row>
+
+              <br><br>
 
           </el-tab-pane>
 
@@ -196,14 +211,9 @@
 
   import {defineComponent, onMounted, ref, computed, h} from 'vue';
 
-  import {filteredList, create} from '../utils/service.js';
+  import {list, filteredList, create} from '../utils/service.js';
 
-  const data_value = ref(
-      [
-        (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0'), 
-        (new Date()).getFullYear() + '-' + ((new Date()).getMonth() + 1).toString().padStart(2, '0')
-      ]
-  );
+  const data_value = ref([]);
 
   const activeName = ref('current');
 
@@ -315,6 +325,10 @@
 
   });
 
+  const handleDateChange = ()  => {
+    filterData(data_value.value[0], data_value.value[1]);
+  }
+
   const filterData = (async (from, to)=>{
 
     loading.value = true;
@@ -342,6 +356,8 @@
   });
 
   onMounted(async ()=>{
+    // chiedo e setto intanto il periodo di riferimento
+    data_value.value = await list('admin/quote/period');
     filterData(data_value.value[0], data_value.value[1]);
   });
 

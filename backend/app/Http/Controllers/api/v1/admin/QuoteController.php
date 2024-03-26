@@ -6,14 +6,24 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\User;
-use App\Models\Act;
-use App\Models\Sell;
-use App\Models\Document;
+use App\Models\Quote;
+use App\Models\QuoteDetail;
 
 use Carbon\Carbon;
 
 class QuoteController extends Controller
 {
+    public function period()
+    {
+        $periodo_da = Quote::max('periodo_a'); // Il nuovo periodo comincia dove finisce l'ultimo
+        $periodo_da = !is_null($periodo_da) ? $periodo_da : '2024-01-01 00:00:00';
+        $periodo_da = \DateTime::createFromFormat('Y-m-d h:s:i', $periodo_da)->format('Y-m');
+        
+        $periodo_a = \DateTime::createFromFormat('Y-m', $periodo_da)->modify('+6 months')->format('Y-m');
+
+        return response([$periodo_da, $periodo_a], 200);
+    }
+    
     /**
      * Display a listing of the resource.
      */
