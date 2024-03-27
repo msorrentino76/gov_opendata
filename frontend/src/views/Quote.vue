@@ -32,7 +32,7 @@
                   </div>
                 </template>
 
-                <el-row>
+                <el-row :gutter="16">
 
                   <el-col :span="18">
                   
@@ -69,6 +69,10 @@
 
                   </el-col>
 
+                  <el-col :span="6">
+                    <v-chart :option="pieSellsAmountDiagram" style="height: 232px;" autoresize></v-chart>
+                  </el-col>
+
                 </el-row>
 
               </el-card>
@@ -83,7 +87,7 @@
                   </div>
                 </template>
 
-                <el-row>
+                <el-row :gutter="16">
 
                   <el-col :span="18">
 
@@ -130,6 +134,10 @@
                         <el-table-column prop="amount" align="right" :formatter="amount" />
                     </el-table>
 
+                  </el-col>
+
+                  <el-col :span="6">
+                    <v-chart :option="pieActsHoursDiagram" style="height: 232px;" autoresize></v-chart>
                   </el-col>
 
                 </el-row>
@@ -245,6 +253,15 @@
 
   import {list, filteredList, create} from '../utils/service.js';
 
+  import { use } from 'echarts/core';
+  import { PieChart, BarChart } from 'echarts/charts';
+  import { TitleComponent, TooltipComponent, LegendComponent, GridComponent  } from 'echarts/components';
+  import { CanvasRenderer } from 'echarts/renderers';
+  import VChart from 'vue-echarts';
+  
+  // Registra i componenti necessari di ECharts
+  use([TitleComponent, TooltipComponent, LegendComponent, PieChart, CanvasRenderer, BarChart, GridComponent ]);
+
   const data_value = ref([]);
 
   const activeName = ref('current');
@@ -256,6 +273,9 @@
   const saving = ref(false);
 
   const history = ref([]);
+
+  const pieActsHoursDiagram   = ref(null);  
+  const pieSellsAmountDiagram = ref(null);  
 
   const totale_dividendi_per_vendita = computed(
     () => {
@@ -406,6 +426,72 @@
     filterData(data_value.value[0], data_value.value[1]);
 
     history.value = await list('admin/quotes');
+
+    pieActsHoursDiagram.value = {
+        title: {
+          text: 'Ore complessive per attività',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: users.value.map( u => { return { value: u.hours, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
+      
+      pieSellsAmountDiagram.value = {
+        title: {
+          text: 'Importo per Vendite',
+          left: 'center',
+        },
+        tooltip: {
+          trigger: 'item',
+          //formatter: '{a} <br/>{b} : {c} ({d}%)',
+          formatter: '{b} : {c} ({d}%)',
+        },
+        /*legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: x,
+        },*/
+        series: [
+          {
+            name: 'Spazio',
+            type: 'pie',
+            radius: '64%',
+            center: ['50%', '60%'],
+            data: users.value.map( u => { if( u.role != 'developer') return { value: u.amount, name: u.subject } } ),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)',
+              },
+            },
+          },
+        ],
+      };
 
   });
 

@@ -8,6 +8,8 @@ import 'dayjs/locale/it';
 
 import 'element-plus/dist/index.css';
 
+import './assets/css/app.css'
+
 import { createRouter, createWebHistory } from 'vue-router';
 
 import DashboardView from './views/Dashboard.vue';
