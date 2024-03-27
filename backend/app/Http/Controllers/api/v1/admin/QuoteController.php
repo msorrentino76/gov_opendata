@@ -98,10 +98,10 @@ class QuoteController extends Controller
             QuoteDetail::create([
                 'quote_id' => $quote->id,
                 'user_id'  => $detail['id'],
-                'percentuale_vendita'  => $detail['acts_perc'] ,
-                'dividendo_vendita'    => $detail['acts_amount']  ,
-                'percentuale_attivita' => $detail['sell_perc'],
-                'dividendo_attivita'   => $detail['sell_amount'] ,
+                'percentuale_vendita'  => $detail['sell_perc'] ,
+                'dividendo_vendita'    => $detail['sell_amount']  ,
+                'percentuale_attivita' => $detail['acts_perc'],
+                'dividendo_attivita'   => $detail['acts_amount'] ,
             ]);
         }
 
@@ -112,9 +112,9 @@ class QuoteController extends Controller
     /**
      * Display the specified resource.
      */
-    public function historical(string $id)
+    public function historical()
     {
-        //
+        return Quote::with('details')->with('details.user')->get();
     }
-
+ 
 }

@@ -202,6 +202,33 @@
 
           <el-tab-pane label="Storico" key="history" name="history">
 
+            <el-table :data="history">
+
+              <el-table-column type="expand">
+                <template #default="props">
+                  <el-table :data="props.row.details">
+                    <el-table-column label="Soggetto">
+                        <template #default="scope">
+                          {{ scope.row.user.name }} {{ scope.row.user.surname }}      
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Percentuale vendita"  prop="percentuale_vendita"                      align="right"/>
+                    <el-table-column label="Dividendo vendita"    prop="dividendo_vendita"    :formatter="amount" align="right"/>
+                    <el-table-column label="Percentuale attivita" prop="percentuale_attivita"                     align="right"/>
+                    <el-table-column label="Dividendo attivita"   prop="dividendo_attivita"   :formatter="amount" align="right"/>        
+                  </el-table>
+                </template>
+              </el-table-column>
+
+              <el-table-column prop="periodo_da"                sortable label="Da" :formatter="dataFormatter"/>
+              <el-table-column prop="periodo_a"                 sortable label="A"  :formatter="dataFormatter"/>
+              <el-table-column prop="importo_totale"            sortable label="Importo Totale"            align="right" :formatter="amount"/>
+              <el-table-column prop="dividendo_vendita_totale"  sortable label="Dividendo vendita totale"  align="right" :formatter="amount"/>
+              <el-table-column prop="dividendo_attivita_totale" sortable label="Dividendo attivita totale" align="right" :formatter="amount"/>
+              <el-table-column prop="importo_residuo_cassa"     sortable label="Importo residuo cassa"     align="right" :formatter="amount"/>
+
+            </el-table>
+
           </el-tab-pane>
           
       </el-tabs>
@@ -227,6 +254,8 @@
   const totals  = ref({});  
 
   const saving = ref(false);
+
+  const history = ref([]);
 
   const totale_dividendi_per_vendita = computed(
     () => {
@@ -278,8 +307,8 @@
       return h('strong', {}, row[column.property]);
   };
 
-  const dataFormatter = (row) => {
-    const data = new Date(row.data_ora ? row.data_ora : row.data);
+  const dataFormatter = (row, column) => {
+    const data = new Date(row[column.property]);
     const opzioniFormattazione = 
             {
                 year: 'numeric',
@@ -327,6 +356,7 @@
       data_value.value = await list('admin/quote/period');
       Auth.commit('setDataFilterQuote', data_value.value);
       filterData(data_value.value[0], data_value.value[1]);
+      history.value = await list('admin/quotes');
     }
 
     saving.value = false;
@@ -368,10 +398,15 @@
     Auth.commit('setDataFilter', data_value.value);
   }
 
-  onMounted(async ()=>{    
+  onMounted(async ()=>{   
+
     // chiedo e setto intanto il periodo di riferimento
     data_value.value = Auth.state.data_filter_quote ? Auth.state.data_filter_quote : await list('admin/quote/period');
+    
     filterData(data_value.value[0], data_value.value[1]);
+
+    history.value = await list('admin/quotes');
+
   });
 
   defineComponent({
