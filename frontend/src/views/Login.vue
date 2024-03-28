@@ -35,6 +35,10 @@
     import FormEl from '../components/Form.vue';
     import {token} from '../utils/service.js';
 
+    import { useRouter } from 'vue-router';
+
+    const router = useRouter();
+
     const formData = ref([]);
     const action   = ref([]);
     const formLoading = ref(false);
@@ -111,6 +115,8 @@
             if(resp){
                 if(resp.errors){
                     errorsForm.value = resp.errors;
+                } else {
+                    router.push('/');
                 }
             }
             formLoading.value = false;
