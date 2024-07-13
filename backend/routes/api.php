@@ -9,12 +9,9 @@ use App\Http\Controllers\api\v1\common\NotificaController;
 use App\Http\Controllers\api\v1\common\ProfileController;
 use App\Http\Controllers\api\v1\common\DocumentController;
 
-use App\Http\Controllers\api\v1\user\DashboardController;
-use App\Http\Controllers\api\v1\user\ActController;
-use App\Http\Controllers\api\v1\user\SellController;
-
-use App\Http\Controllers\api\v1\admin\QuoteController;
-use App\Http\Controllers\api\v1\admin\LogsController;
+use App\Http\Controllers\api\v1\sysAdmin\LegalEntityAdminController;
+use App\Http\Controllers\api\v1\sysAdmin\LegalEntityController;
+use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,34 +54,19 @@ Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
     Route::delete('remove/{id}', [DocumentController::class, 'remove']);
 });
 
-Route::middleware(['auth:sanctum', 'ability:system:user'])->prefix('user')->group(function () {
 
-    Route::get   ('dashboard', [DashboardController::class, 'index']);
+//Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () {
+//    Route::get ('acts'    , [ActController::class, 'index']);
+//});
+
+
+Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () {
     
-    Route::get   ('acts'    , [ActController::class, 'index']);
-    Route::post  ('act'     , [ActController::class, 'store']);
-    //Route::get   ('act/{id}', [ActController::class, 'show']);
-    //Route::put   ('act/{id}', [ActController::class, 'update']);
-    //Route::delete('act/{id}', [ActController::class, 'destroy']);
-
-    Route::get   ('sells'    , [SellController::class, 'index']);
-    Route::post  ('sell'     , [SellController::class, 'store']);
-    //Route::get   ('sell/{id}', [SellController::class, 'show']);
-    //Route::put   ('sell/{id}', [SellController::class, 'update']);
-    //Route::delete('sell/{id}', [SellController::class, 'destroy']);
-    
-});
-
-Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('admin')->group(function () {
-
-    Route::get   ('quote' , [QuoteController::class, 'new']);
-    Route::post  ('quote' , [QuoteController::class, 'store']);    
-    Route::get   ('quotes', [QuoteController::class, 'historical']);
- 
-    Route::get   ('quote/period', [QuoteController::class, 'period']);
-    
-    //Route::put   ('quote/{id}', [QuoteController::class, 'update']);
-    //Route::delete('quote/{id}', [QuoteController::class, 'destroy']);
+    Route::get   ('legals'        , [LegalEntityController::class, 'index']);
+    Route::post  ('legal'         , [LegalEntityController::class, 'create']);
+    Route::get   ('legal/{id}'    , [LegalEntityController::class, 'read']);
+    Route::put   ('legal/{id}'    , [LegalEntityController::class, 'update']);
+    Route::delete('legal/{id}'    , [LegalEntityController::class, 'destroy']);
     
     Route::get   ('logs'          , [LogsController::class, 'index']);
     Route::get   ('log/{filename}', [LogsController::class, 'content']);

@@ -20,25 +20,7 @@ class DatabaseSeeder extends Seeder
             'name'      => 'Marco',
             'surname'   => 'Sorrentino',
             'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:admin", "system:user", "numie:developer"]),
-        ]);
-        
-        \App\Models\User::create([
-            'username'  => 'mladiega',
-            'email'     => 'staff@marcoladiega.it',
-            'name'      => 'Marco',
-            'surname'   => 'La Diega',
-            'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:user", "numie:seller"]),
-        ]);
-
-        \App\Models\User::create([
-            'username'  => 'mtestaverde',
-            'email'     => 'commerciale@macrosis.it',
-            'name'      => 'Marcello',
-            'surname'   => 'Testaverde',
-            'password'  => bcrypt('password'),
-            'abilities' => json_encode(["system:user", "numie:seller"]),
+            'abilities' => json_encode(["system:admin"]),
         ]);
         
     }
