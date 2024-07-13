@@ -53,7 +53,7 @@
 <script setup>
 
   import {ref, onMounted, defineComponent} from 'vue';
-  import {list, read, del} from '../utils/service.js'
+  import {list, read, del} from '../../utils/service.js'
 
   import {Search, Delete} from '@element-plus/icons-vue';
 
@@ -66,7 +66,7 @@
 
   const handleDetail = (async (index, row) => {
     loadingContent.value = true;    
-    const resp  = await read('admin/log', row.filename);
+    const resp  = await read('sys_admin/log', row.filename);
     logContent.value = resp;
     selectedFile.value = row.filename;
     loadingContent.value = false;
@@ -74,7 +74,7 @@
 
   const handleDelete = (async (index, row) => {
     loadingList.value = true;    
-    const resp  = await del('admin/log', row.filename);
+    const resp  = await del('sys_admin/log', row.filename);
     if(resp){
       logsFile.value = logsFile.value.filter((obj) => obj.filename !== row.filename);
     }
@@ -83,7 +83,7 @@
 
   onMounted(async ()=>{
     loadingList.value = true;
-    const resp  = await list('admin/logs');
+    const resp  = await list('sys_admin/logs');
     logsFile.value = resp;
     loadingList.value = false;
   });

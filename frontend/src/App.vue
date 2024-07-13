@@ -43,7 +43,7 @@ import AsideComponent  from './layout/Aside.vue';
 import MainComponent   from './layout/Main.vue';
 import FooterComponent from './layout/Footer.vue';
 
-import LoginView from './views/Login.vue';
+import LoginView from './views/auth/Login.vue';
 
 import { ref } from 'vue';
 

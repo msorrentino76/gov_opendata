@@ -9,7 +9,7 @@ export default createStore({
       data_filter: false,
       data_filter_quote: false,
       config: {
-        applicationBaseURL: 'http://localhost/NumiPort/backend/public',
+        applicationBaseURL: 'http://localhost/gestione_utenti/backend/public',
       }
     },
     mutations: {

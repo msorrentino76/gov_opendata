@@ -32,8 +32,8 @@
 <script setup>
 
     import {ref, defineComponent} from 'vue';
-    import FormEl from '../components/Form.vue';
-    import {token} from '../utils/service.js';
+    import FormEl from '../../components/Form.vue';
+    import {token} from '../../utils/service.js';
 
     import { useRouter } from 'vue-router';
 

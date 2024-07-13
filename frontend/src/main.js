@@ -12,22 +12,20 @@ import './assets/css/app.css'
 
 import { createRouter, createWebHistory } from 'vue-router';
 
-import DashboardView from './views/Dashboard.vue';
-import ActivityView  from './views/Activity.vue';
-import SellView      from './views/Sell.vue';
-import QuoteView     from './views/Quote.vue';
-import SystemLogView from './views/SystemLog.vue';
-
-//import AdminsView from './views/Admins.vue';
+import SystemDashboardView  from './views/sysadmin/Dashboard.vue';
+import LegalEntityAdminView from './views/sysadmin/LegalEntityAdmin.vue';
+import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
+import LicenceView          from './views/sysadmin/Licence.vue';
+import SystemLogView        from './views/sysadmin/SystemLog.vue';
 
 import auth from './store/Auth.js'; 
 
 const routes = [
-    { path: '/'        , component: DashboardView },
-    { path: '/activity', component: ActivityView },
-    { path: '/sells'   , component: SellView },
-    { path: '/quote'   , component: QuoteView },
-    { path: '/logs'    , component: SystemLogView },
+    { path: '/sysadmin'                    , component: SystemDashboardView },
+    { path: '/sysadmin/legal_entity_admin' , component: LegalEntityAdminView },
+    { path: '/sysadmin/legal_entity'       , component: LegalEntityView },
+    { path: '/sysadmin/licence'            , component: LicenceView },
+    { path: '/sysadmin/logs'               , component: SystemLogView },
   ];
   
   const router = createRouter({
