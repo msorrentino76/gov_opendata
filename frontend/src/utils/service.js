@@ -122,10 +122,10 @@ export const download = async (f) => {
       }
   }
 
-  export const create = async (endpoint, data) => {
+  export const create = async (endpoint, data, mute = false) => {
     try {
-        const response = await axiosInstance.post(endpoint, data);
-        elNotifySuccess();
+        const response = await axiosInstance.post(endpoint /*+ '?XDEBUG_SESSION_START=netbeans-xdebug'*/, data);
+        if(!mute) elNotifySuccess();
         return await response.data;
     } catch (error) {
         return errorHandler(error, 'create');

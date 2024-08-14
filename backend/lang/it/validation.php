@@ -189,7 +189,28 @@ return [
         'ore'  => 'Ore impiegate',
         'descrizione' => 'Descrizione',
         
-        'today' => 'oggi'
+        'today' => 'oggi',
+        
+        'cf'      => 'Codice fiscale',
+        'cod_amm' => 'Codice IPA Amministrazione',
+        'des_amm' => 'Descrizione amministrazione',
+        'sito_istituzionale'  => 'Sito istituzionale',
+        'data_accreditamento' => 'Data accreditamento',
+        'mail1' => 'Email (1)',
+        'mail2' => 'Email (2)',
+        'mail3' => 'Email (3)',
+        'mail4' => 'Email (4)',
+        'indirizzo' => 'Indirizzo',
+        'cap' => 'CAP',
+        'regione'   => 'Regione',
+        'provincia' => 'Provincia',
+        'comune'    => 'Comune',
+        'titolo_resp' => 'Titolo Responsabile',
+        'nome_resp' => 'Nome Responsabile',
+        'cogn_resp' => 'Cognome Responsabile',
+        'Tipologia' => 'tipologia',
+        'Categoria' => 'categoria',
+        
     ],
 
 ];

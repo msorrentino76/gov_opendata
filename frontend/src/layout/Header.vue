@@ -73,7 +73,7 @@
   });
 
   const getAllNotifications = (async() => {
-    const resp = await list('notifications/all');    
+    const resp = ('notifications/all');    
     notifications.value = resp.map((r) => {
       if(!newNotification.value && (r.read_at == null)) newNotification.value = true;
       return {'id': r.id, 'message': r.data.message, 'seen' : (r.read_at != null), 'created_at' : r.created_at}

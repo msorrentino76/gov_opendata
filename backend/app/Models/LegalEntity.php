@@ -44,5 +44,15 @@ class LegalEntity extends Model
         'telefono',
         'fax',    
     ];
+ 
+    protected $appends = ['full_address', 'titolare'];
+    
+    public function getFullAddressAttribute() {
+         return ($this->indirizzo ?? '') . ' ' . ($this->cap ?? '') . ' ' . ($this->provincia ?? '') . ' ' . ($this->regione ?? '');
+    }
+    
+    public function getTitolareAttribute() {
+        return ($this->titolo_resp ?? '') . ' ' . ($this->cogn_resp ?? '') . ' ' . ($this->nome_resp ?? '');
+    }
     
 }

@@ -22,6 +22,7 @@
                         :label="field.label"
                         :prop="field.name"
                         :error="formErrors[field.name] ? formErrors[field.name] : ''"
+                        :maxlength="field.maxlength ? field.maxlength : 128"
                     >
                         <el-input v-model="data[field.name]" :placeholder="field.placeholder ? field.placeholder : ''">
                             <template v-if="field.prepend" #prepend>

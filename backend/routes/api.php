@@ -68,6 +68,9 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::put   ('legal/{id}'    , [LegalEntityController::class, 'update']);
     Route::delete('legal/{id}'    , [LegalEntityController::class, 'destroy']);
     
+    Route::post  ('legal_suggestions' , [LegalEntityController::class, 'legalSuggestions']);
+    Route::post  ('legal_ipa_details' , [LegalEntityController::class, 'legalIPADetails']);
+    
     Route::get   ('logs'          , [LogsController::class, 'index']);
     Route::get   ('log/{filename}', [LogsController::class, 'content']);
     Route::delete('log/{filename}', [LogsController::class, 'delete']);

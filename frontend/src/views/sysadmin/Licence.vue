@@ -11,7 +11,7 @@
 
 
   defineComponent({
-      name: 'DashboardView',
+      name: 'LicenceView',
   })
 
 </script>

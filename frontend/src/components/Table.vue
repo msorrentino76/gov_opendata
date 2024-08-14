@@ -336,9 +336,14 @@ const defaultDelete = (async(id, row) => {
     action.value = 'delete';
     loading.value = true;     
     let resp = await del(props.endpoints.delete, row.id);
+    console.log('defaultDelete', id, row)
     if(resp) {
-        rows.value = rows.value.filter((obj) => obj.id !== row.id);
+        rows.value = rows.value.filter((obj) => {
+            console.log('defaultDelete MAP', obj.id, row.id)
+            return obj.id !== row.id
+        });
     }
+    console.log('defaultDelete ROW', rows.value)
     loading.value = false; 
 })
 

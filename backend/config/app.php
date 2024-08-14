@@ -188,4 +188,22 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | URL Istitutions' download
+    |--------------------------------------------------------------------------
+    */
+	'ipa_ws_base_url'           => env('IPA_WS_BASE_URL', 'https://www.indicepa.gov.it:443/public-ws/'),
+	'ipa_ws_auth_id'            => env('IPA_WS_AUTH_ID', 'VSRIFLLG'),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Software Version
+    |--------------------------------------------------------------------------
+    */
+	'ver' => env('VERSION', '1.2'),
+    
+        'sito_detentore_diritti' => env('SITO_DETENTORE_DIRITTI', 'http://www.numie.it'),
+        'detentore_diritti'      => env('DETENTORE_DIRITTI'     , 'Nùmie'),    
+    
 ];

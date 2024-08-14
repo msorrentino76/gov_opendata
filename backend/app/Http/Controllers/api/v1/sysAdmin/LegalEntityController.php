@@ -147,4 +147,44 @@ class LegalEntityController extends Controller
         
     }
     
+    public function legalSuggestions(Request $request) {
+        
+        $results = [];
+        $data = $request->only('looking_for');
+        $looking_for = $data['looking_for'];                
+        $res = json_decode($this->wsIpa('WS16_DES_AMM.php', array('DESCR' => $looking_for)));
+        
+        if(isset($res->data)) {
+            foreach ($res->data as $item) {
+                $results[] = ['value' => $item->des_amm, 'cod_amm' => $item->cod_amm];
+            }
+        }
+         
+        return response($results, 200);
+    }
+    
+    public function legalIPADetails(Request $request) {
+        $data = $request->only('cod_amm');
+        if(isset($data['cod_amm'])){                
+            $res = json_decode($this->wsIpa('WS05_AMM.php', array('COD_AMM' => $data['cod_amm'])));
+            if(isset($res->data)) {
+                return response(json_encode($res->data), 200);
+            }  
+        }
+        return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+    }
+    
+    private function wsIpa($service, $data) {
+        $url = config('app.ipa_ws_base_url') . $service;
+        $data['AUTH_ID'] = config('app.ipa_ws_auth_id');
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        return $result;
+    }
+    
 }
