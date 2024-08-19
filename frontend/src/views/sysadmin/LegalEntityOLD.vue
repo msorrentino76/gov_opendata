@@ -198,7 +198,7 @@ onMounted(async ()=>{
 onUnmounted(()=>{});
 
 defineComponent({
-    name: 'LegalEntityMyComponent',
+    name: 'LegalEntityOLD',
 })
 
 </script>

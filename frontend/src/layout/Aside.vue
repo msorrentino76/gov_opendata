@@ -14,7 +14,7 @@
       <template #title>Dashboard</template>
     </el-menu-item>
 
-    <el-menu-item index="/sysadmin/legal_entity_admin" v-if="Auth.state.user.abilities.includes('system:admin')">
+    <el-menu-item index="/users" v-if="Auth.state.user.abilities.includes('system:admin') || Auth.state.user.abilities.includes('legal_entity:admin')">
       <el-icon><User /></el-icon>
       <template #title>Amministratori di Ente</template>
     </el-menu-item>

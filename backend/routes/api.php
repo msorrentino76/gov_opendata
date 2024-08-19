@@ -9,7 +9,8 @@ use App\Http\Controllers\api\v1\common\NotificaController;
 use App\Http\Controllers\api\v1\common\ProfileController;
 use App\Http\Controllers\api\v1\common\DocumentController;
 
-use App\Http\Controllers\api\v1\sysAdmin\LegalEntityAdminController;
+use App\Http\Controllers\api\v1\common\UserController;
+
 use App\Http\Controllers\api\v1\sysAdmin\LegalEntityController;
 use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
@@ -59,15 +60,22 @@ Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
 //    Route::get ('acts'    , [ActController::class, 'index']);
 //});
 
+Route::middleware(['auth:sanctum', 'ability:system:admin,legal_entity:admin'])->group(function () {
+    Route::get   ('users'        , [UserController::class, 'index']);
+    Route::post  ('user'         , [UserController::class, 'create']);
+    Route::get   ('user/{id}'    , [UserController::class, 'read']);
+    Route::put   ('user/{id}'    , [UserController::class, 'update']);
+    Route::delete('user/{id}'    , [UserController::class, 'destroy']);  
+    Route::put   ('toggle/{id}'  , [UserController::class, 'toggle']);
+});
 
-Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () {
+Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () { 
     
     Route::get   ('legals'        , [LegalEntityController::class, 'index']);
     Route::post  ('legal'         , [LegalEntityController::class, 'create']);
     Route::get   ('legal/{id}'    , [LegalEntityController::class, 'read']);
     Route::put   ('legal/{id}'    , [LegalEntityController::class, 'update']);
-    Route::delete('legal/{id}'    , [LegalEntityController::class, 'destroy']);
-    
+    Route::delete('legal/{id}'    , [LegalEntityController::class, 'destroy']);    
     Route::post  ('legal_suggestions' , [LegalEntityController::class, 'legalSuggestions']);
     Route::post  ('legal_ipa_details' , [LegalEntityController::class, 'legalIPADetails']);
     

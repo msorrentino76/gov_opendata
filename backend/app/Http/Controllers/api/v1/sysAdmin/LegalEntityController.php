@@ -24,8 +24,7 @@ class LegalEntityController extends Controller
      * destroy($id): Elimina una risorsa dal database.
      */
     
-    public function index(Request $request)
-    {
+    public function index(){
         return response(LegalEntity::orderBy('des_amm')->get(), 200);
     }
       

@@ -191,6 +191,11 @@ const errorHandler = ((error, api_call) => {
     return error.response.data;
   }
 
+  if(error.response && error.response.status == 404){
+    elNotifyError('Risorsa non trovata');  
+    return false;
+  }
+
   elNotifyError();
 
   console.error('Errore durante la chiamata API ' + api_call + ' :', error.code, error.message);

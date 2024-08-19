@@ -8,9 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+use Carbon\Carbon;
+
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -18,9 +22,13 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
+        'surname',
         'username',
         'email',
         'password',
+        'abilities',
+        'created_by',
     ];
 
     /**
@@ -37,8 +45,11 @@ class User extends Authenticatable
         'deleted_at',        
         'created_at',
         'updated_at',
+        'created_by',
     ];
 
+    protected $appends = ['last_login']; 
+    
     /**
      * The attributes that should be cast.
      *
@@ -48,19 +59,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password'          => 'hashed',
         'notify_email'      => 'boolean',
+        'enabled'           => 'boolean',
+        //'created_at'        => ,
+        //'updated_at'        => ,
     ];
+    
+    public function getCreatedAtAttribute($value) {
+        return Carbon::parse($value)->locale('it')->isoFormat('D/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
+    }
+    
+    public function getUpdatedAtAttribute($value) {
+        return Carbon::parse($value)->locale('it')->isoFormat('D/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
+    }
+    
+    public function getLastLoginAttribute() {
+        $last_login = $this->storico()->orderBy('data_ora', 'desc')->offset(1)->limit(1)->first();
+        return is_null($last_login) ? '-' : Carbon::parse($last_login->data_ora)->locale('it')->isoFormat('D/MM/YYYY HH:mm'); //isoFormat('dddd D MMMM YYYY');
+    }
     
     public function username(){
         return 'username';
     }
-  
-    public function acts(){
-        return $this->hasMany(Act::class);
-    }    
-    
-    public function sells(){
-        return $this->hasMany(Sell::class);
-    } 
     
     public function documents(){
         return $this->hasMany(Document::class);
@@ -70,6 +89,7 @@ class User extends Authenticatable
         return $this->hasMany(StoricoLogin::class);
     }  
     
+    /*
     public function numieRole() {
         $abilities = json_decode($this->abilities);
         foreach($abilities as $ability){
@@ -78,4 +98,6 @@ class User extends Authenticatable
         }
         return 'no_role';
     }
+    */
+    
 }

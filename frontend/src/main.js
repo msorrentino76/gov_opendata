@@ -13,7 +13,7 @@ import './assets/css/app.css'
 import { createRouter, createWebHistory } from 'vue-router';
 
 import SystemDashboardView  from './views/sysadmin/Dashboard.vue';
-import LegalEntityAdminView from './views/sysadmin/LegalEntityAdmin.vue';
+import UsersView            from './views/common/Users.vue';
 import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
 import LicenceView          from './views/sysadmin/Licence.vue';
 import SystemLogView        from './views/sysadmin/SystemLog.vue';
@@ -22,7 +22,7 @@ import auth from './store/Auth.js';
 
 const routes = [
     { path: '/sysadmin'                    , component: SystemDashboardView },
-    { path: '/sysadmin/legal_entity_admin' , component: LegalEntityAdminView },
+    { path: '/users'                       , component: UsersView },
     { path: '/sysadmin/legal_entity'       , component: LegalEntityView },
     { path: '/sysadmin/licence'            , component: LicenceView },
     { path: '/sysadmin/logs'               , component: SystemLogView },

@@ -21,7 +21,9 @@ return new class extends Migration
             $table->string('password');
             $table->text('abilities');
             $table->boolean('password_changed')->nullable(true);	
-            $table->boolean('notify_email')->nullable(true);            
+            $table->boolean('notify_email')->nullable(true); 
+            $table->boolean('enabled')->nullable(false)->default(true); 
+            $table->foreignId('created_by')->nullable()->constrained('users');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
