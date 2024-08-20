@@ -43,12 +43,13 @@
           </el-popconfirm>
           -->
 
-          <el-button type="primary" :icon="Search" size="small" @click="handleRead(scope.$index, scope.row)">Dettagli</el-button>
-          <el-button type="warning" :icon="Edit"   size="small" @click="handleUpdate(scope.$index, scope.row)">Modifica</el-button>
-          
+          <el-button type="primary" :icon="Search"   size="small" @click="handleRead(scope.$index, scope.row)">Dettagli</el-button>
+          <el-button type="warning" :icon="Edit"     size="small" @click="handleUpdate(scope.$index, scope.row)">Modifica</el-button>
+          <el-button type="info"    :icon="Notebook" size="small" @click="handleHistory(scope.$index, scope.row)">Storico</el-button>
+
           <el-popconfirm title="Cancellando questo ente verranno cancellate anche le relative licenze. Procedere?" @confirm="handleDelete(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
-              <el-button type="danger" :icon="Delete" size="small">Cancella</el-button>  
+              <el-button type="danger" :icon="Delete" size="small"></el-button>  
             </template>
           </el-popconfirm>
 
@@ -78,7 +79,7 @@
         <el-divider />
       </div>
 
-      <el-form v-loading="form_loading" :model="legal_entity" :disabled="form_disable" label-position="top" status-icon>
+      <el-form v-if="form_action != 'history'"  v-loading="form_loading" :model="legal_entity" :disabled="form_disable" label-position="top" status-icon>
 
       <!--  
         <el-form-item label="Logo" :prop="logo" :error="form_error.logo">                                            
@@ -237,6 +238,28 @@
 
       </el-form>
 
+      <template v-if="form_action == 'history'">
+
+        <el-descriptions border>
+          <el-descriptions-item label="Amministrazione: ">{{ legal_entity.des_amm }}</el-descriptions-item>
+          <el-descriptions-item label="Codice fiscale: "> {{ legal_entity.cf }}</el-descriptions-item>
+        </el-descriptions>
+
+        <br><br><br>
+
+        <el-timeline v-loading="activities_loading">
+          <el-timeline-item
+            v-for="(activity, index) in activities"
+            :key="index"
+            :timestamp="activity.timestamp"
+            :type="activity.type"
+          >
+            {{ activity.content }}
+          </el-timeline-item>
+        </el-timeline>
+
+    </template>
+
     </el-drawer>
 
 
@@ -248,9 +271,9 @@
 
 import {defineComponent, ref, reactive, onMounted, onUnmounted, computed} from 'vue';
 
-import { Delete, Edit, Search, Plus, Location, Place, User, Monitor, OfficeBuilding, Calendar} from '@element-plus/icons-vue'
+import { Delete, Edit, Search, Plus, Location, Place, User, Monitor, OfficeBuilding, Calendar, Notebook} from '@element-plus/icons-vue'
 
-import {list, create, update, del} from '../../utils/service.js';
+import {list, create, read, update, del} from '../../utils/service.js';
 
 
 const legal_entities = ref([]);
@@ -270,6 +293,9 @@ const form_disable = ref(false);
 const form_error   = ref({});
 
 const query_search = ref('');
+
+const activities_loading = ref(false);
+const activities = ref([]);
 
 const filterTableData = computed(() =>
   legal_entities.value.filter(
@@ -308,6 +334,26 @@ const handleUpdate = ((id, row) => {
   form_action.value  = 'update';
   form_error.value   = {};
   Object.assign(legal_entity, legal_entities.value.find((obj) => {return obj.id === row.id}));
+})
+
+const handleHistory = (async(id, row) => {
+  openDrawer.value  = true;
+  drawerTitle.value = 'Storico Ente';
+  form_disable.value = false;
+  form_action.value  = 'history';
+  form_error.value   = {};
+  Object.assign(legal_entity, legal_entities.value.find((obj) => {return obj.id === row.id}));
+
+  activities_loading.value = true;
+  activities.value = [];
+  let resp = await read('sys_admin/legal_activities', legal_entity.id);
+  if(resp){
+    if(!resp.errors){
+      activities.value = resp;
+    }    
+  }
+  activities_loading.value = false;
+
 })
 
 const handleDelete = (async(id, row) => {

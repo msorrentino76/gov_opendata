@@ -134,7 +134,7 @@ export const download = async (f) => {
 
   export const read = async (endpoint, id) => {     
     try {
-        const response = await axiosInstance.get(endpoint + '/' + id);
+        const response = await axiosInstance.get(endpoint + '/' + id /*+ '?XDEBUG_SESSION_START=netbeans-xdebug'*/);
         return await response.data;
     } catch (error) {
         return errorHandler(error, 'read');

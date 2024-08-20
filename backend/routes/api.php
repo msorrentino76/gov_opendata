@@ -67,6 +67,7 @@ Route::middleware(['auth:sanctum', 'ability:system:admin,legal_entity:admin'])->
     Route::put   ('user/{id}'    , [UserController::class, 'update']);
     Route::delete('user/{id}'    , [UserController::class, 'destroy']);  
     Route::put   ('toggle/{id}'  , [UserController::class, 'toggle']);
+    Route::get   ('user_activities/{id}'  , [UserController::class, 'userActivities']);    
 });
 
 Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () { 
@@ -78,6 +79,7 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::delete('legal/{id}'    , [LegalEntityController::class, 'destroy']);    
     Route::post  ('legal_suggestions' , [LegalEntityController::class, 'legalSuggestions']);
     Route::post  ('legal_ipa_details' , [LegalEntityController::class, 'legalIPADetails']);
+    Route::get   ('legal_activities/{id}'  , [LegalEntityController::class, 'legalActivities']);
     
     Route::get   ('logs'          , [LogsController::class, 'index']);
     Route::get   ('log/{filename}', [LogsController::class, 'content']);

@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Panoscape\History\HasHistories;
+
 class LegalEntity extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasHistories;
     
     protected $table = 'legal_entities';
     
@@ -53,6 +55,10 @@ class LegalEntity extends Model
     
     public function getTitolareAttribute() {
         return ($this->titolo_resp ?? '') . ' ' . ($this->cogn_resp ?? '') . ' ' . ($this->nome_resp ?? '');
+    }
+    
+    public function getModelLabel(){
+        return $this->display_name;
     }
     
 }

@@ -10,11 +10,13 @@ use Laravel\Sanctum\HasApiTokens;
 
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Panoscape\History\HasHistories;
+
 use Carbon\Carbon;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes, HasHistories;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +31,7 @@ class User extends Authenticatable
         'password',
         'abilities',
         'created_by',
+        'enabled',
     ];
 
     /**
@@ -88,6 +91,14 @@ class User extends Authenticatable
     public function storico(){
         return $this->hasMany(StoricoLogin::class);
     }  
+    
+    public function getModelLabel(){
+        return $this->display_name;
+    }
+    
+    public function __toString() {
+        return $this->name . ' ' . $this->surname;
+    }
     
     /*
     public function numieRole() {

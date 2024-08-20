@@ -64,7 +64,7 @@
 
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
-      <el-form v-loading="form_loading" :model="user" :disabled="form_disable" label-position="top" status-icon>
+      <el-form v-if="form_action != 'read'" v-loading="form_loading" :model="user" :disabled="form_disable" label-position="top" status-icon>
 
         <el-row :gutter="20">
           <el-col :span="12">
@@ -92,9 +92,32 @@
           </el-col>
         </el-row>
 
-        <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
+        <el-button type="success" @click="submit()">Salva</el-button>
 
       </el-form>
+
+      <template v-if="form_action == 'read'">
+
+        <el-descriptions border>
+          <el-descriptions-item label="Username: ">{{ user.username }}</el-descriptions-item>
+          <el-descriptions-item label="Email: ">{{ user.email }}</el-descriptions-item>
+          <el-descriptions-item label="Utente: ">{{ user.name }} {{ user.surname }}</el-descriptions-item>
+        </el-descriptions>
+
+        <br><br><br>
+
+          <el-timeline v-loading="activities_loading">
+            <el-timeline-item
+              v-for="(activity, index) in activities"
+              :key="index"
+              :timestamp="activity.timestamp"
+              :type="activity.type"
+            >
+              {{ activity.content }}
+            </el-timeline-item>
+          </el-timeline>
+
+      </template>
 
     </el-drawer>
 
@@ -108,7 +131,7 @@
 
   import {Plus, User, CreditCard, Search, Edit, Delete, CircleCloseFilled, CircleCheckFilled, Message} from '@element-plus/icons-vue'
 
-  import {list, create, update, del} from '../../utils/service.js';
+  import {list, create, read, update, del} from '../../utils/service.js';
 
   import Auth from '../../store/Auth.js';
 
@@ -127,6 +150,9 @@ const form_action  = ref();
 const form_loading = ref('');
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const activities_loading = ref(false);
+const activities = ref([]);
 
 const filterTableData = computed(() =>
   users.value.filter(
@@ -162,13 +188,24 @@ const handleCreate = (() => {
   Object.keys(user).forEach(key => { user[key] = ''; })
 })
 
-const handleRead = ((id, row) => {
+const handleRead = (async(id, row) => {
   openDrawer.value   = true;
   drawerTitle.value  = 'Dettaglio Utente';
   form_disable.value = true;
   form_action.value  = 'read';
   form_error.value   = {};
   Object.assign(user, users.value.find((obj) => {return obj.id === row.id}));
+
+  activities_loading.value = true;
+  activities.value = [];
+  let resp = await read('user_activities', user.id);
+  if(resp){
+    if(!resp.errors){
+      activities.value = resp;
+    }    
+  }
+  activities_loading.value = false;
+
 })
 
 const handleUpdate = ((id, row) => {

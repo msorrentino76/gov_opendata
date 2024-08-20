@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 
 use App\Exceptions\ResponseException;
+
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -41,6 +44,7 @@ class UserController extends Controller
             }
             
             $data['created_by'] = Auth::user()->id;
+            $data['enabled']    = true;
             
             $user = User::create($data);
             
@@ -77,6 +81,58 @@ class UserController extends Controller
         $user->save();
         
         return response($user, 200);
+        
+    }
+    
+    public function userActivities(string $id) {
+        
+        $user = $this->getResourceIfOwner($id);
+        $hist = $user->histories()->orderBy('performed_at', 'asc')->get();
+        
+        $activities = [];
+        
+        foreach ($hist as $h){
+            $owner = (string)User::find($h->user_id);
+            $timestamp = Carbon::parse($h->performed_at)->locale('it')->isoFormat('D/MM/YYYY HH:mm');
+            if($h->message == 'CREATE') {
+                $activities[] = ['content' => 'Creato da ' . $owner, 'timestamp' => $timestamp, 'type' => 'success'];
+            }
+            if($h->message == 'UPDATE') {
+                
+                $data_update = false;
+                
+                foreach($h->meta as $row){                    
+                    if($row['key'] == 'enabled'){
+                        $activities[] = ['content' => ($row['new'] ? 'Riabilitato da ' : 'Disabilitato da ') . $owner, 'timestamp' => $timestamp, 'type' => $row['new'] ? 'warning' : ''];
+                    } else {
+                        $data_update = true;                        
+                    }                    
+                } 
+                
+                if($data_update){
+                    $extra_content = [];
+                    foreach($h->meta as $row){
+                        $key = __('validation.attributes.' . $row['key']);
+                        $extra_content[] = "$key da: '{$row['old']}' a '{$row['new']}'";
+                    }
+                    $activities[] = ['content' => 'Modificato da ' . $owner . ': ' . implode(' - ', $extra_content), 'timestamp' => $timestamp, 'type' => 'primary'];
+                }
+            }
+        }
+        
+        return $activities;
+        
+        /*
+        return [
+            ['content' => 'sdas', 'timestamp' => '2023-01-12', 'type' => 'success'],
+            ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'primary'],
+            ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'warning'],
+            ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'info'],
+            ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'danger'],
+            ['content' => 'sddsas', 'timestamp' => '2023-01-13'],
+        ];
+         * 
+         */
         
     }
     

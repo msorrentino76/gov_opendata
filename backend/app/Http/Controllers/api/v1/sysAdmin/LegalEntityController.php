@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 use App\Models\LegalEntity;
+use App\Models\User;
+
 use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -171,6 +173,36 @@ class LegalEntityController extends Controller
             }  
         }
         return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+    }
+    
+    public function legalActivities($id) {
+        
+        try {
+            $le = LegalEntity::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+        }
+        $hist = $le->histories()->orderBy('performed_at', 'asc')->get();
+        
+        $activities = [];
+        
+        foreach ($hist as $h){
+            $owner = (string)User::find($h->user_id);
+            $timestamp = Carbon::parse($h->performed_at)->locale('it')->isoFormat('D/MM/YYYY HH:mm');
+            if($h->message == 'CREATE') {
+                $activities[] = ['content' => 'Creato da ' . $owner, 'timestamp' => $timestamp, 'type' => 'success'];
+            }
+            if($h->message == 'UPDATE') {
+                $extra_content = [];
+                foreach($h->meta as $row){
+                    $key = __('validation.attributes.' . $row['key']);
+                    $extra_content[] = "$key da: '{$row['old']}' a '{$row['new']}'";
+                }
+                $activities[] = ['content' => 'Modificato da ' . $owner . ': ' . implode(' - ', $extra_content), 'timestamp' => $timestamp, 'type' => 'primary'];
+            }
+        }
+        
+        return $activities;    
     }
     
     private function wsIpa($service, $data) {
