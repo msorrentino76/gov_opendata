@@ -73,11 +73,13 @@
   });
 
   const getAllNotifications = (async() => {
-    const resp = ('notifications/all');    
-    notifications.value = resp.map((r) => {
-      if(!newNotification.value && (r.read_at == null)) newNotification.value = true;
-      return {'id': r.id, 'message': r.data.message, 'seen' : (r.read_at != null), 'created_at' : r.created_at}
-    });
+    const resp = await list('notifications/all'); 
+    if(resp){   
+      notifications.value = resp.map((r) => {
+        if(!newNotification.value && (r.read_at == null)) newNotification.value = true;
+        return {'id': r.id, 'message': r.data.message, 'seen' : (r.read_at != null), 'created_at' : r.created_at}
+      });
+    }
   });
 
   const notifTimerId = setInterval(() => {

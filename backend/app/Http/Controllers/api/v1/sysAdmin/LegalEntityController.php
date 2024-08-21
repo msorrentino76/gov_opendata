@@ -4,12 +4,8 @@ namespace App\Http\Controllers\api\v1\sysAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 use App\Models\LegalEntity;
-use App\Models\User;
-
-use Carbon\Carbon;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -78,7 +74,11 @@ class LegalEntityController extends Controller
         try {
             $le = LegalEntity::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+            /*
+             * 422 VA BENE PER I FORM
+             * return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+             */
+            return response('Ente non trovato', 404);
         }
         
         return response($le, 200);
@@ -110,7 +110,11 @@ class LegalEntityController extends Controller
         try {
             $le = LegalEntity::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+            /*
+             * 422 VA BENE PER I FORM
+             * return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+             */
+            return response('Ente non trovato', 404);
         }
         
         $le->update($data);
@@ -139,7 +143,11 @@ class LegalEntityController extends Controller
         try {
             $le = LegalEntity::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+            /*
+             * 422 VA BENE PER I FORM
+             * return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+             */
+            return response('Ente non trovato', 404);
         }
         
         $le->delete();
@@ -153,7 +161,7 @@ class LegalEntityController extends Controller
         $results = [];
         $data = $request->only('looking_for');
         $looking_for = $data['looking_for'];                
-        $res = json_decode($this->wsIpa('WS16_DES_AMM.php', array('DESCR' => $looking_for)));
+        $res = json_decode(wsIpa('WS16_DES_AMM.php', array('DESCR' => $looking_for)));
         
         if(isset($res->data)) {
             foreach ($res->data as $item) {
@@ -167,12 +175,16 @@ class LegalEntityController extends Controller
     public function legalIPADetails(Request $request) {
         $data = $request->only('cod_amm');
         if(isset($data['cod_amm'])){                
-            $res = json_decode($this->wsIpa('WS05_AMM.php', array('COD_AMM' => $data['cod_amm'])));
+            $res = json_decode(wsIpa('WS05_AMM.php', array('COD_AMM' => $data['cod_amm'])));
             if(isset($res->data)) {
                 return response(json_encode($res->data), 200);
             }  
         }
-        return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+        /*
+         * 422 VA BENE PER I FORM
+         * return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+         */
+        return response('Ente non trovato su Indice PA', 404);
     }
     
     public function legalActivities($id) {
@@ -180,42 +192,14 @@ class LegalEntityController extends Controller
         try {
             $le = LegalEntity::findOrFail($id);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
-        }
-        $hist = $le->histories()->orderBy('performed_at', 'asc')->get();
-        
-        $activities = [];
-        
-        foreach ($hist as $h){
-            $owner = (string)User::find($h->user_id);
-            $timestamp = Carbon::parse($h->performed_at)->locale('it')->isoFormat('D/MM/YYYY HH:mm');
-            if($h->message == 'CREATE') {
-                $activities[] = ['content' => 'Creato da ' . $owner, 'timestamp' => $timestamp, 'type' => 'success'];
-            }
-            if($h->message == 'UPDATE') {
-                $extra_content = [];
-                foreach($h->meta as $row){
-                    $key = __('validation.attributes.' . $row['key']);
-                    $extra_content[] = "$key da: '{$row['old']}' a '{$row['new']}'";
-                }
-                $activities[] = ['content' => 'Modificato da ' . $owner . ': ' . implode(' - ', $extra_content), 'timestamp' => $timestamp, 'type' => 'primary'];
-            }
+            /*
+             * 422 VA BENE PER I FORM
+             * return response()->json(['errors' => ['des_amm' => 'Ente non trovato'],], 422);
+             */
+            return response('Ente non trovato', 404);
         }
         
-        return $activities;    
-    }
-    
-    private function wsIpa($service, $data) {
-        $url = config('app.ipa_ws_base_url') . $service;
-        $data['AUTH_ID'] = config('app.ipa_ws_auth_id');
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_POST, 1);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        return $result;
+        return modelActivities($le);    
     }
     
 }

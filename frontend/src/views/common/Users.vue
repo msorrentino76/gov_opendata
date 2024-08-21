@@ -30,26 +30,26 @@
         <template #default="scope">
 
           <el-tooltip class="box-item" effect="dark" content="Dettagli" placement="top-start">
-            <el-button type="primary" :icon="Search" circle size="small" @click="handleRead(scope.$index, scope.row)"   />
+            <el-button type="primary" :icon="Search" size="small" @click="handleRead(scope.$index, scope.row)"   />
           </el-tooltip>
 
           <el-tooltip class="box-item" effect="dark" content="Modifica" placement="top-start">
-            <el-button type="warning" :icon="Edit"   circle size="small" @click="handleUpdate(scope.$index, scope.row)" />
+            <el-button type="warning" :icon="Edit" size="small" @click="handleUpdate(scope.$index, scope.row)" />
           </el-tooltip>
 
           <el-tooltip class="box-item" effect="dark" :content="scope.row.enabled ? 'Disabilita' : 'Riabilita'" placement="top-start">
-            <el-button :type="scope.row.enabled ? 'info' : 'success'" :icon="scope.row.enabled ? CircleCloseFilled : CircleCheckFilled" circle size="small" @click="handleToggle(scope.$index, scope.row)" />
+            <el-button :type="scope.row.enabled ? 'info' : 'success'" :icon="scope.row.enabled ? CircleCloseFilled : CircleCheckFilled" size="small" @click="handleToggle(scope.$index, scope.row)" />
           </el-tooltip>
 
           <el-popconfirm title="Resettare ed inviare nuovamente password?" @confirm="handleReset(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
-              <el-button type="success" :icon="Message" circle size="small" />  
+              <el-button type="success" :icon="Message" size="small" />  
             </template>
           </el-popconfirm>
 
           <el-popconfirm title="Sicuro di voler procedere?" @confirm="handleDelete(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
-              <el-button type="danger" :icon="Delete" circle size="small" />
+              <el-button type="danger" :icon="Delete" size="small" />
             </template>
           </el-popconfirm>
 
@@ -65,6 +65,17 @@
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
       <el-form v-if="form_action != 'read'" v-loading="form_loading" :model="user" :disabled="form_disable" label-position="top" status-icon>
+
+        <div v-if="form_action=='create'">
+          <el-alert
+            title="Avviso:"
+            type="info"
+            description="L'utente creato potrà modificare i dati inseriti dal suo Profilo."
+            show-icon
+          />
+          <br>
+      </div>
+
 
         <el-row :gutter="20">
           <el-col :span="12">
@@ -215,6 +226,13 @@ const handleUpdate = ((id, row) => {
   form_action.value  = 'update';
   form_error.value   = {};
   Object.assign(user, users.value.find((obj) => {return obj.id === row.id}));
+})
+
+const handleReset = (async(id, row) => {
+    loading.value = true;    
+    form_action.value  = 'resetpwd'; 
+    await update('resetpwd', row);
+    loading.value = false; 
 })
 
 const handleDelete = (async(id, row) => {

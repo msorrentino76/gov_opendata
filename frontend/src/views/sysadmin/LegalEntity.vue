@@ -79,6 +79,12 @@
         <el-divider />
       </div>
 
+      <div v-if="form_action=='update'">
+        <el-divider />
+          <el-button type="primary" @click="handleSelect(legal_entity)">Aggiorna da Indice PA</el-button>
+        <el-divider />
+      </div>
+
       <el-form v-if="form_action != 'history'"  v-loading="form_loading" :model="legal_entity" :disabled="form_disable" label-position="top" status-icon>
 
       <!--  

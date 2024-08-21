@@ -184,6 +184,7 @@ return [
         'surname'  => 'Cognome',
         'email'    => 'Email',
         'username' => 'Username',
+        'password' => 'Password',
         
         'data' => 'Data attività',
         'ore'  => 'Ore impiegate',

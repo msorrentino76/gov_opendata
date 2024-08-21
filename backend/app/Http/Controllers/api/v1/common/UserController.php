@@ -8,14 +8,20 @@ use Illuminate\Http\Request;
 use App\Models\User;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use App\Exceptions\ResponseException;
 
 use Carbon\Carbon;
 
+use App\Notifications\Registration;
+use App\Notifications\ResetPassword;
+
 class UserController extends Controller
 {
+    
+    private $len_pwd = 8;
     
     public function index(){
         return response(User::where(['created_by' => Auth::user()->id])->orderBy('surname')->get(), 200);
@@ -29,8 +35,7 @@ class UserController extends Controller
                 
         try {
             
-            $length           = 8;
-            $password         = bin2hex(random_bytes($length / 2));        
+            $password         = bin2hex(random_bytes($this->len_pwd / 2));        
             $data['password'] = bcrypt($password);
             
             // system:admin       -> CREA legal_entity:admin
@@ -46,13 +51,19 @@ class UserController extends Controller
             $data['created_by'] = Auth::user()->id;
             $data['enabled']    = true;
             
-            $user = User::create($data);
+            DB::beginTransaction();
+            
+            $user = User::create($data);            
+            $user->notifY(new Registration((string)$user, $data['username'], $password));
+            
+            DB::commit();
+            return $user;
             
         } catch (\Exception $e) {
-            
+            DB::rollBack();
+            Log::error('User: ' . Auth::user()->id . ' - Exception message: ' . $e->getMessage());
+            return response(['message' => 'Errore durante la creazione dell\'utente', 'error' => $e->getMessage()], 500);
         }
-
-        return $user;
         
     }
     
@@ -73,15 +84,28 @@ class UserController extends Controller
         return response(['id' => $id], 200);
     }
     
-    public function toggle(Request $request, string $id){
-        
+    public function resetPwd(Request $request, string $id) {
         $user = $this->getResourceIfOwner($id);
-        
+        $new_pwd = bin2hex(random_bytes($this->len_pwd / 2)); 
+        try {
+            DB::beginTransaction();
+            $user->password = bcrypt($new_pwd);
+            $user->update();
+            $user->notifY(new ResetPassword((string)$user, $user->username, $new_pwd));
+            DB::commit();
+            return $user;
+        } catch (Exception $ex) {
+            DB::rollBack();
+            Log::error('User: ' . Auth::user()->id . ' - Exception message: ' . $e->getMessage());
+            return response(['message' => 'Errore durante la creazione dell\'utente', 'error' => $e->getMessage()], 500);
+        }         
+    }
+    
+    public function toggle(Request $request, string $id){        
+        $user = $this->getResourceIfOwner($id);        
         $user->enabled = !$user->enabled;        
-        $user->save();
-        
-        return response($user, 200);
-        
+        $user->save();        
+        return response($user, 200);        
     }
     
     public function userActivities(string $id) {
@@ -104,7 +128,9 @@ class UserController extends Controller
                 foreach($h->meta as $row){                    
                     if($row['key'] == 'enabled'){
                         $activities[] = ['content' => ($row['new'] ? 'Riabilitato da ' : 'Disabilitato da ') . $owner, 'timestamp' => $timestamp, 'type' => $row['new'] ? 'warning' : ''];
-                    } else {
+                    } elseif($row['key'] == 'password'){
+                        $activities[] = ['content' => 'Password resettata da ' . $owner, 'timestamp' => $timestamp, 'type' => 'warning'];
+                    }else {
                         $data_update = true;                        
                     }                    
                 } 
@@ -124,7 +150,7 @@ class UserController extends Controller
         
         /*
         return [
-            ['content' => 'sdas', 'timestamp' => '2023-01-12', 'type' => 'success'],
+            ['content' => 'sdas'  , 'timestamp' => '2023-01-12', 'type' => 'success'],
             ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'primary'],
             ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'warning'],
             ['content' => 'sddsas', 'timestamp' => '2023-01-13', 'type' => 'info'],
@@ -145,7 +171,7 @@ class UserController extends Controller
                 ])->first();
         
         if(is_null($user)){
-            throw new ResponseException(response('Risorsa non trovata', 404));
+            throw new ResponseException(response('Utente non trovato', 404));
         }
         
         return $user;

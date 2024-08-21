@@ -43,9 +43,9 @@ return [
     |
     */
     'attributes_blacklist' => [
-        // \App\User::class => [
-        //     'password'
-        // ],
+        \App\User::class => [
+             'password'
+        ],
     ],
 
     /*

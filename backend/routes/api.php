@@ -65,7 +65,8 @@ Route::middleware(['auth:sanctum', 'ability:system:admin,legal_entity:admin'])->
     Route::post  ('user'         , [UserController::class, 'create']);
     Route::get   ('user/{id}'    , [UserController::class, 'read']);
     Route::put   ('user/{id}'    , [UserController::class, 'update']);
-    Route::delete('user/{id}'    , [UserController::class, 'destroy']);  
+    Route::delete('user/{id}'    , [UserController::class, 'destroy']); 
+    Route::put   ('resetpwd/{id}', [UserController::class, 'resetPwd']);
     Route::put   ('toggle/{id}'  , [UserController::class, 'toggle']);
     Route::get   ('user_activities/{id}'  , [UserController::class, 'userActivities']);    
 });
