@@ -64,7 +64,30 @@
 
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
-      <el-form v-if="form_action != 'read'" v-loading="form_loading" :model="user" :disabled="form_disable" label-position="top" status-icon>
+      <el-form 
+        ref="userForm"
+        v-if="form_action != 'read'"
+        v-loading="form_loading"
+        :model="user"
+        :rules="{
+            name: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            surname: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            username: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            email: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],        
+        }"
+        :disabled="form_disable"
+        label-position="top"
+        status-icon
+      >
 
         <div v-if="form_action=='create'">
           <el-alert
@@ -74,17 +97,16 @@
             show-icon
           />
           <br>
-      </div>
-
+        </div>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Nome" :error="form_error.name">
+            <el-form-item label="Nome" :error="form_error.name" prop="name">
               <el-input v-model="user.name" placeholder="Nome"><template #prepend><el-button :icon="User"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Cognome" :error="form_error.surname">
+            <el-form-item label="Cognome" :error="form_error.surname" prop="surname">
               <el-input v-model="user.surname" placeholder="Cognome"><template #prepend><el-button :icon="User"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -92,18 +114,20 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Username" :error="form_error.username">
+            <el-form-item label="Username" :error="form_error.username" prop="username">
               <el-input v-model="user.username" placeholder="Username"><template #prepend><el-button :icon="CreditCard"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Email" :error="form_error.email">
+            <el-form-item label="Email" :error="form_error.email" prop="email">
               <el-input v-model="user.email" placeholder="Email"><template #prepend>@</template></el-input>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-button type="success" @click="submit()">Salva</el-button>
+        <br>
+
+        <el-button type="success" @click="submit(userForm)">Salva</el-button>
 
       </el-form>
 
@@ -155,6 +179,8 @@ const loading      = ref(true);
 
 const openDrawer   = ref(false);
 const drawerTitle  = ref('');
+
+const userForm     = ref();
 
 const form_action  = ref();
 
@@ -245,37 +271,42 @@ const handleDelete = (async(id, row) => {
     loading.value = false; 
 })
 
-const submit = (async() => {
+const submit = (async(formRef) => {
 
-form_loading.value == true;
+  if (!formRef) return;
+  const val = await formRef.validate((valid) => valid);
+  if(!val) return false;
 
-if(form_action.value == 'create'){
-  let resp = await create('user', user);
-  if(resp){
-    if(resp.errors){
-      form_error.value = resp.errors;
-     //this.scrollToTop();
-    } else {
-      users.value.push(resp);     
-      openDrawer.value = false;
-    }    
-  }
-}
+  form_loading.value == true;
+  form_error.value   = {};
 
-if(form_action.value == 'update'){
-  let resp = await update('user', user);
-  if(resp){
-    if(resp.errors){
-      form_error.value = resp.errors;
+  if(form_action.value == 'create'){
+    let resp = await create('user', user);
+    if(resp){
+      if(resp.errors){
+        form_error.value = resp.errors;
       //this.scrollToTop();
-    } else {
-      users.value = users.value.map((obj) => {return obj.id == resp.id ? resp : obj});  
-      openDrawer.value = false;
-    }    
+      } else {
+        users.value.push(resp);     
+        openDrawer.value = false;
+      }    
+    }
   }
-}
 
-form_loading.value == false;
+  if(form_action.value == 'update'){
+    let resp = await update('user', user);
+    if(resp){
+      if(resp.errors){
+        form_error.value = resp.errors;
+        //this.scrollToTop();
+      } else {
+        users.value = users.value.map((obj) => {return obj.id == resp.id ? resp : obj});  
+        openDrawer.value = false;
+      }    
+    }
+  }
+
+  form_loading.value == false;
 
 })
 

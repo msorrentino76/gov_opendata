@@ -18,6 +18,9 @@ use Carbon\Carbon;
 use App\Notifications\Registration;
 use App\Notifications\ResetPassword;
 
+use Illuminate\Validation\Rule;
+use App\Rules\NoSpaces;
+
 class UserController extends Controller
 {
     
@@ -28,6 +31,13 @@ class UserController extends Controller
     }
     
     public function create(Request $request){
+        
+        $request->validate([
+            'name'     => 'required',
+            'surname'  => 'required',
+            'username' => ['required', 'unique:users', new NoSpaces],
+            'email'    => 'required|unique:users|email',
+        ]);
         
         $data = $request->only('name', 'surname', 'username', 'email');
         
@@ -72,8 +82,18 @@ class UserController extends Controller
     }
     
     public function update(Request $request, string $id){
-        $data = $request->only('name', 'surname', 'username', 'email');
+        
         $user = $this->getResourceIfOwner($id);
+        
+        $request->validate([
+            'name'     => 'required',
+            'surname'  => 'required',
+            'username' => ['required', Rule::unique('users')->ignore($user->id), new NoSpaces],
+            'email'    => ['required', Rule::unique('users')->ignore($user->id), 'email'],
+        ]);
+                
+        $data = $request->only('name', 'surname', 'username', 'email');
+        
         $user->update($data);
         return $user;
     }
