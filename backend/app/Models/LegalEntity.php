@@ -49,12 +49,20 @@ class LegalEntity extends Model
  
     protected $appends = ['full_address', 'titolare'];
     
+    public function licence() {
+        return $this->hasOne(Licence::class);
+    }
+    
     public function getFullAddressAttribute() {
          return ($this->indirizzo ?? '') . ' ' . ($this->cap ?? '') . ' ' . ($this->provincia ?? '') . ' ' . ($this->regione ?? '');
     }
     
     public function getTitolareAttribute() {
         return ($this->titolo_resp ?? '') . ' ' . ($this->cogn_resp ?? '') . ' ' . ($this->nome_resp ?? '');
+    }
+    
+    public function __toString() {
+        return $this->des_amm . ' (' . $this->cf . ')';
     }
     
     public function getModelLabel(){

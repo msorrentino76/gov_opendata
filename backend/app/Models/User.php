@@ -80,6 +80,10 @@ class User extends Authenticatable
         return is_null($last_login) ? '-' : Carbon::parse($last_login->data_ora)->locale('it')->isoFormat('D/MM/YYYY HH:mm'); //isoFormat('dddd D MMMM YYYY');
     }
     
+    public function licence() {
+        return $this->hasOne(Licence::class);
+    }
+    
     public function username(){
         return 'username';
     }

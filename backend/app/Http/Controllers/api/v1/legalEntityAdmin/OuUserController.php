@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\v1\sysAdmin;
+namespace App\Http\Controllers\api\v1\legalEntityAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 use Carbon\Carbon;
 
-class License extends Controller
+class OuUserController extends Controller
 {
 
     public function create(Request $request){

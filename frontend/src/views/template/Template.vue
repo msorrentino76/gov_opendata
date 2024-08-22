@@ -15,13 +15,13 @@
     <el-table v-loading="loading" :data="filterTableData" style="width: 100%" :height="480" empty-text="Nessun risultato trovato">
 
       <!-- FILL -->
-      <el-table-column label="Amministratore"  prop="user"  :sortable="true"/>
-      <el-table-column label="Ente"            prop="legal" :sortable="true"/>
-      <el-table-column label="Valida Da"       prop="valida_da"    />
-      <el-table-column label="Valida A"        prop="valida_a"     />
-      <el-table-column label="Giorni scadenza" prop="expired_days" />      
 
-      <el-table-column align="right">        
+      <el-table-column label="Amministrazione" prop="des_amm" :sortable="true"/>
+      <el-table-column label="Codice fiscale"  prop="cf" />
+      <el-table-column label="Indirizzo"       prop="full_address" />
+      <el-table-column label="Titolare"        prop="titolare" />
+
+      <el-table-column align="right">
 
         <template #header>
           <el-input v-model="search" size="small" placeholder="Cerca..." />
@@ -29,9 +29,9 @@
         
         <template #default="scope">
 
-          <el-button type="primary" :icon="Search"   size="small" @click="handleRead(scope.$index, scope.row)"></el-button>
-          <el-button type="warning" :icon="Edit"     size="small" @click="handleUpdate(scope.$index, scope.row)"></el-button>
-          <el-button type="info"    :icon="Notebook" size="small" @click="handleHistory(scope.$index, scope.row)"></el-button>
+          <el-button type="primary" :icon="Search"   size="small" @click="handleRead(scope.$index, scope.row)">Dettagli</el-button>
+          <el-button type="warning" :icon="Edit"     size="small" @click="handleUpdate(scope.$index, scope.row)">Modifica</el-button>
+          <el-button type="info"    :icon="Notebook" size="small" @click="handleHistory(scope.$index, scope.row)">Storico</el-button>
 
           <el-popconfirm title="Si confermadi voler procedere con la cancellazione?" @confirm="handleDelete(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
@@ -74,29 +74,7 @@
 
       <!-- FILL -->
 
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="Seleziona Utente (se assente censirlo da apposita area)" :error="form_error.user" prop="user">
-              <el-select v-model="user" placeholder="Seleziona Utente" size="large">
-                <el-option v-for="item in users_option" :key="item.id" :label="item.surname + ' ' + item.name + ' - ' + item.email" :value="item.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-row :gutter="20">
-          <el-col :span="24">
-            <el-form-item label="Seleziona Ente (se assente censirlo da apposita area)" :error="form_error.legal" prop="legal">
-              <el-select v-model="legal" placeholder="Seleziona Ente" size="large">
-                <el-option v-for="item in legals_option" :key="item.id" :label="item.des_amm + ' (CF: ' + item.cf + ')'" :value="item.id" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <br>
-
-        <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
+      <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
 
       </el-form>
 
@@ -117,20 +95,20 @@
   //import Auth from '../../store/Auth.js';
 
 const drawerTitles = {
-  onCreate: 'Aggiungi Licenza',
-  onRead:   'Dettaglio Licenza',
-  onUpdate: 'Modifica Licenza',
-  onDelete: 'Cancella Licenza',
-  onHistory:'Storico Licenza',
+  onCreate: '',
+  onRead:   '',
+  onUpdate: '',
+  onDelete: '',
+  onHistory:'',
 };
 
 const endpoints = {
-  onList:   'sys_admin/licences',
-  onCreate: 'sys_admin/licence',
-  onRead:   'sys_admin/licence',
-  onUpdate: 'sys_admin/licence',
-  onDelete: 'sys_admin/licence',
-  onHistory:'sys_admin/licence_activities',
+  onList:   '',
+  onCreate: '',
+  onRead:   '',
+  onUpdate: '',
+  onDelete: '',
+  onHistory:'',
 };
 
 const objModels = ref([]);
@@ -154,18 +132,14 @@ const form_error   = ref({});
 const activities_loading = ref(false);
 const activities = ref([]);
 
-const users_option  = ref([]);
-const legals_option = ref([]);
-
-const user  = ref({});
-const legal = ref({});
-
 const filterTableData = computed(() =>
 objModels.value.filter(
     (data) =>
       !search.value ||
-      data.user.toLowerCase().includes(search.value.toLowerCase()) ||
-      data.legal.toLowerCase().includes(search.value.toLowerCase())
+      data.surname.toLowerCase().includes(search.value.toLowerCase()) ||
+      data.name.toLowerCase().includes(search.value.toLowerCase())    ||
+      data.username.toLowerCase().includes(search.value.toLowerCase())    ||
+      data.email.toLowerCase().includes(search.value.toLowerCase())
   )
 )
 
@@ -271,18 +245,13 @@ onMounted(async ()=>{
   if(resp && !resp.errors){
     objModels.value = resp;
   }
-  let resp1 = await list('sys_admin/available');
-  if(resp1 && !resp1.errors){
-    users_option.value  = resp1.users;
-    legals_option.value = resp1.legals;
-  }
   loading.value = false;
 })
 
 onUnmounted(()=>{});
 
   defineComponent({
-      name: 'LicenceView',
+      name: 'TemplateView',
   })
 
 </script>

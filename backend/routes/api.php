@@ -12,6 +12,7 @@ use App\Http\Controllers\api\v1\common\DocumentController;
 use App\Http\Controllers\api\v1\common\UserController;
 
 use App\Http\Controllers\api\v1\sysAdmin\LegalEntityController;
+use App\Http\Controllers\api\v1\sysAdmin\LicenseController;
 use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
 /*
@@ -86,4 +87,12 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::get   ('log/{filename}', [LogsController::class, 'content']);
     Route::delete('log/{filename}', [LogsController::class, 'delete']);
     
+    Route::get   ('licences'        , [LicenseController::class, 'index']);
+    Route::get   ('available'       , [LicenseController::class, 'available']); 
+    Route::post  ('licence'         , [LicenseController::class, 'create']);
+    Route::get   ('licence/{id}'    , [LicenseController::class, 'read']);
+    Route::put   ('licence/{id}'    , [LicenseController::class, 'update']);
+    Route::delete('licence/{id}'    , [LicenseController::class, 'destroy']);    
+    Route::get   ('licence_activities/{id}'  , [LegalEntityController::class, 'licenceActivities']);
+        
 });
