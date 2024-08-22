@@ -51,7 +51,7 @@
         ref="formModel"
         v-if="form_action != 'read'"
         v-loading="form_loading"
-        :model="user"
+        :model="objModel"
         :rules="{}/*{
             name: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
@@ -77,6 +77,29 @@
       <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
 
       </el-form>
+
+      <template v-if="form_action == 'read'">
+
+        <el-descriptions border>
+          <el-descriptions-item label="Username: ">{{ user.username }}</el-descriptions-item>
+          <el-descriptions-item label="Email: ">{{ user.email }}</el-descriptions-item>
+          <el-descriptions-item label="Utente: ">{{ user.name }} {{ user.surname }}</el-descriptions-item>
+        </el-descriptions>
+
+        <br><br><br>
+
+        <el-timeline v-loading="activities_loading">
+          <el-timeline-item
+            v-for="(activity, index) in activities"
+            :key="index"
+            :timestamp="activity.timestamp"
+            :type="activity.type"
+          >
+            {{ activity.content }}
+          </el-timeline-item>
+        </el-timeline>
+
+      </template>
 
     </el-drawer>
 

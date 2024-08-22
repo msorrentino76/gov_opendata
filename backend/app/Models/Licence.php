@@ -41,7 +41,8 @@ class Licence extends Model
     public function getExpiredDaysAttribute() {
         $date  = Carbon::createFromFormat('Y-m-d H:i:s', $this->getRawOriginal('valida_a'));
         $today = Carbon::now();
-        return $today->diffInDays($date);
+        $d = $today->diffInDays($date);
+        return $d <= 0 ? 0 : $d;
     }
     
     public function getValidaDaAttribute($value) {

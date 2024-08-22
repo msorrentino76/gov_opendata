@@ -29,13 +29,12 @@
         
         <template #default="scope">
 
-          <el-button type="primary" :icon="Search"   size="small" @click="handleRead(scope.$index, scope.row)"></el-button>
-          <el-button type="warning" :icon="Edit"     size="small" @click="handleUpdate(scope.$index, scope.row)"></el-button>
-          <el-button type="info"    :icon="Notebook" size="small" @click="handleHistory(scope.$index, scope.row)"></el-button>
+          <el-button type="primary" :icon="Search"   size="small" @click="handleRead(scope.$index, scope.row)">Dettagli</el-button>
+          <el-button type="warning" :icon="Edit"     size="small" @click="handleUpdate(scope.$index, scope.row)">Modifica</el-button>
 
           <el-popconfirm title="Si confermadi voler procedere con la cancellazione?" @confirm="handleDelete(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
-              <el-button type="danger" :icon="Delete" size="small"></el-button>  
+              <el-button type="danger" :icon="Delete" size="small">Cancella</el-button>  
             </template>
           </el-popconfirm>
 
@@ -49,9 +48,8 @@
 
       <el-form 
         ref="formModel"
-        v-if="form_action != 'read'"
         v-loading="form_loading"
-        :model="user"
+        :model="objModel"
         :rules="{}/*{
             name: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
@@ -77,8 +75,8 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="Seleziona Utente (se assente censirlo da apposita area)" :error="form_error.user" prop="user">
-              <el-select v-model="user" placeholder="Seleziona Utente" size="large">
-                <el-option v-for="item in users_option" :key="item.id" :label="item.surname + ' ' + item.name + ' - ' + item.email" :value="item.id" />
+              <el-select v-model="objModel.user" placeholder="Seleziona Utente" :disabled="form_action=='update'">
+                <el-option v-for="item in users_option" :key="item.id" :label="item.surname + ' ' + item.name + ' - ' + item.email " :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -87,18 +85,45 @@
         <el-row :gutter="20">
           <el-col :span="24">
             <el-form-item label="Seleziona Ente (se assente censirlo da apposita area)" :error="form_error.legal" prop="legal">
-              <el-select v-model="legal" placeholder="Seleziona Ente" size="large">
+              <el-select v-model="objModel.legal" placeholder="Seleziona Ente" :disabled="form_action=='update'">
                 <el-option v-for="item in legals_option" :key="item.id" :label="item.des_amm + ' (CF: ' + item.cf + ')'" :value="item.id" />
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <br>
+        <el-date-picker
+          v-model="licenceValideTime"
+          type="daterange"
+          unlink-panels
+          range-separator="fino"
+          start-placeholder="Valida da"
+          end-placeholder="Valida a"
+          :shortcuts="shortcuts"
+          format="DD/MM/YYYY"
+          value-format="DD/MM/YYYY"
+        />
 
-        <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
+        <br><br>
+
+        <el-button v-if="form_action != 'read'" type="success" @click="submit(formModel)">Salva</el-button>
 
       </el-form>
+
+      <br><br><br>
+
+      <template v-if="form_action == 'read'">
+        <el-timeline v-loading="activities_loading">
+          <el-timeline-item
+            v-for="(activity, index) in activities"
+            :key="index"
+            :timestamp="activity.timestamp"
+            :type="activity.type"
+          >
+            {{ activity.content }}
+          </el-timeline-item>
+        </el-timeline>
+      </template>
 
     </el-drawer>
 
@@ -110,9 +135,9 @@
 
   import {ref, reactive, computed, onMounted, onUnmounted, defineComponent} from 'vue';
 
-  import {Plus, Search, Edit, Delete, Notebook /*, User, CreditCard, , CircleCloseFilled, CircleCheckFilled, Message*/} from '@element-plus/icons-vue'
+  import {Plus, Search, Edit, Delete/*, User, CreditCard, , CircleCloseFilled, CircleCheckFilled, Message*/} from '@element-plus/icons-vue'
 
-  import {list, create, read, update, del} from '../../utils/service.js';
+  import {list, read, del} from '../../utils/service.js';
 
   //import Auth from '../../store/Auth.js';
 
@@ -157,8 +182,37 @@ const activities = ref([]);
 const users_option  = ref([]);
 const legals_option = ref([]);
 
-const user  = ref({});
-const legal = ref({});
+const licenceValideTime = ref([]);
+
+const shortcuts = [
+  {
+    text: '+ 3 mesi',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      end.setTime(start.getTime() + 3600 * 1000 * 24 * 90)
+      return [start, end]
+    },
+  },
+  {
+    text: '+ 6 mesi',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      end.setTime(start.getTime() + 3600 * 1000 * 24 * 180)
+      return [start, end]
+    },
+  },
+  {
+    text: '+ 12 mesi',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      end.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
+      return [start, end]
+    },
+  },
+]
 
 const filterTableData = computed(() =>
 objModels.value.filter(
@@ -176,15 +230,28 @@ const handleCreate = (() => {
   form_action.value  = 'create';
   form_error.value   = {};
   Object.keys(objModel).forEach(key => { objModel[key] = ''; })
+  licenceValideTime.value = [];
 })
 
-const handleRead = ((id, row) => {
+const handleRead = (async(id, row) => {
   openDrawer.value   = true;
   drawerTitle.value  = drawerTitles.onRead;
   form_disable.value = true;
   form_action.value  = 'read';
   form_error.value   = {};
   Object.assign(objModel, objModels.value.find((obj) => {return obj.id === row.id}));
+  licenceValideTime.value = [objModel.valida_da, objModel.valida_a];
+
+  activities_loading.value = true;
+  activities.value = [];
+  let resp = await read(endpoints.onHistory, objModel.id);
+  if(resp){
+    if(!resp.errors){
+      activities.value = resp;
+    }    
+  }
+  activities_loading.value = false;
+
 })
 
 const handleUpdate = ((id, row) => {
@@ -194,6 +261,7 @@ const handleUpdate = ((id, row) => {
   form_action.value  = 'update';
   form_error.value   = {};
   Object.assign(objModel, objModels.value.find((obj) => {return obj.id === row.id}));
+  licenceValideTime.value = [objModel.valida_da, objModel.valida_a];
 })
 
 const handleDelete = (async(id, row) => {
@@ -208,6 +276,13 @@ const handleDelete = (async(id, row) => {
 
 const submit = (async(formRef) => {
 
+  objModel.valida_da = licenceValideTime.value[0];
+  objModel.valida_a  = licenceValideTime.value[1];
+    
+  console.log('submit', objModel, licenceValideTime.value, formRef)
+  return;
+  
+  /*
 if (!formRef) return;
 const val = await formRef.validate((valid) => valid);
 if(!val) return false;
@@ -242,27 +317,7 @@ if(form_action.value == 'update'){
 }
 
 form_loading.value == false;
-
-})
-
-const handleHistory = (async(id, row) => {
-  openDrawer.value  = true;
-  drawerTitle.value = drawerTitles.onHistory;
-  form_disable.value = false;
-  form_action.value  = 'history';
-  form_error.value   = {};
-  Object.assign(objModel, objModels.value.find((obj) => {return obj.id === row.id}));
-
-  activities_loading.value = true;
-  activities.value = [];
-  let resp = await read(endpoints.onHistory, objModel.id);
-  if(resp){
-    if(!resp.errors){
-      activities.value = resp;
-    }    
-  }
-  activities_loading.value = false;
-
+*/
 })
 
 onMounted(async ()=>{
