@@ -211,7 +211,10 @@ return [
         'cogn_resp' => 'Cognome Responsabile',
         'tipologia' => 'Tipologia',
         'categoria' => 'Categoria',
-
+        
+        'valida_a'  => 'Data inizio licenza',
+        'valida_da' => 'Data fine licenza',
+        
     ],
 
 ];

@@ -72,7 +72,12 @@ class AuthController extends Controller
             
             $user->tokens()->delete();
          
-            return ['user' => $user, 'token' => $user->createToken($request->username, json_decode($user->abilities))->plainTextToken];
+            if($user->enabled)
+            
+            return [
+                'user' => $user,
+                'licence_for' => $user->notExpiredLicenceFor(),
+                'token' => $user->createToken($request->username, json_decode($user->abilities))->plainTextToken];
             
         }
 

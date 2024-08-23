@@ -3,11 +3,10 @@ import createPersistedState from 'vuex-persistedstate';
 
 export default createStore({
     state: {
-      logged: false,
-      token : null,
-      user  : null,
-      data_filter: false,
-      data_filter_quote: false,
+      logged  : false,
+      token   : null,
+      user    : null,
+      licence : null,
       config: {
         applicationBaseURL: 'http://localhost/gestione_utenti/backend/public',
       }
@@ -15,25 +14,22 @@ export default createStore({
     mutations: {
       login(state, data) {
         data.user.abilities = JSON.parse(data.user.abilities);
-        state.logged = true;
-        state.token  = data.token;
-        state.user   = data.user;
+        state.logged  = true;
+        state.token   = data.token;
+        state.user    = data.user;
+        state.licence = data.licence_for;
       },
       logout(state) {
-        state.logged = false;
-        state.token  = null;
-        state.user   = null;
-        state.data_filter = false;
-        state.data_filter_quote = false;
+        state.logged  = false;
+        state.token   = null;
+        state.user    = null;
+        state.licence = null;
       },
       updateUser(state, user) {
         state.user   = user;
       },
-      setDataFilter(state, data_filter) {
-        state.data_filter = data_filter;
-      },
-      setDataFilterQuote(state, data_filter_quote) {
-        state.data_filter_quote = data_filter_quote;
+      updateLicence(state, licence) {
+        state.licence = licence;
       },
     },    
     plugins: [createPersistedState()]

@@ -93,6 +93,6 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::get   ('licence/{id}'    , [LicenseController::class, 'read']);
     Route::put   ('licence/{id}'    , [LicenseController::class, 'update']);
     Route::delete('licence/{id}'    , [LicenseController::class, 'destroy']);    
-    Route::get   ('licence_activities/{id}'  , [LegalEntityController::class, 'licenceActivities']);
+    Route::get   ('licence_activities/{id}'  , [LicenseController::class, 'licenceActivities']);
         
 });

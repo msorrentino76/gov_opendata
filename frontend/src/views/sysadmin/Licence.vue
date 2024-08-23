@@ -12,7 +12,7 @@
 
     <br>
 
-    <el-table v-loading="loading" :data="filterTableData" style="width: 100%" :height="480" empty-text="Nessun risultato trovato">
+    <el-table v-loading="loading" :data="filterTableData" style="width: 100%" :height="480" empty-text="Nessun risultato trovato" :row-class-name="tableRowClassName">
 
       <!-- FILL -->
       <el-table-column label="Amministratore"  prop="user"  :sortable="true"/>
@@ -34,7 +34,7 @@
 
           <el-popconfirm title="Si confermadi voler procedere con la cancellazione?" @confirm="handleDelete(scope.$index, scope.row)" confirm-button-text="Si">
             <template #reference>
-              <el-button type="danger" :icon="Delete" size="small">Cancella</el-button>  
+              <el-button type="danger" :icon="Delete" size="small"></el-button>  
             </template>
           </el-popconfirm>
 
@@ -92,17 +92,34 @@
           </el-col>
         </el-row>
 
-        <el-date-picker
-          v-model="licenceValideTime"
-          type="daterange"
-          unlink-panels
-          range-separator="fino"
-          start-placeholder="Valida da"
-          end-placeholder="Valida a"
-          :shortcuts="shortcuts"
-          format="DD/MM/YYYY"
-          value-format="DD/MM/YYYY"
-        />
+        <el-row :gutter="20">
+
+          <el-col :span="12">
+            <el-form-item label="Data inizio licenza" :error="form_error.legal" prop="legal">
+              <el-date-picker
+                v-model="objModel.valida_da"
+                type="date"
+                placeholder="Data inizio licenza"
+                format="DD/MM/YYYY"
+                value-format="DD/MM/YYYY"
+              />
+            </el-form-item>  
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="Data fine licenza" :error="form_error.legal" prop="legal">
+              <el-date-picker
+                v-model="objModel.valida_a"
+                type="date"
+                placeholder="Data fine licenza"
+                format="DD/MM/YYYY"
+                value-format="DD/MM/YYYY"
+                :shortcuts="shortcuts"
+              />
+            </el-form-item>
+          </el-col>
+
+        </el-row>
 
         <br><br>
 
@@ -137,7 +154,7 @@
 
   import {Plus, Search, Edit, Delete/*, User, CreditCard, , CircleCloseFilled, CircleCheckFilled, Message*/} from '@element-plus/icons-vue'
 
-  import {list, read, del} from '../../utils/service.js';
+  import {list, create, read, update, del} from '../../utils/service.js';
 
   //import Auth from '../../store/Auth.js';
 
@@ -182,34 +199,29 @@ const activities = ref([]);
 const users_option  = ref([]);
 const legals_option = ref([]);
 
-const licenceValideTime = ref([]);
-
 const shortcuts = [
   {
-    text: '+ 3 mesi',
+    text: '+ 90 giorni',
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      end.setTime(start.getTime() + 3600 * 1000 * 24 * 90)
-      return [start, end]
+      const date = new Date()
+      date.setTime(date.getTime() + 3600 * 1000 * 24 * 90)
+      return date;
     },
   },
   {
-    text: '+ 6 mesi',
+    text: '+ 180 giorni',
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      end.setTime(start.getTime() + 3600 * 1000 * 24 * 180)
-      return [start, end]
+      const date = new Date()
+      date.setTime(date.getTime() + 3600 * 1000 * 24 * 180)
+      return date;
     },
   },
   {
-    text: '+ 12 mesi',
+    text: '+ 365 giorni',
     value: () => {
-      const end = new Date()
-      const start = new Date()
-      end.setTime(start.getTime() - 3600 * 1000 * 24 * 365)
-      return [start, end]
+      const date = new Date()
+      date.setTime(date.getTime() + 3600 * 1000 * 24 * 365)
+      return date;
     },
   },
 ]
@@ -223,14 +235,25 @@ objModels.value.filter(
   )
 )
 
-const handleCreate = (() => {
+const handleCreate = (async() => {
+  
   openDrawer.value   = true;
   drawerTitle.value  = drawerTitles.onCreate;
   form_disable.value = false;
   form_action.value  = 'create';
   form_error.value   = {};
   Object.keys(objModel).forEach(key => { objModel[key] = ''; })
-  licenceValideTime.value = [];
+
+  form_loading.value = true;
+
+  let resp1 = await list('sys_admin/available');
+  if(resp1 && !resp1.errors){
+    users_option.value  = resp1.users;
+    legals_option.value = resp1.legals;
+  }
+  
+  form_loading.value = false;
+
 })
 
 const handleRead = (async(id, row) => {
@@ -240,7 +263,6 @@ const handleRead = (async(id, row) => {
   form_action.value  = 'read';
   form_error.value   = {};
   Object.assign(objModel, objModels.value.find((obj) => {return obj.id === row.id}));
-  licenceValideTime.value = [objModel.valida_da, objModel.valida_a];
 
   activities_loading.value = true;
   activities.value = [];
@@ -261,7 +283,6 @@ const handleUpdate = ((id, row) => {
   form_action.value  = 'update';
   form_error.value   = {};
   Object.assign(objModel, objModels.value.find((obj) => {return obj.id === row.id}));
-  licenceValideTime.value = [objModel.valida_da, objModel.valida_a];
 })
 
 const handleDelete = (async(id, row) => {
@@ -275,18 +296,14 @@ const handleDelete = (async(id, row) => {
 })
 
 const submit = (async(formRef) => {
-
-  objModel.valida_da = licenceValideTime.value[0];
-  objModel.valida_a  = licenceValideTime.value[1];
     
-  console.log('submit', objModel, licenceValideTime.value, formRef)
-  return;
+  console.log('submit', objModel, formRef)
   
   /*
 if (!formRef) return;
 const val = await formRef.validate((valid) => valid);
 if(!val) return false;
-
+*/
 form_loading.value == true;
 form_error.value   = {};
 
@@ -317,19 +334,58 @@ if(form_action.value == 'update'){
 }
 
 form_loading.value == false;
-*/
+
 })
+
+const tableRowClassName = ({row}) => {
+  let giorni_totali    = calculateDateDifference(row.valida_da, row.valida_a);
+  let giorni_trascorsi = calculateDateDifference(row.valida_da, todayIt());
+  let giorni_residui   = giorni_totali - giorni_trascorsi;
+  let perc_residui     = Math.ceil((giorni_residui / giorni_totali) * 100);
+  console.log(giorni_totali, giorni_trascorsi, perc_residui);
+  if(perc_residui <= 10) return 'danger-row';
+  if(perc_residui <= 25) return 'warning-row';
+}
+
+const calculateDateDifference = (date1, date2) =>{
+      const [day1, month1, year1] = date1.split('/').map(Number);
+      const [day2, month2, year2] = date2.split('/').map(Number);
+
+      const d1 = new Date(year1, month1 - 1, day1);
+      const d2 = new Date(year2, month2 - 1, day2);
+
+      // Differenza in millisecondi
+      const diffInMs = d2 - d1;
+
+      // Converti la differenza in giorni
+      return Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+    }
+
+const todayIt = () => {
+  const today = new Date();
+
+  // Estrarre giorno, mese e anno
+  let day = today.getDate();
+  let month = today.getMonth() + 1; // I mesi partono da 0, quindi aggiungiamo 1
+  const year = today.getFullYear();
+
+  // Aggiungi uno 0 davanti a giorno e mese se sono a una cifra
+  if (day < 10) {
+    day = '0' + day;
+  }
+
+  if (month < 10) {
+    month = '0' + month;
+  }
+
+  return `${day}/${month}/${year}`;
+}
 
 onMounted(async ()=>{
   loading.value = true;
   let resp = await list(endpoints.onList);
   if(resp && !resp.errors){
     objModels.value = resp;
-  }
-  let resp1 = await list('sys_admin/available');
-  if(resp1 && !resp1.errors){
-    users_option.value  = resp1.users;
-    legals_option.value = resp1.legals;
   }
   loading.value = false;
 })
@@ -341,3 +397,15 @@ onUnmounted(()=>{});
   })
 
 </script>
+
+<style>
+.el-table .danger-row {
+  --el-table-tr-bg-color: var(--el-color-danger-light-9);
+}
+.el-table .warning-row {
+  --el-table-tr-bg-color: var(--el-color-warning-light-9);
+}
+.el-table .success-row {
+  --el-table-tr-bg-color: var(--el-color-success-light-9);
+}
+</style>

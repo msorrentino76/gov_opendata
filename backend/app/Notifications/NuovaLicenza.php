@@ -9,22 +9,20 @@ use Illuminate\Notifications\Notification;
 
 use Illuminate\Support\HtmlString;
 
-class Registration extends Notification
+class NuovaLicenza extends Notification
 {
     use Queueable;
 
     private $subject;
-    private $username;
-    private $password;
+    private $licence;
     
     /**
      * Create a new notification instance.
      */
-    public function __construct($subject, $username, $password)
+    public function __construct($subject, $licence)
     {
-        $this->subject  = $subject;
-        $this->username = $username;
-        $this->password = $password;
+        $this->subject = $subject;
+        $this->licence = $licence;
     }
 
     /**
@@ -43,13 +41,10 @@ class Registration extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                ->subject('Registrazione su ' . config('app.name'))
-                ->greeting('Benvenuto ' . $this->subject)
-                ->line('è stato registrato con successo al sistema ' . config('app.name') . '.') 
-                ->line('Le Sue credenziali di accesso al sistema sono:')
-                ->line(new HtmlString('Username: <b>' . $this->username . '</b>'))
-                ->line(new HtmlString('Password: <b>' . $this->password . '</b>'))
-                ->line(new HtmlString('<u>Si ricordi di cambiarla al primo accesso dal tuo Profilo.</u>'))
+                ->greeting('Gentile ' . $this->subject)
+                ->line('è stata attivata la Sua licenza su ' . config('app.name') . ' pertinente a:') 
+                ->line(new HtmlString('<b>' . $this->licence->legal . '</b>'))
+                ->line(new HtmlString('Il periodo di licenza andrà dal <b>' . $this->licence->valida_da . '</b> al <b>' . $this->licence->valida_a . '</b>'))
                 ->action('Accedi', config('app.url'));
     }
 

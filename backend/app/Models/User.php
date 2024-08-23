@@ -49,6 +49,7 @@ class User extends Authenticatable
         'created_at',
         'updated_at',
         'created_by',
+        //'licence'
     ];
 
     protected $appends = ['last_login']; 
@@ -68,11 +69,11 @@ class User extends Authenticatable
     ];
     
     public function getCreatedAtAttribute($value) {
-        return Carbon::parse($value)->locale('it')->isoFormat('D/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
+        return Carbon::parse($value)->locale('it')->isoFormat('DD/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
     }
     
     public function getUpdatedAtAttribute($value) {
-        return Carbon::parse($value)->locale('it')->isoFormat('D/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
+        return Carbon::parse($value)->locale('it')->isoFormat('DD/MM/YYYY'); //isoFormat('dddd D MMMM YYYY');
     }
     
     public function getLastLoginAttribute() {
@@ -82,6 +83,15 @@ class User extends Authenticatable
     
     public function licence() {
         return $this->hasOne(Licence::class);
+    }
+    
+    public function notExpiredLicenceFor() {
+        $licence =  $this->licence;
+        if(is_null($licence)) return null;
+        $expired_at = Carbon::createFromFormat('d/m/Y', $licence->valida_a);
+        $today      = Carbon::today();
+        if( $today->greaterThan($expired_at) ) return null;
+        return $licence->legalEntity();
     }
     
     public function username(){
