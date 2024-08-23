@@ -212,6 +212,8 @@ return [
         'tipologia' => 'Tipologia',
         'categoria' => 'Categoria',
 
+        'user'   => 'Utente',
+        'legal'  => 'Ente',
         'valida_a'  => 'Data inizio licenza',
         'valida_da' => 'Data fine licenza',
         

@@ -51,18 +51,17 @@
         v-loading="form_loading"
         :model="objModel"
         :rules="{}/*{
-            name: [
+            user: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
             ],
-            surname: [
+            legal: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
             ],
-            username: [
+            valida_da: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
             ],
-            email: [
+            valida_a: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
             ],        
         }*/"
         :disabled="form_disable"
@@ -95,7 +94,7 @@
         <el-row :gutter="20">
 
           <el-col :span="12">
-            <el-form-item label="Data inizio licenza" :error="form_error.legal" prop="legal">
+            <el-form-item label="Data inizio licenza" :error="form_error.valida_da" prop="valida_da">
               <el-date-picker
                 v-model="objModel.valida_da"
                 type="date"
@@ -107,7 +106,7 @@
           </el-col>
 
           <el-col :span="12">
-            <el-form-item label="Data fine licenza" :error="form_error.legal" prop="legal">
+            <el-form-item label="Data fine licenza" :error="form_error.valida_a" prop="valida_a">
               <el-date-picker
                 v-model="objModel.valida_a"
                 type="date"
@@ -297,13 +296,10 @@ const handleDelete = (async(id, row) => {
 
 const submit = (async(formRef) => {
     
-  console.log('submit', objModel, formRef)
-  
-  /*
 if (!formRef) return;
 const val = await formRef.validate((valid) => valid);
 if(!val) return false;
-*/
+
 form_loading.value == true;
 form_error.value   = {};
 

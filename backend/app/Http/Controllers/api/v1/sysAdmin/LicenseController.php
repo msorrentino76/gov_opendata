@@ -35,6 +35,13 @@ class LicenseController extends Controller
     
     public function create(Request $request){
         
+        $request->validate([
+            'user'   => 'required|exists:users,id',
+            'legal'  => 'required|exists:legal_entities,id',
+            'valida_da' => 'required|date_format:d/m/Y',
+            'valida_a'  => 'required|date_format:d/m/Y',
+        ]);
+        
         $data = $request->only('user', 'legal', 'valida_da', 'valida_a');
 
         $save['user_id']         = $data['user'];
@@ -42,6 +49,18 @@ class LicenseController extends Controller
         $save['valida_da']       = Carbon::createFromFormat('d/m/Y', $data['valida_da'])->format('Y-m-d H:i:s');
         $save['valida_a']        = Carbon::createFromFormat('d/m/Y', $data['valida_a'])->format('Y-m-d H:i:s');
 
+        if($save['valida_a'] <= $save['valida_da']) {
+            return response()->json([
+                'errors' => ['valida_a' => 'La Data di fine licenza deve essere successiva rispetto la Data di Inizio Licenza'],
+            ], 422); 
+        }
+        
+        if($save['valida_a'] <= now()) {
+            return response()->json([
+                'errors' => ['valida_a' => 'La Data di fine licenza deve essere successiva rispetto la odierna'],
+            ], 422); 
+        }
+        
         try {
             
             $user = User::findOrFail($save['user_id']);
@@ -78,6 +97,13 @@ class LicenseController extends Controller
     
     public function update(Request $request, string $id){
         
+        $request->validate([
+            //'user'   => 'required|exists:users,id',
+            //'legal'  => 'required|exists:legal_entities,id',
+            'valida_da' => 'required|date_format:d/m/Y',
+            'valida_a'  => 'required|date_format:d/m/Y',
+        ]);
+        
         try {
             $licence = Licence::findOrFail($id);
         } catch (ModelNotFoundException $e) {
@@ -93,6 +119,18 @@ class LicenseController extends Controller
         $save['valida_da']       = Carbon::createFromFormat('d/m/Y', $data['valida_da'])->format('Y-m-d H:i:s');
         $save['valida_a']        = Carbon::createFromFormat('d/m/Y', $data['valida_a'])->format('Y-m-d H:i:s');
 
+        if($save['valida_a'] <= $save['valida_da']) {
+            return response()->json([
+                'errors' => ['valida_a' => 'La Data di fine licenza deve essere successiva rispetto la Data di Inizio Licenza'],
+            ], 422); 
+        }
+        
+        if($save['valida_a'] <= now()) {
+            return response()->json([
+                'errors' => ['valida_a' => 'La Data di fine licenza deve essere successiva rispetto la odierna'],
+            ], 422); 
+        }
+        
         try {
             
             $user = User::findOrFail($licence->user_id);
