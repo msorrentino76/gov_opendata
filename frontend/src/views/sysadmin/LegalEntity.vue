@@ -61,7 +61,6 @@
 
     <div style="padding: 16px 0 16px 0;">Risultati: {{ filterTableData.length }}</div>    
 
-
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
       <div v-if="form_action=='create'">

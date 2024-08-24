@@ -18,6 +18,9 @@ import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
 import LicenceView          from './views/sysadmin/Licence.vue';
 import SystemLogView        from './views/sysadmin/SystemLog.vue';
 
+import LeAdminDashboardView  from './views/legaladmin/Dashboard.vue';
+import OUView                from './views/legaladmin/OU.vue';
+
 import auth from './store/Auth.js'; 
 
 const routes = [
@@ -26,6 +29,10 @@ const routes = [
     { path: '/sysadmin/legal_entity'       , component: LegalEntityView },
     { path: '/sysadmin/licence'            , component: LicenceView },
     { path: '/sysadmin/logs'               , component: SystemLogView },
+
+    { path: '/le_admin'                    , component: LeAdminDashboardView },
+    { path: '/le_admin/ou'                 , component: OUView },
+
   ];
   
   const router = createRouter({
