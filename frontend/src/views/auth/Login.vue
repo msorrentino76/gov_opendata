@@ -40,7 +40,7 @@
     const router = useRouter();
 
     const formData = ref([]);
-    const action   = ref([]);
+    const action   = ref('');
     const formLoading = ref(false);
     const errorsForm = ref({});
 

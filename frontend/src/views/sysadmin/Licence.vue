@@ -45,7 +45,7 @@
     </el-table>
 
     <div style="padding: 16px 0 16px 0;">Risultati: {{ filterTableData.length }}</div> 
-    
+
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
       <el-form 
@@ -190,7 +190,7 @@ const formModel    = ref();
 
 const form_action  = ref();
 
-const form_loading = ref('');
+const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
 
@@ -302,7 +302,7 @@ if (!formRef) return;
 const val = await formRef.validate((valid) => valid);
 if(!val) return false;
 
-form_loading.value == true;
+form_loading.value = true;
 form_error.value   = {};
 
 if(form_action.value == 'create'){
@@ -331,7 +331,7 @@ if(form_action.value == 'update'){
   }
 }
 
-form_loading.value == false;
+form_loading.value = false;
 
 })
 
@@ -340,7 +340,7 @@ const tableRowClassName = ({row}) => {
   let giorni_trascorsi = calculateDateDifference(row.valida_da, todayIt());
   let giorni_residui   = giorni_totali - giorni_trascorsi;
   let perc_residui     = Math.ceil((giorni_residui / giorni_totali) * 100);
-  console.log(giorni_totali, giorni_trascorsi, perc_residui);
+  //console.log(giorni_totali, giorni_trascorsi, perc_residui);
   if(perc_residui <= 10) return 'danger-row';
   if(perc_residui <= 25) return 'warning-row';
 }

@@ -31,9 +31,12 @@
             if($h->message == 'UPDATE') {
                 $extra_content = [];
                 foreach($h->meta as $row){
-                    $key = __('validation.attributes.' . $row['key']);
-                    $extra_content[] = "$key da: '{$row['old']}' a '{$row['new']}'";
+                    if(!empty($row['old']) && !empty($row['new'])){
+                        $key = __('validation.attributes.' . $row['key']);
+                        $extra_content[] = "$key da: '{$row['old']}' a '{$row['new']}'";
+                    }
                 }
+                if(!empty($extra_content))
                 $activities[] = ['content' => 'Modificato da ' . $owner . ': ' . implode(' - ', $extra_content), 'timestamp' => $timestamp, 'type' => 'primary'];
             }
         }

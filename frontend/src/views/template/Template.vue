@@ -148,7 +148,7 @@ const formModel    = ref();
 
 const form_action  = ref();
 
-const form_loading = ref('');
+const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
 
@@ -209,7 +209,7 @@ if (!formRef) return;
 const val = await formRef.validate((valid) => valid);
 if(!val) return false;
 
-form_loading.value == true;
+form_loading.value = true;
 form_error.value   = {};
 
 if(form_action.value == 'create'){
@@ -238,7 +238,7 @@ if(form_action.value == 'update'){
   }
 }
 
-form_loading.value == false;
+form_loading.value = false;
 
 })
 

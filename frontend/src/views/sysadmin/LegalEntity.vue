@@ -293,7 +293,7 @@ const drawerTitle  = ref('');
 
 const form_action  = ref();
 
-const form_loading = ref('');
+const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
 
@@ -373,7 +373,7 @@ const handleDelete = (async(id, row) => {
 
 const submit = (async() => {
 
-  form_loading.value == true;
+  form_loading.value = true;
 
   if(form_action.value == 'create'){
     let resp = await create('sys_admin/legal', legal_entity);
@@ -401,7 +401,7 @@ const submit = (async() => {
     }
   }
 
-  form_loading.value == false;
+  form_loading.value = false;
 
 })
 

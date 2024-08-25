@@ -15,7 +15,7 @@
 
       <el-button @click="setMode('profile')"      :icon="UserFilled" round>Profilo</el-button>
 
-      <!--el-button @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button-->
+      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
       
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
@@ -42,11 +42,13 @@
   import {ref, defineProps, defineComponent, onMounted, onBeforeUnmount } from 'vue';
   import {list, revoke} from '../utils/service.js'; 
 
-  import {/*Expand,*/ UserFilled, BellFilled /*, HelpFilled*/, SwitchButton } from '@element-plus/icons-vue';
+  import {/*Expand,*/ UserFilled, BellFilled, HelpFilled, SwitchButton } from '@element-plus/icons-vue';
 
   import ProfiloView from '../views/common/Profilo.vue';
   import NotificheView from '../views/common/Notifiche.vue';
   import AssistenzaView from '../views/common/Assistenza.vue';
+
+  import Auth from '../store/Auth.js';
 
   const openDrawer    = ref(false);
   const mode          = ref('');

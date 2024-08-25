@@ -184,7 +184,7 @@ const userForm     = ref();
 
 const form_action  = ref();
 
-const form_loading = ref('');
+const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
 
@@ -277,7 +277,7 @@ const submit = (async(formRef) => {
   const val = await formRef.validate((valid) => valid);
   if(!val) return false;
 
-  form_loading.value == true;
+  form_loading.value = true;
   form_error.value   = {};
 
   if(form_action.value == 'create'){
@@ -306,7 +306,7 @@ const submit = (async(formRef) => {
     }
   }
 
-  form_loading.value == false;
+  form_loading.value = false;
 
 })
 
