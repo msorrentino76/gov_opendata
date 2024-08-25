@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(LegalEntity::class)->constrained();
             
             $table->string('cod_amm')->nullable();
-            $table->string('cod_uni_ou')->nullable()->unique();
+            $table->string('cod_uni_ou')->nullable(); //->unique(); NON PUO' ESSERE UNIQUE A CAUSA DELLA CANCELLAZIONE LOGICA
             $table->string('cod_aoo')->nullable();
             $table->string('des_ou');
             $table->string('regione')->nullable();

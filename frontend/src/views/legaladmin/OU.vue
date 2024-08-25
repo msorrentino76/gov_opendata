@@ -52,37 +52,105 @@
     </el-table>
 
     <div style="padding: 16px 0 16px 0;">Risultati: {{ filterTableData.length }}</div> 
-    
+
     <el-drawer v-model="openDrawer" :title="drawerTitle" direction="rtl" size="75%">
 
       <el-form 
         ref="formModel"
-        v-if="form_action != 'read' && form_action != 'history' "
+        v-if="form_action != 'history' "
         v-loading="form_loading"
         :model="objModel"
-        :rules="{}/*{
-            name: [
+        :rules="{
+            des_ou: [
               { required: true, message: 'Campo richiesto', trigger: 'blur' },
             ],
-            surname: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            username: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            email: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            mail1: [
               { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],        
-        }*/"
+            ],
+            mail2: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],
+            mail3: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ], 
+            mail_resp: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],   
+            cap: [
+              { type: 'number' , message: 'Ammessi solo caratteri numerici', trigger: 'blur' },
+            ],      
+        }"
         :disabled="form_disable"
         label-position="top"
         status-icon
       >
 
-      <!-- FILL -->
+      <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="Descrizione Unità Organizzativa" :error="form_error.des_ou" prop="des_ou">
+              <el-input v-model="objModel.des_ou" placeholder="Descrizione Unità Organizzativa"><template #prepend><el-button :icon="OfficeBuilding"/></template></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
 
-      <el-button type="success" @click="submit()">Salva</el-button>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <el-form-item label="Email (1)" :error="form_error.mail1" prop="mail1">
+              <el-input v-model="objModel.mail1" placeholder="Email"><template #prepend>@</template></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="Email (2)" :error="form_error.mail2" prop="mail2">
+              <el-input v-model="objModel.mail2" placeholder="Email"><template #prepend>@</template></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="Email (3)" :error="form_error.mail3" prop="mail3">
+              <el-input v-model="objModel.mail3" placeholder="Email"><template #prepend>@</template></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="20">
+            <el-form-item label="Indirizzo" :error="form_error.indirizzo" prop="indirizzo">
+              <el-input v-model="objModel.indirizzo" placeholder="Indirizzo"><template #prepend><el-button :icon="Place"/></template></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="4">
+            <el-form-item label="CAP" :error="form_error.cap" prop="cap">
+              <el-input v-model="objModel.cap" placeholder="CAP"><template #prepend><el-button :icon="Place"/></template></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="Nome Responsabile" :error="form_error.nome_resp" prop="nome_resp">
+              <el-input v-model="objModel.nome_resp" placeholder="Nome Responsabile"><template #prepend><el-button :icon="User"/></template></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Cognome Responsabile" :error="form_error.cogn_resp" prop="cogn_resp">
+              <el-input v-model="objModel.cogn_resp" placeholder="Cognome Responsabile"><template #prepend><el-button :icon="User"/></template></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="Email Responsabile" :error="form_error.mail_resp" prop="mail_resp">
+              <el-input v-model="objModel.mail_resp" placeholder="Email Responsabile"><template #prepend>@</template></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="Telefono Responsabile" :error="form_error.tel_resp" prop="tel_resp">
+              <el-input v-model="objModel.tel_resp" placeholder="Telefono Responsabile"><template #prepend><el-button :icon="Phone"/></template></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+      <el-button type="success" @click="submit(formModel)" v-if="form_action != 'read'">Salva</el-button>
 
       </el-form>
 
@@ -118,7 +186,7 @@
 
   import {ref, reactive, computed, onMounted, onUnmounted, defineComponent} from 'vue';
 
-  import {Plus, Search, Edit, Delete, Notebook /*, User, CreditCard, , CircleCloseFilled, CircleCheckFilled, Message*/} from '@element-plus/icons-vue'
+  import {Plus, Search, Edit, Delete, Notebook, Place, Phone, User, OfficeBuilding  /*, CreditCard, , CircleCloseFilled, CircleCheckFilled, Message*/} from '@element-plus/icons-vue'
 
   import {list, create, read, update, del} from '../../utils/service.js';
 
@@ -127,11 +195,11 @@
   //import Auth from '../../store/Auth.js';
 
 const drawerTitles = {
-  onCreate: '',
-  onRead:   '',
-  onUpdate: '',
-  onDelete: '',
-  onHistory:'',
+  onCreate: 'Aggiungi Unità Organizzativa',
+  onRead:   'Dettagli Unità Organizzativa',
+  onUpdate: 'Modifica Unità Organizzativa',
+  onDelete: 'Cancella Unità Organizzativa',
+  onHistory:'Storico  Unità Organizzativa',
 };
 
 const endpoints = {
@@ -254,8 +322,8 @@ const handleAutofill = (async() => {
   loading.value = true;
   let resp = await list('le_admin/ou_autofill');
   if(resp && !resp.errors){
-    //objModels.value = objModels.value.map((obj) => {return obj.cod_uni_ou	 == resp.id ? resp : obj});
-    open('', 'Sono state aggiornate ' + resp.length + ' Unità Organizzative');
+    objModels.value = resp.all;
+    open('', 'Sono state aggiornate ' + resp.updated + ' Unità Organizzative');
   } else {
     open('Error', 'Errore durante l\'interrogazione di Indice PA');
   }

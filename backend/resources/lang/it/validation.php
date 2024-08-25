@@ -209,6 +209,11 @@ return [
         'titolo_resp' => 'Titolo Responsabile',
         'nome_resp' => 'Nome Responsabile',
         'cogn_resp' => 'Cognome Responsabile',
+        'mail_resp' => 'Email Responsabile',
+        'tel_resp'  => 'Telefono Responsabile',
+        'des_ou'    => 'Descrizione Unità Organizzativa',
+        'tel'       => 'Telefono',
+        'fax'       => 'Fax',
         'tipologia' => 'Tipologia',
         'categoria' => 'Categoria',
         
@@ -216,7 +221,7 @@ return [
         'legal'  => 'Ente',
         'valida_a'  => 'Data inizio licenza',
         'valida_da' => 'Data fine licenza',
-        
+           
     ],
 
 ];

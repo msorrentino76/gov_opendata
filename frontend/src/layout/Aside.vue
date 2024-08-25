@@ -19,6 +19,11 @@
       <template #title>Dashboard</template>
     </el-menu-item>
 
+    <el-menu-item index="/le_admin/ou" v-if="Auth.state.user.abilities.includes('legal_entity:admin')">
+      <el-icon><OfficeBuilding /></el-icon>
+      <template #title>Unità Organizzative</template>
+    </el-menu-item>
+    
     <el-menu-item index="/users" v-if="Auth.state.user.abilities.includes('system:admin') || Auth.state.user.abilities.includes('legal_entity:admin')">
       <el-icon><User /></el-icon>
       <template #title>Amministratori di Ente</template>
@@ -37,12 +42,6 @@
     <el-menu-item index="/sysadmin/logs" v-if="Auth.state.user.abilities.includes('system:admin')">
       <el-icon><Cpu /></el-icon>
       <template #title>System Log</template>
-    </el-menu-item>
-
-
-    <el-menu-item index="/le_admin/ou" v-if="Auth.state.user.abilities.includes('legal_entity:admin')">
-      <el-icon><OfficeBuilding /></el-icon>
-      <template #title>Unità Organizzative</template>
     </el-menu-item>
 
   </el-menu>

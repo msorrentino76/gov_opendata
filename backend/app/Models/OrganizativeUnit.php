@@ -31,21 +31,21 @@ class OrganizativeUnit extends Model
         'cod_amm',
         'cod_uni_ou',
         'cod_aoo',
-        'des_ou',
+        'des_ou',   // <-
         'regione',
         'provincia',
         'comune',
-        'cap',
-        'indirizzo',
-        'tel',
-        'fax',
-        'mail1',
-        'mail2',
-        'mail3',
-        'nome_resp',
-        'cogn_resp',
-        'mail_resp',
-        'tel_resp',
+        'cap',      // <-
+        'indirizzo',// <-
+        'tel',      // <-
+        'fax',      // <-
+        'mail1',    // <-
+        'mail2',    // <-
+        'mail3',    // <-
+        'nome_resp',// <-
+        'cogn_resp',// <-
+        'mail_resp',// <-
+        'tel_resp', // <-
     ];
     
     public function getModelLabel() {
