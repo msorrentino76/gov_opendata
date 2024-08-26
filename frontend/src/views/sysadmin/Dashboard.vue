@@ -1,7 +1,11 @@
 <template>
 
     <h3>Dashboard</h3>
+    
+    <el-card class="box-card">
 
+      
+    </el-card>
 
 </template>
 

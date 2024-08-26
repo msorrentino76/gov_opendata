@@ -37,6 +37,8 @@
 
     import { useRouter } from 'vue-router';
 
+    import Auth from '../../store/Auth.js';
+
     const router = useRouter();
 
     const formData = ref([]);
@@ -116,7 +118,12 @@
                 if(resp.errors){
                     errorsForm.value = resp.errors;
                 } else {
-                    router.push('/');
+                    if(Auth.state.user.abilities.includes('system:admin')){
+                        router.push('/sysadmin');
+                    }
+                    if(Auth.state.user.abilities.includes('legal_entity:admin')){
+                        router.push('/le_admin');
+                    }
                 }
             }
             formLoading.value = false;

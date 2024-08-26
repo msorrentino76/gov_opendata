@@ -12,6 +12,8 @@ import './assets/css/app.css'
 
 import { createRouter, createWebHistory } from 'vue-router';
 
+import DispatcherView       from './views/common/Dispatcher.vue';
+
 import SystemDashboardView  from './views/sysadmin/Dashboard.vue';
 import UsersView            from './views/common/Users.vue';
 import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
@@ -24,6 +26,9 @@ import OUView                from './views/legaladmin/OU.vue';
 import auth from './store/Auth.js'; 
 
 const routes = [
+
+    { path: '/'                            , component: DispatcherView },
+
     { path: '/sysadmin'                    , component: SystemDashboardView },
     { path: '/users'                       , component: UsersView },
     { path: '/sysadmin/legal_entity'       , component: LegalEntityView },

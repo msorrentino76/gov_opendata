@@ -1,6 +1,6 @@
 <template>
   
-  <el-menu :default-active="$route.path" :router=true :collapse="collapseMenu">
+  <el-menu :default-active="$route.path" :router=true :collapse="collapseMenu" style="min-height: 640px;">
 
     <el-menu-item>
       <el-icon @click="menuToggle()" v-if="collapseMenu"><Expand /></el-icon>
@@ -14,19 +14,19 @@
       <template #title>Dashboard</template>
     </el-menu-item>
 
-    <el-menu-item index="/le_admin" v-if="Auth.state.user.abilities.includes('legal_entity:admin')">
+    <el-menu-item index="/le_admin" v-if="Auth.state.user.abilities.includes('legal_entity:admin') && Auth.state.licence !== null">
       <el-icon><Odometer /></el-icon>
       <template #title>Dashboard</template>
     </el-menu-item>
 
-    <el-menu-item index="/le_admin/ou" v-if="Auth.state.user.abilities.includes('legal_entity:admin')">
+    <el-menu-item index="/le_admin/ou" v-if="Auth.state.user.abilities.includes('legal_entity:admin') && Auth.state.licence !== null">
       <el-icon><OfficeBuilding /></el-icon>
       <template #title>Unità Organizzative</template>
     </el-menu-item>
-    
-    <el-menu-item index="/users" v-if="Auth.state.user.abilities.includes('system:admin') || Auth.state.user.abilities.includes('legal_entity:admin')">
+
+    <el-menu-item index="/users" v-if="Auth.state.user.abilities.includes('system:admin') || (Auth.state.user.abilities.includes('legal_entity:admin') && Auth.state.licence !== null)">
       <el-icon><User /></el-icon>
-      <template #title>Amministratori di Ente</template>
+      <template #title>{{ Auth.state.user.abilities.includes('system:admin') ? 'Amministratori di Ente' : 'Utenti' }}</template>
     </el-menu-item>
 
     <el-menu-item index="/sysadmin/legal_entity" v-if="Auth.state.user.abilities.includes('system:admin')">

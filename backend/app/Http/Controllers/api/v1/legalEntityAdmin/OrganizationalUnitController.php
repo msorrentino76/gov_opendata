@@ -11,14 +11,15 @@ use App\Models\OrganizativeUnit;
 
 use Carbon\Carbon;
 
+use App\Exceptions\ResponseException;
+
 class OrganizationalUnitController extends Controller
 {
 
     private $user    = null;
     private $licence = null;
     private $ente    = null;
-    
-    
+        
     public function index() {
         $this->setLicence();
         return response(OrganizativeUnit::orderBy('des_ou')->where(['legal_entity_id' => $this->ente->id])->get(), 200);
@@ -187,5 +188,8 @@ class OrganizationalUnitController extends Controller
         $this->user = Auth::user();
         $this->licence = $this->user->licence;
         $this->ente    = $this->user->notExpiredLicenceFor();
+        if(is_null($this->ente)){
+            throw new ResponseException(response('Nessuna licenza attiva', 404));
+        }
     }
 }

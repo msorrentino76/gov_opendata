@@ -336,15 +336,21 @@ form_loading.value = false;
 })
 
 const tableRowClassName = ({row}) => {
+  /*
   let giorni_totali    = calculateDateDifference(row.valida_da, row.valida_a);
   let giorni_trascorsi = calculateDateDifference(row.valida_da, todayIt());
-  let giorni_residui   = giorni_totali - giorni_trascorsi;
+  let giorni_residui   = giorni_totali - giorni_trascorsi + 1;
   let perc_residui     = Math.ceil((giorni_residui / giorni_totali) * 100);
-  //console.log(giorni_totali, giorni_trascorsi, perc_residui);
+  console.log(giorni_totali, giorni_trascorsi, perc_residui);
   if(perc_residui <= 10) return 'danger-row';
   if(perc_residui <= 25) return 'warning-row';
+  */
+  // non mi baso sulla percentuale ma sui giorni!
+  if(row.expired_days <= 10) return 'danger-row';
+  if(row.expired_days <= 30) return 'warning-row';
 }
 
+/*
 const calculateDateDifference = (date1, date2) =>{
       const [day1, month1, year1] = date1.split('/').map(Number);
       const [day2, month2, year2] = date2.split('/').map(Number);
@@ -378,6 +384,7 @@ const todayIt = () => {
 
   return `${day}/${month}/${year}`;
 }
+*/
 
 onMounted(async ()=>{
   loading.value = true;

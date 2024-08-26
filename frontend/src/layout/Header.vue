@@ -19,6 +19,20 @@
       
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
+      <div v-if="Auth.state.licence !== null" class="centered-text-container">
+        <span class="centered-text">{{ Auth.state.licence.des_amm }}
+          <el-tooltip v-if="Auth.state.user.licence.expired_days > 30" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni`" placement="top-start">
+            <el-button type="success" :icon="SuccessFilled" circle size="small"/>
+          </el-tooltip>
+          <el-tooltip v-if="Auth.state.user.licence.expired_days <= 30 && Auth.state.user.licence.expired_days > 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
+            <el-button type="warning" :icon="WarnTriangleFilled" circle size="small"/>
+          </el-tooltip>
+          <el-tooltip v-if="Auth.state.user.licence.expired_days <= 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
+            <el-button type="danger" :icon="WarningFilled" circle size="small"/>
+          </el-tooltip>                    
+        </span>
+      </div>
+
     </header>
     
     <el-drawer v-model="openDrawer" direction="rtl" :size="mode=='notification'? '25%' : '75%'">
@@ -42,7 +56,7 @@
   import {ref, defineProps, defineComponent, onMounted, onBeforeUnmount } from 'vue';
   import {list, revoke} from '../utils/service.js'; 
 
-  import {/*Expand,*/ UserFilled, BellFilled, HelpFilled, SwitchButton } from '@element-plus/icons-vue';
+  import {/*Expand,*/ UserFilled, BellFilled, HelpFilled, SwitchButton, SuccessFilled, WarnTriangleFilled, WarningFilled } from '@element-plus/icons-vue';
 
   import ProfiloView from '../views/common/Profilo.vue';
   import NotificheView from '../views/common/Notifiche.vue';
@@ -111,12 +125,21 @@
     clearInterval(notifTimerId);
   });
 
-
-
 </script>
 
-<style>
+<style scoped>
   h4 {
     margin: auto;
   }
+
+.centered-text-container {
+  text-align: center; /* Centra il testo all'interno del contenitore */
+  position: absolute; /* Permette di posizionare il testo */
+  left: 50%;
+  top: 0;
+}
+
+.centered-text {
+  display: inline-block;
+}
 </style>
