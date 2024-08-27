@@ -22,7 +22,8 @@ class OrganizationalUnitController extends Controller
         
     public function index() {
         $this->setLicence();
-        return response(OrganizativeUnit::orderBy('des_ou')->where(['legal_entity_id' => $this->ente->id])->get(), 200);
+        //return response(OrganizativeUnit::orderBy('des_ou')->where(['legal_entity_id' => $this->ente->id])->get(), 200);
+        return response($this->ente->organizativeUnits, 200);
     }
     
     public function create(Request $request){

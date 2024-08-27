@@ -1,4 +1,8 @@
 
+<template>
+    <span></span>
+</template>
+
 <script setup>
 
     import {defineComponent, onMounted, } from 'vue';

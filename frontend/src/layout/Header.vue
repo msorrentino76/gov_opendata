@@ -20,7 +20,7 @@
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
       <div v-if="Auth.state.licence !== null" class="centered-text-container">
-        <span class="centered-text">{{ Auth.state.licence.des_amm }}
+        <span class="centered-text"><b>{{ Auth.state.licence.des_amm }}</b>&nbsp;&nbsp;
           <el-tooltip v-if="Auth.state.user.licence.expired_days > 30" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni`" placement="top-start">
             <el-button type="success" :icon="SuccessFilled" circle size="small"/>
           </el-tooltip>

@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Panoscape\History\HasHistories;
 
+use App\Models\OuUser;
+use App\Models\User;
+
 class OrganizativeUnit extends Model
 {
     use HasFactory, SoftDeletes, HasHistories;
@@ -48,8 +51,28 @@ class OrganizativeUnit extends Model
         'tel_resp', // <-
     ];
     
+    public function ouUsers(){
+        return $this->hasMany(OuUser::class);    
+    }
+    
+    public function users(){
+        $users = [];
+        foreach ($this->ouUsers as $ou){
+            $users[] = User::find($ou->user_id);
+        }
+        return $users;
+    }
+    
+    public function userids(){
+        $users = [];
+        foreach ($this->ouUsers as $ou){
+            $users[] = $ou->user_id;
+        }
+        return $users;
+    }
+    
     public function getModelLabel() {
         return $this->display_name;
     }
-
+    
 }

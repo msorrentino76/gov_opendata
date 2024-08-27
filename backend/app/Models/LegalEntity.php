@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Models\OrganizativeUnit;
+
 use Panoscape\History\HasHistories;
 
 class LegalEntity extends Model
@@ -51,6 +53,10 @@ class LegalEntity extends Model
     
     public function licence() {
         return $this->hasOne(Licence::class);
+    }
+    
+    public function organizativeUnits(){
+        return $this->hasMany(OrganizativeUnit::class);
     }
     
     public function getFullAddressAttribute() {

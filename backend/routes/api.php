@@ -16,6 +16,7 @@ use App\Http\Controllers\api\v1\sysAdmin\LicenseController;
 use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
 use App\Http\Controllers\api\v1\legalEntityAdmin\OrganizationalUnitController;
+use App\Http\Controllers\api\v1\legalEntityAdmin\OuUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -100,6 +101,7 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
 });
  
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_admin')->group(function () {
+    
     Route::get   ('ous'        , [OrganizationalUnitController::class, 'index']);
     Route::post  ('ou'         , [OrganizationalUnitController::class, 'create']);
     Route::get   ('ou/{id}'    , [OrganizationalUnitController::class, 'read']);
@@ -107,4 +109,8 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::delete('ou/{id}'    , [OrganizationalUnitController::class, 'destroy']); 
     Route::get   ('ou_autofill'         , [OrganizationalUnitController::class, 'ouAutofill']);
     Route::get   ('ou_activities/{id}'  , [OrganizationalUnitController::class, 'ouActivities']);    
+    
+    Route::get   ('users_ous'    , [OuUserController::class, 'index']);
+    Route::put   ('user_ou/{id}' , [OuUserController::class, 'update']);
+    
 });

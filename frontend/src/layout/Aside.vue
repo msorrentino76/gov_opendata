@@ -44,6 +44,11 @@
       <template #title>System Log</template>
     </el-menu-item>
 
+    <el-menu-item index="/le_admin/ou_users" v-if="Auth.state.user.abilities.includes('legal_entity:admin') && Auth.state.licence !== null">
+      <el-icon><List /></el-icon>
+      <template #title>Utenze Unità Org.</template>
+    </el-menu-item>
+
   </el-menu>
 
 </template>
@@ -55,7 +60,7 @@
 
   import {defineProps, defineComponent} from 'vue';
 
-  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu} from '@element-plus/icons-vue'
+  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List} from '@element-plus/icons-vue'
 
   defineProps({
     collapseMenu: {},
