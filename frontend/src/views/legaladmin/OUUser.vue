@@ -32,11 +32,13 @@
                 filter-placeholder="Cerca utenza..."
                  @change="handleChange(ou.id)"
             >
-                <template #right-footer>
+                <template #right-footer>                    
                     <el-button class="transfer-footer" type="primary" @click="handlePermission(ou.id)" size="small">Gestisci permessi</el-button>
                     <el-button class="transfer-footer" type="info"    @click="handleHistory(ou.id)" size="small">Storico</el-button>
+                    &nbsp;&nbsp;
+                    <b>Resp: </b> {{ ou.nome_resp }} {{ ou.cogn_resp }}
                 </template>
-                <template #left-footer>
+                <template #left-footer>                    
                     <el-button v-if="ownerNotInUser(ou.mail_resp)" class="transfer-footer" type="success" @click="handleOwnerToUser(ou.id)" size="small">
                         Crea utenza per Resp. {{ ou.nome_resp }} {{ ou.cogn_resp }}
                     </el-button>
@@ -73,6 +75,71 @@
                 </el-timeline-item>
             </el-timeline>
 
+            <el-form 
+                ref="userForm"
+                v-if="drawerAction == 'create'"
+                v-loading="form_loading"
+                :model="user"
+                :rules="{
+                    name: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    ],
+                    surname: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    ],
+                    username: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    ],
+                    email: [
+                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                    { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+                    ],        
+                }"
+                label-position="top"
+                status-icon
+            >
+
+                <el-alert
+                    title="Avviso:"
+                    type="info"
+                    description="L'utente creato potrà modificare i dati inseriti dal suo Profilo."
+                    show-icon
+                />
+
+                <br>
+
+                <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="Nome" :error="form_error.name" prop="name">
+                    <el-input v-model="user.name" placeholder="Nome"><template #prepend><el-button :icon="User"/></template></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="Cognome" :error="form_error.surname" prop="surname">
+                    <el-input v-model="user.surname" placeholder="Cognome"><template #prepend><el-button :icon="User"/></template></el-input>
+                    </el-form-item>
+                </el-col>
+                </el-row>
+
+                <el-row :gutter="20">
+                <el-col :span="12">
+                    <el-form-item label="Username" :error="form_error.username" prop="username">
+                    <el-input v-model="user.username" placeholder="Username"><template #prepend><el-button :icon="CreditCard"/></template></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="Email" :error="form_error.email" prop="email">
+                    <el-input v-model="user.email" placeholder="Email"><template #prepend>@</template></el-input>
+                    </el-form-item>
+                </el-col>
+                </el-row>
+
+                <br>
+
+                <el-button type="success" @click="submit(userForm)">Salva</el-button>
+
+            </el-form>
+
         </el-drawer>
 
     </el-card>
@@ -81,9 +148,11 @@
 
 <script setup>
 
-    import {defineComponent, onMounted, ref} from 'vue';
+    import {defineComponent, onMounted, ref, reactive} from 'vue';
 
-    import {list, update, read} from '../../utils/service.js';
+    import {list, create, update, read} from '../../utils/service.js';
+
+    import {User, CreditCard} from '@element-plus/icons-vue'
 
     import Auth from '../../store/Auth.js';
 
@@ -105,6 +174,12 @@
 
     const activities_loading = ref(false);
     const activities = ref([]);
+
+    const user     = reactive({});
+    const userForm = ref();
+
+    const form_loading = ref(false);
+    const form_error   = ref({});
 
     const handleChange = (async (ou_id) => {  
         loading.value = true; 
@@ -151,7 +226,11 @@
         openDrawer.value   = true;
         drawerTitle.value  = 'Crea utenza';
         drawerAction.value = 'create';      
-        selected_ou.value  = ous.value.find((o) => {return o.id == ou_id});     
+        selected_ou.value  = ous.value.find((o) => {return o.id == ou_id}); 
+        user.name     = selected_ou.value.nome_resp;
+        user.surname  = selected_ou.value.cogn_resp;
+        user.username = (selected_ou.value.nome_resp.toLowerCase()[0] + '.' + selected_ou.value.cogn_resp.toLowerCase()).replace(/\s+/g, '');
+        user.email    = selected_ou.value.mail_resp;    
         console.log('handleOwnerToUser', ou_id)
     });
 
@@ -162,6 +241,31 @@
     const truncatedText = ((text) => {      
       return text.length > 58 ? text.slice(0, 58) + "..." : text;
     });
+
+    const submit = (async(formRef) => {
+
+        if (!formRef) return;
+        const val = await formRef.validate((valid) => valid);
+        if(!val) return false;
+
+        form_loading.value = true;
+        form_error.value   = {};
+
+        let resp = await create('user', user);
+
+        if(resp){
+            if(resp.errors){
+                console.log('resp', resp)
+                form_error.value = resp.errors;
+            } else {     
+                openDrawer.value = false;
+                init();
+            }    
+        }
+
+        form_loading.value = false;
+
+    })
 
     const ownerNotInUser = ((mail) => { return !users_email.value.includes(mail) });
 
