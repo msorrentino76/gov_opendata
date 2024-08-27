@@ -36,6 +36,7 @@ class OuUserController extends Controller
         return response($results, 200);
     }
     
+    /*
     public function create(Request $request){
         
     }
@@ -43,6 +44,7 @@ class OuUserController extends Controller
     public function read(string $id){
         
     }
+    */
     
     public function update(Request $request, string $id){
 
@@ -104,7 +106,24 @@ class OuUserController extends Controller
         
     }
     
+    /*
     public function destroy(string $id) {
+        
+    }
+    */
+    
+    public function ouuserActivities($id) {
+        
+        $this->setLicence();
+        
+        // E' dell'utente loggato questa OU
+        if(!$this->ente->organizativeUnits->contains('id', $id)){
+            throw new ResponseException(response('OU non trovata o non in carico all\Ente per il quale la licenza è attiva', 404));
+        }
+
+        $ou = OrganizativeUnit::find($id);
+        
+        return modelActivities($ou);
         
     }
     

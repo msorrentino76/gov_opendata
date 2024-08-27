@@ -182,4 +182,5 @@ class LicenseController extends Controller
         
         return modelActivities($licence);    
     }
+    
 }

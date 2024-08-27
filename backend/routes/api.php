@@ -110,7 +110,8 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::get   ('ou_autofill'         , [OrganizationalUnitController::class, 'ouAutofill']);
     Route::get   ('ou_activities/{id}'  , [OrganizationalUnitController::class, 'ouActivities']);    
     
-    Route::get   ('users_ous'    , [OuUserController::class, 'index']);
-    Route::put   ('user_ou/{id}' , [OuUserController::class, 'update']);
+    Route::get   ('users_ous'       , [OuUserController::class, 'index']);
+    Route::put   ('user_ou/{id}'    , [OuUserController::class, 'update']);
+    Route::get   ('user_ou_act/{id}', [OuUserController::class, 'ouuserActivities']);
     
 });
