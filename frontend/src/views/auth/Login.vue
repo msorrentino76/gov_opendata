@@ -49,15 +49,15 @@
     const rules = {
         /*
         email: [
-            { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            { type: 'email', message: 'Inserire una email valida', trigger: 'blur' },
+            { required: true, message: 'Campo richiesto', trigger: 'change' },
+            { type: 'email', message: 'Inserire una email valida', trigger: 'change' },
         ], 
         */
         username: [
-            { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            { required: true, message: 'Campo richiesto', trigger: 'change' },
         ],       
         password: [
-            { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            { required: true, message: 'Campo richiesto', trigger: 'change' },
         ],               
     }
 

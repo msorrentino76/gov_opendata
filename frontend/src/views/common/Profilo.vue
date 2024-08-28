@@ -166,29 +166,29 @@
 
     const rules = {
       name: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ],     
       surname: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ], 
       username: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ], 
       email: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
         { type: 'email',  message: 'Inserire un indirizzo email valido', trigger: ['blur', 'change'] },
       ],                   
     }
 
     const rulesPass = {
       password: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ],     
       new_password: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ], 
       confirm_new_password: [
-        { required: true, message: 'Campo richiesto', trigger: 'blur' },
+        { required: true, message: 'Campo richiesto', trigger: 'change' },
       ],                  
     }
 

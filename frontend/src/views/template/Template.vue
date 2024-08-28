@@ -52,23 +52,10 @@
         v-if="form_action != 'read'"
         v-loading="form_loading"
         :model="objModel"
-        :rules="{}/*{
-            name: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            surname: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            username: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            email: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],        
-        }*/"
+        :rules="rules"
         :disabled="form_disable"
         label-position="top"
+        :scroll-to-error="true"
         status-icon
       >
 
@@ -151,6 +138,8 @@ const form_action  = ref();
 const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const rules = ref({});
 
 const activities_loading = ref(false);
 const activities = ref([]);

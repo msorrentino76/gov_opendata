@@ -4,16 +4,10 @@
           ref="formAssistance"
           v-loading="form_loading"
           :model="objModel"
-          :rules="{
-              oggetto: [
-                { required: true, message: 'Campo richiesto', trigger: 'blur' },
-              ],
-              testo: [
-                { required: true, message: 'Campo richiesto', trigger: 'blur' },
-              ],     
-          }"
+          :rules="rules"
           :disabled="form_disable"
           label-position="top"
+          :scroll-to-error="true"
           status-icon
         >
 
@@ -57,6 +51,15 @@
   const form_loading   = ref(false);
   const form_error     = ref({});
   const form_disable   = ref(false);
+
+  const rules = ref({
+              oggetto: [
+                { required: true, message: 'Campo richiesto', trigger: 'change' },
+              ],
+              testo: [
+                { required: true, message: 'Campo richiesto', trigger: 'change' },
+              ],     
+          });
 
   const submit = (async(formRef) => {
 

@@ -60,37 +60,10 @@
         v-if="form_action != 'history' "
         v-loading="form_loading"
         :model="objModel"
-        :rules="{
-            des_ou: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            mail1: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            mail2: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            mail3: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ], 
-            nome_resp: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            cogn_resp: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            mail_resp: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            /*   
-            cap: [
-              { type: 'number' , message: 'Ammessi solo caratteri numerici', trigger:  ['blur', 'change'] },
-            ],  
-            */    
-        }"
+        :rules="rules"
         :disabled="form_disable"
         label-position="top"
+        :scroll-to-error="true"
         status-icon
       >
 
@@ -237,6 +210,36 @@ const form_action  = ref();
 const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const rules = ref({
+            des_ou: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+            ],
+            mail1: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            mail2: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            mail3: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ], 
+            nome_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+            ],
+            cogn_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+            ],
+            mail_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            /*   
+            cap: [
+              { type: 'number' , message: 'Ammessi solo caratteri numerici', trigger:  ['blur', 'change'] },
+            ],  
+            */    
+        });
 
 const activities_loading = ref(false);
 const activities = ref([]);

@@ -7,6 +7,7 @@
     :disabled="formModel.disabled"
     :rules="formRules"
     label-position="top"
+    :scroll-to-error="true"
     status-icon
     >
     

@@ -91,29 +91,8 @@
         :disabled="form_disable"
         label-position="top"
         ref="formModel"
-        :rules="{
-            des_amm: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            cf: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            mail1: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            mail2: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            mail3: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ], 
-            mail4: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],
-            mail5: [
-              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-            ],   
-        }"
+        :rules="rules"
+        :scroll-to-error="true"
         status-icon
       >
 
@@ -327,6 +306,30 @@ const form_action  = ref();
 const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const rules = ref({
+            des_amm: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+            ],
+            cf: [
+              { required: true, message: 'Campo richiesto', trigger: 'change' },
+            ],
+            mail1: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            mail2: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            mail3: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ], 
+            mail4: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],
+            mail5: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+            ],   
+        });
 
 const formModel    = ref();
 

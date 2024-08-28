@@ -52,22 +52,10 @@
         ref="formModel"
         v-loading="form_loading"
         :model="objModel"
-        :rules="{}/*{
-            user: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            legal: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            valida_da: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],
-            valida_a: [
-              { required: true, message: 'Campo richiesto', trigger: 'blur' },
-            ],        
-        }*/"
+        :rules="rules"
         :disabled="form_disable"
         label-position="top"
+        :scroll-to-error="true"
         status-icon
       >
 
@@ -193,6 +181,8 @@ const form_action  = ref();
 const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const rules = ref({});
 
 const activities_loading = ref(false);
 const activities = ref([]);

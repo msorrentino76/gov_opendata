@@ -143,10 +143,10 @@
               }"
               :rules="{
                 cf: [
-                  { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                  { required: true, message: 'Campo richiesto', trigger: 'change' },
                 ],     
                 des_amm: [
-                  { required: true, message: 'Campo richiesto', trigger: 'blur' },
+                  { required: true, message: 'Campo richiesto', trigger: 'change' },
                 ],                   
               }"
               :endpoints="{

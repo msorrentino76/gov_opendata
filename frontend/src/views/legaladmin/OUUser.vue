@@ -80,22 +80,9 @@
                 v-if="drawerAction == 'create'"
                 v-loading="form_loading"
                 :model="user"
-                :rules="{
-                    name: [
-                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
-                    ],
-                    surname: [
-                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
-                    ],
-                    username: [
-                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
-                    ],
-                    email: [
-                    { required: true, message: 'Campo richiesto', trigger: 'blur' },
-                    { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
-                    ],        
-                }"
+                :rules="rules"
                 label-position="top"
+                :scroll-to-error="true"
                 status-icon
             >
 
@@ -180,6 +167,22 @@
 
     const form_loading = ref(false);
     const form_error   = ref({});
+
+    const rules = ref({
+                    name: [
+                    { required: true, message: 'Campo richiesto', trigger: 'change' },
+                    ],
+                    surname: [
+                    { required: true, message: 'Campo richiesto', trigger: 'change' },
+                    ],
+                    username: [
+                    { required: true, message: 'Campo richiesto', trigger: 'change' },
+                    ],
+                    email: [
+                    { required: true, message: 'Campo richiesto', trigger: 'change' },
+                    { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'change' },
+                    ],        
+                });
 
     const handleChange = (async (ou_id) => {  
         loading.value = true; 
