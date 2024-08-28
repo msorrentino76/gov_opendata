@@ -35,7 +35,9 @@ class OrganizationalUnitController extends Controller
             'mail1'  => 'nullable|email',
             'mail2'  => 'nullable|email',
             'mail3'  => 'nullable|email',
-            'mail_resp' => 'nullable|email',
+            'nome_resp' => 'required',
+            'cogn_resp' => 'required',
+            'mail_resp' => 'required|email',
             'cap'       => 'nullable|numeric|digits:5',
             'tel_resp'  => ['nullable', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'min:10', 'max:15'],
         ]);
@@ -100,7 +102,9 @@ class OrganizationalUnitController extends Controller
             'mail1'  => 'nullable|email',
             'mail2'  => 'nullable|email',
             'mail3'  => 'nullable|email',
-            'mail_resp' => 'nullable|email',
+            'nome_resp' => 'required',
+            'cogn_resp' => 'required',
+            'mail_resp' => 'required|email',
             'cap'       => 'nullable|numeric|digits:5',
             'tel_resp'  => ['nullable', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'min:10', 'max:15'],
         ]);

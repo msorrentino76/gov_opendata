@@ -15,7 +15,7 @@
 
       <el-button @click="setMode('profile')"      :icon="UserFilled" round>Profilo</el-button>
 
-      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
+      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin') || Auth.state.user.abilities.includes('ou:user')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
       
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
@@ -64,13 +64,20 @@
 
   import Auth from '../store/Auth.js';
 
+  import { useRouter } from 'vue-router';
+
+  const router = useRouter();
+
   const openDrawer    = ref(false);
   const mode          = ref('');
 
   const notifications = ref([]);
   const newNotification = ref(false);
   
-  const logout = (async ()=>{await revoke('revoke')})
+  const logout = (async ()=>{
+    await revoke('revoke');
+    router.push('/');
+  })
 
   const setMode = ((m) => {mode.value = m; openDrawer.value = true; });
 

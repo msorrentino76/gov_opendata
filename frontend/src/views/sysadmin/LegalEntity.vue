@@ -84,7 +84,38 @@
         <el-divider />
       </div>
 
-      <el-form v-if="form_action != 'history'"  v-loading="form_loading" :model="legal_entity" :disabled="form_disable" label-position="top" status-icon>
+      <el-form 
+        v-if="form_action != 'history'" 
+        v-loading="form_loading"
+        :model="legal_entity"
+        :disabled="form_disable"
+        label-position="top"
+        ref="formModel"
+        :rules="{
+            des_amm: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            cf: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            mail1: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],
+            mail2: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],
+            mail3: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ], 
+            mail4: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],
+            mail5: [
+              { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
+            ],   
+        }"
+        status-icon
+      >
 
       <!--  
         <el-form-item label="Logo" :prop="logo" :error="form_error.logo">                                            
@@ -120,12 +151,12 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Codice fiscale" :error="form_error.cf">
+            <el-form-item label="Codice fiscale" :error="form_error.cf" prop="cf">
               <el-input v-model="legal_entity.cf" placeholder="Codice fiscale" :disabled="form_action=='update'"><template #prepend><el-button :icon="OfficeBuilding"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Codice IPA Amministrazione" :error="form_error.cod_amm">
+            <el-form-item label="Codice IPA Amministrazione" :error="form_error.cod_amm" prop="cod_amm">
               <el-input v-model="legal_entity.cod_amm" placeholder="Codice IPA Amministrazione" :disabled="form_action=='update'"><template #prepend><el-button :icon="OfficeBuilding"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -133,7 +164,7 @@
 
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item label="Descrizione amministrazione" :error="form_error.des_amm">
+            <el-form-item label="Descrizione amministrazione" :error="form_error.des_amm" prop="des_amm">
               <el-input v-model="legal_entity.des_amm" placeholder="Descrizione amministrazione"><template #prepend><el-button :icon="OfficeBuilding"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -141,12 +172,12 @@
 
         <el-row :gutter="20">
           <el-col :span="18">
-            <el-form-item label="Sito istituzionale" :error="form_error.sito_istituzionale">
+            <el-form-item label="Sito istituzionale" :error="form_error.sito_istituzionale" prop="sito_istituzionale">
               <el-input v-model="legal_entity.sito_istituzionale" placeholder="Sito istituzionale"><template #prepend><el-button :icon="Monitor"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="Data accreditamento (aaaa-mm-gg)" :error="form_error.data_accreditamento">
+            <el-form-item label="Data accreditamento (aaaa-mm-gg)" :error="form_error.data_accreditamento" prop="data_accreditamento">
               <el-input v-model="legal_entity.data_accreditamento" placeholder="Data accreditamento"><template #prepend><el-button :icon="Calendar"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -154,22 +185,22 @@
 
         <el-row :gutter="20">
           <el-col :span="6">
-            <el-form-item label="Email (1)" :error="form_error.mail1">
+            <el-form-item label="Email (1)" :error="form_error.mail1" prop="mail1">
               <el-input v-model="legal_entity.mail1" placeholder="Email"><template #prepend>@</template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="Email (2)" :error="form_error.mail2">
+            <el-form-item label="Email (2)" :error="form_error.mail2" prop="mail2">
               <el-input v-model="legal_entity.mail2" placeholder="Email"><template #prepend>@</template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="Email (3)" :error="form_error.mail3">
+            <el-form-item label="Email (3)" :error="form_error.mail3" prop="mail3">
               <el-input v-model="legal_entity.mail3" placeholder="Email"><template #prepend>@</template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="Email (4)" :error="form_error.mail4">
+            <el-form-item label="Email (4)" :error="form_error.mail4" prop="mail4">
               <el-input v-model="legal_entity.mail4" placeholder="Email"><template #prepend>@</template></el-input>
             </el-form-item>
           </el-col>
@@ -177,12 +208,12 @@
 
         <el-row :gutter="20">
           <el-col :span="20">
-            <el-form-item label="Indirizzo" :error="form_error.indirizzo">
+            <el-form-item label="Indirizzo" :error="form_error.indirizzo" prop="indirizzo">
               <el-input v-model="legal_entity.indirizzo" placeholder="Indirizzo"><template #prepend><el-button :icon="Place"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="4">
-            <el-form-item label="CAP" :error="form_error.cap">
+            <el-form-item label="CAP" :error="form_error.cap" prop="cap">
               <el-input v-model="legal_entity.cap" placeholder="CAP"><template #prepend><el-button :icon="Place"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -190,17 +221,17 @@
 
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="Regione" :error="form_error.regione">
+            <el-form-item label="Regione" :error="form_error.regione" prop="regione">
               <el-input v-model="legal_entity.regione" placeholder="Regione"><template #prepend><el-button :icon="Location"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Provincia (sigla)" :error="form_error.provincia">
+            <el-form-item label="Provincia (sigla)" :error="form_error.provincia" prop="provincia">
               <el-input v-model="legal_entity.provincia" placeholder="Provincia (sigla)"><template #prepend><el-button :icon="Location"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Comune" :error="form_error.comune">
+            <el-form-item label="Comune" :error="form_error.comune" prop="comune">
               <el-input v-model="legal_entity.comune" placeholder="Comune"><template #prepend><el-button :icon="Location"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -208,17 +239,17 @@
 
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="Titolo Responsabile" :error="form_error.titolo_resp">
+            <el-form-item label="Titolo Responsabile" :error="form_error.titolo_resp" prop="titolo_resp">
               <el-input v-model="legal_entity.titolo_resp" placeholder="Titolo Responsabile"><template #prepend><el-button :icon="User"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Nome Responsabile" :error="form_error.nome_resp">
+            <el-form-item label="Nome Responsabile" :error="form_error.nome_resp" prop="nome_resp">
               <el-input v-model="legal_entity.nome_resp" placeholder="Nome Responsabile"><template #prepend><el-button :icon="User"/></template></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="Cognome Responsabile" :error="form_error.cogn_resp">
+            <el-form-item label="Cognome Responsabile" :error="form_error.cogn_resp" prop="cogn_resp">
               <el-input v-model="legal_entity.cogn_resp" placeholder="Cognome Responsabile"><template #prepend><el-button :icon="User"/></template></el-input>
             </el-form-item>
           </el-col>
@@ -226,12 +257,12 @@
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="Tipologia" :error="form_error.tipologia">
+            <el-form-item label="Tipologia" :error="form_error.tipologia" prop="tipologia">
               <el-input v-model="legal_entity.tipologia" placeholder="Tipologia"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Categoria" :error="form_error.categoria">
+            <el-form-item label="Categoria" :error="form_error.categoria" prop="categoria">
               <el-input v-model="legal_entity.categoria" placeholder="Categoria"></el-input>
             </el-form-item>
           </el-col>
@@ -239,7 +270,7 @@
 
         <br>
 
-        <el-button v-if="form_action != 'read'" type="success" @click="submit()">Salva</el-button>
+        <el-button v-if="form_action != 'read'" type="success" @click="submit(formModel)">Salva</el-button>
 
       </el-form>
 
@@ -296,6 +327,8 @@ const form_action  = ref();
 const form_loading = ref(false);
 const form_disable = ref(false);
 const form_error   = ref({});
+
+const formModel    = ref();
 
 const query_search = ref('');
 
@@ -371,7 +404,11 @@ const handleDelete = (async(id, row) => {
     loading.value = false; 
 })
 
-const submit = (async() => {
+const submit = (async(formRef) => {
+
+  if (!formRef) return;
+  const val = await formRef.validate((valid) => valid);
+  if(!val) return false;
 
   form_loading.value = true;
 

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\User;
+use App\Models\Licence;
 
 class ProfileController extends Controller
 {
@@ -48,6 +49,10 @@ class ProfileController extends Controller
         
         $user->save();
         
+        if(!isset($user->licence)){
+            $user->licence = Licence::where(['user_id' => $user->id])->first();
+        }
+                
         return response($user, 200);
     }
 
@@ -85,6 +90,10 @@ class ProfileController extends Controller
         $user->password_changed = true;
         $user->save();
         
+        if(!isset($user->licence)){
+            $user->licence = Licence::where(['user_id' => $user->id])->first();
+        }
+                
         return response($user, 200);
     }
   

@@ -73,7 +73,14 @@
             mail3: [
               { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
             ], 
+            nome_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
+            cogn_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
+            ],
             mail_resp: [
+              { required: true, message: 'Campo richiesto', trigger: 'blur' },
               { type: 'email' , message: 'Inserire un indirizzo email valido', trigger: 'blur' },
             ],
             /*   

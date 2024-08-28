@@ -7,6 +7,7 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\api\v1\common\NotificaController;
 use App\Http\Controllers\api\v1\common\ProfileController;
+use App\Http\Controllers\api\v1\common\AssistenzaController;
 use App\Http\Controllers\api\v1\common\DocumentController;
 
 use App\Http\Controllers\api\v1\common\UserController;
@@ -51,6 +52,10 @@ Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
 Route::middleware('auth:sanctum')->prefix('profile')->group(function () {
     Route::put('account/{id}' , [ProfileController::class, 'account']);
     Route::put('password/{id}', [ProfileController::class, 'password']);
+});
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('assistance' , [AssistenzaController::class, 'send']);
 });
 
 Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
