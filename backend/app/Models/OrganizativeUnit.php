@@ -11,6 +11,8 @@ use Panoscape\History\HasHistories;
 use App\Models\OuUser;
 use App\Models\User;
 
+use App\Models\StoricoOuUser;
+
 class OrganizativeUnit extends Model
 {
     use HasFactory, SoftDeletes, HasHistories;
@@ -69,6 +71,10 @@ class OrganizativeUnit extends Model
             $users[] = $ou->user_id;
         }
         return $users;
+    }
+    
+    public function storicoOuUser(){
+        return $this->hasMany(StoricoOuUser::class)->orderBy('performed_at');
     }
     
     public function getModelLabel() {
