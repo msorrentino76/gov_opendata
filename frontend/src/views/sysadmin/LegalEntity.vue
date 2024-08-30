@@ -100,33 +100,33 @@
           <el-col :span="12">      
             <el-form-item label="Logo" :prop="logo_img" :error="form_error.logo_img">                                            
               <el-upload ref="upload"
-                                :action="Auth.state.config.applicationBaseURL + '/api' + logoUploader.uploadEndpoint"
-                                :headers="uploadHeader"
-                                :accept="logoUploader.accept.mime"
-                                list-type="picture"
-                                multiple
-                                drag
-                                :thumbnail-mode="true"
-                                :limit="logoUploader.limit"
-                                v-model:file-list="logo_img"
-                                :before-upload="(rawFile)=>{                                    
-                                    if(logoUploader.maxmbsize && (rawFile.size / 1024 / 1024) > 0.1) {
-                                        form_error.logo_img = 'Il file ' + rawFile.name + ' supera la dimensione massima consentita di ' + 0.1 + ' Mb';
-                                        return false;
-                                    }
-                                    return true;
-                                }"
-                                :before-remove="(rawFile)=>{removeFile(logoUploader.removeEndpoint, rawFile && rawFile.response ? rawFile.response.id : false)}"
-                                >
-                                <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                                <div class="el-upload__text">
-                                Trascina qui il logo oppure <em>Clicca qui per caricarli</em>
-                                </div>
-                                <template #tip>
-                                <div class="el-upload__tip">
-                                    Accettati file {{ logoUploader.accept.label }} di massimo {{ logoUploader.maxmbsize }} Megabyte
-                                </div>
-                                </template>
+                :action="Auth.state.config.applicationBaseURL + '/api' + logoUploader.uploadEndpoint"
+                :headers="uploadHeader"
+                :accept="logoUploader.accept.mime"
+                list-type="picture"
+                multiple
+                drag
+                :thumbnail-mode="true"
+                :limit="logoUploader.limit"
+                v-model:file-list="logo_img"
+                :before-upload="(rawFile)=>{                                    
+                  if(logoUploader.maxmbsize && (rawFile.size / 1024 / 1024) > 0.1) {
+                    form_error.logo_img = 'Il file ' + rawFile.name + ' supera la dimensione massima consentita di ' + 0.1 + ' Mb';
+                    return false;
+                  }
+                    return true;
+                  }"
+                :before-remove="(rawFile)=>{removeFile(logoUploader.removeEndpoint, rawFile ? (rawFile.response ? rawFile.response.id : (rawFile.id ? rawFile.id : false)) : false )}"
+              >
+                <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+                  <div class="el-upload__text">
+                    Trascina qui il logo oppure <em>Clicca qui per caricarli</em>
+                  </div>
+                  <template #tip>
+                    <div class="el-upload__tip">
+                      Accettati file {{ logoUploader.accept.label }} di massimo {{ logoUploader.maxmbsize }} Megabyte
+                    </div>
+                  </template>
               </el-upload>                            
             </el-form-item>
           </el-col>
@@ -405,7 +405,7 @@ const handleRead = ((id, row) => {
   form_action.value  = 'read';
   form_error.value   = {};
   Object.assign(legal_entity, legal_entities.value.find((obj) => {return obj.id === row.id}));
-  logo_img.value     = legal_entity.logo;
+  logo_img.value     = legal_entity.logo[0] ? [{...legal_entity.logo[0], url: legal_entity.logo[0].content, id: legal_entity.logo[0].id}] : [];
 })
 
 const handleUpdate = ((id, row) => {
@@ -415,7 +415,7 @@ const handleUpdate = ((id, row) => {
   form_action.value  = 'update';
   form_error.value   = {};
   Object.assign(legal_entity, legal_entities.value.find((obj) => {return obj.id === row.id}));
-  logo_img.value     = legal_entity.logo;
+  logo_img.value     = legal_entity.logo[0] ? [{...legal_entity.logo[0], url: legal_entity.logo[0].content, id: legal_entity.logo[0].id}] : [];
 })
 
 const handleHistory = (async(id, row) => {
@@ -425,7 +425,7 @@ const handleHistory = (async(id, row) => {
   form_action.value  = 'history';
   form_error.value   = {};
   Object.assign(legal_entity, legal_entities.value.find((obj) => {return obj.id === row.id}));
-  logo_img.value     = legal_entity.logo;
+  logo_img.value     = legal_entity.logo[0] ? [{...legal_entity.logo[0], url: legal_entity.logo[0].content, id: legal_entity.logo[0].id}] : [];
 
   activities_loading.value = true;
   activities.value = [];

@@ -128,8 +128,11 @@ class DocumentController extends Controller
          * 1 - parte un garbage collector per i files privi di morph
          * 2 - se un file non viene trovato non esiste già
          */
-        Document::where(['id' => $id, 'user_id' => Auth::user()->id])->forceDelete();        
-        return response(null, 200);
+        $doc             = Document::where(['id' => $id, 'user_id' => Auth::user()->id])->first();
+        $documentable_id = $doc->documentable_id;
+        $doc->forceDelete();   
+        
+        return response(['id' => $id, 'entity_id' => $documentable_id], 200);
     }
     
 }

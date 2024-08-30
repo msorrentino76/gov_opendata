@@ -27,7 +27,7 @@ class Document extends Model
     
     protected $hidden = [
         'documentable_type',
-        'documentable_id',
+        //'documentable_id',
         'user_id',
         'deleted_at',        
         'created_at',

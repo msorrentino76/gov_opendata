@@ -119,6 +119,7 @@ class LegalEntityController extends Controller
         //$user = Auth::user();
         
         $data = $request->only(
+                'logo_img',
                 /*'cod_amm',*/ 'acronimo', 'des_amm', 'regione', 'provincia', 'comune', 'cap', 'indirizzo',
                 'titolo_resp', 'nome_resp', 'cogn_resp', 'sito_istituzionale', 'liv_access', 'mail1',
                 'mail2', 'mail3', 'mail4', 'mail5', 'tipologia', 'categoria', 'data_accreditamento', /*'cf',*/ 'telefono', 'fax'
@@ -133,25 +134,35 @@ class LegalEntityController extends Controller
              */
             return response('Ente non trovato', 404);
         }
-        
-        $le->update($data);
-        
-        /*
-         *  COLLEGO GLI ALLEGATI: FACOLTATIVI! POTREBBE NON ESSERCI
-        
-        $data['allegati'] = isset($data['allegati']) ? $data['allegati'] : [];
-        
-        foreach($data['allegati'] as $allegato){
-            $documento = Document::where(['id' => $allegato['response']['id'], 'user_id' => $user->id])->first();
-            if(!is_null($documento)) {
-                $documento->toMorph($act);
+                
+        try{
+            
+            DB::beginTransaction();
+
+            $le->update($data);
+
+            /*
+             *  COLLEGO GLI ALLEGATI: FACOLTATIVI! POTREBBE NON ESSERCI
+            */
+
+            $data['logo_img'] = isset($data['logo_img']) ? $data['logo_img'] : [];
+
+            foreach($data['logo_img'] as $allegato){
+                $documento = Document::where(['id' => $allegato['response']['id'], 'user_id' => Auth::user()->id])->first();
+                if(!is_null($documento)) {
+                    $documento->toMorph($le, true);
+                }
             }
+                
+            DB::commit();
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('User: ' . Auth::user()->id . ' - Exception message: ' . $e->getMessage());
+            return response(['message' => 'Errore durante la creazione dell\'Ente', 'error' => $e->getMessage()], 500);
         }
-        */
         
-        //return Act::with('actDocuments')/*->with('partecipants')*/->where(['activities.id' => $act->id])->first();
-        
-        return $le;
+        return response(LegalEntity::with('logo')->where(['legal_entities.id' => $le->id])->first(), 200);
         
     }
     
