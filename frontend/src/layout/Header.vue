@@ -19,8 +19,16 @@
       
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
+      <div v-if="Auth.state.licence !== null" class="centered-img-container">
+        <span v-if="Auth.state.licence.logo[0]" :src="Auth.state.licence.logo[0].content">
+          <img :src="Auth.state.licence.logo[0].content" style="max-height: 46px; margin: 1px 5px auto 0px;" >
+        </span>
+      </div>
+
       <div v-if="Auth.state.licence !== null" class="centered-text-container">
+
         <span class="centered-text"><b>{{ Auth.state.licence.des_amm }}</b>&nbsp;&nbsp;
+
           <el-tooltip v-if="Auth.state.user.licence.expired_days > 30" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni`" placement="top-start">
             <el-button type="success" :icon="SuccessFilled" circle size="small"/>
           </el-tooltip>
@@ -29,8 +37,10 @@
           </el-tooltip>
           <el-tooltip v-if="Auth.state.user.licence.expired_days <= 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
             <el-button type="danger" :icon="WarningFilled" circle size="small"/>
-          </el-tooltip>                    
+          </el-tooltip> 
+
         </span>
+
       </div>
 
     </header>
@@ -135,18 +145,27 @@
 </script>
 
 <style scoped>
-  h4 {
-    margin: auto;
-  }
+
+h4 {
+  margin: auto;
+}
+
+.centered-img-container {
+  text-align: center; /* Centra il testo all'interno del contenitore */
+  position: absolute; /* Permette di posizionare il testo */
+  left: 40%;
+  top: 0;
+}
 
 .centered-text-container {
   text-align: center; /* Centra il testo all'interno del contenitore */
   position: absolute; /* Permette di posizionare il testo */
-  left: 50%;
+  left: 44%;
   top: 0;
 }
 
 .centered-text {
   display: inline-block;
 }
+
 </style>

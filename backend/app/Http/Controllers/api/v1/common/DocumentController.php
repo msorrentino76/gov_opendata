@@ -41,12 +41,16 @@ class DocumentController extends Controller
         return response(['id' => $documento->id], 201);
     }
     
-    public function download(string $id) {
+    public function privateDownload(string $id) {
         
         /*
-         * ACL: tutti possono scaricare i docs di tutti
+         * ACL: solo l'owner può scaricare
          */
-        $documento = Document::where(['id' => $id /*, 'user_id' => Auth::user()->id*/])->first();
+        $documento = Document::where(['id' => $id, 'user_id' => Auth::user()->id])->first();
+        
+        if(is_null($documento)) {
+            return response('Documento non trovato', 200);
+        }
         
         $nomeFile       = $documento->name;
         $mime           = $documento->mime;
@@ -63,6 +67,58 @@ class DocumentController extends Controller
                             'Accept-Ranges' => 'bytes',
         ]);
     }
+    
+    public function publicDownload(string $id) {
+        
+        /*
+         * ACL: tutti possono scaricare i docs di tutti
+         */
+        $documento = Document::where(['id' => $id, 'public' => true])->first();
+        
+        if(is_null($documento)) {
+            return response('Documento non trovato', 200);
+        }
+        
+        $nomeFile       = $documento->name;
+        $mime           = $documento->mime;
+        $base64_content = $documento->getRawOriginal('content'); // SKIP ACCESSOR
+        $size           = $documento->size;
+        $content = stripslashes(base64_decode($base64_content));
+
+        return response($content)
+                        ->withHeaders([
+                            'Content-Transfer-Encoding' => 'binary',
+                            'Content-type' => $mime,
+                            'Content-Disposition' => sprintf('attachment; filename="%s"', $nomeFile),
+                            'Content-Length' => $size,
+                            'Accept-Ranges' => 'bytes',
+        ]);
+    }
+    
+//    public function publicDownloadThumbnail(string $id) {
+//        
+//        /*
+//         * ACL: tutti possono scaricare i docs di tutti
+//         */
+//        $documento = Document::where(['id' => $id])->first();
+//        
+//        $nomeFile       = $documento->name;
+//        $mime           = $documento->mime;
+//        $base64_content = $documento->getRawOriginal('content'); // SKIP ACCESSOR
+//        $size           = $documento->size;
+//        $content = stripslashes(base64_decode($base64_content));
+//
+//        $content = Image::fromString($content)->resize(50);
+//        
+//        return response($content)
+//                        ->withHeaders([
+//                            'Content-Transfer-Encoding' => 'binary',
+//                            'Content-type' => $mime,
+//                            'Content-Disposition' => sprintf('attachment; filename="%s"', $nomeFile),
+//                            'Content-Length' => $size,
+//                            'Accept-Ranges' => 'bytes',
+//        ]);
+//    }
     
     public function remove(Request $request, string $id) {
         

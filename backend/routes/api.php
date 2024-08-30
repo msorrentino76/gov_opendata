@@ -60,10 +60,14 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::middleware(['auth:sanctum'])->prefix('document')->group(function () {
     Route::post('upload'       , [DocumentController::class, 'upload']);
-    Route::get ('download/{id}', [DocumentController::class, 'download'])->name('download');
+    Route::get ('download/{id}', [DocumentController::class, 'privateDownload'])->name('privateDownload');
     Route::delete('remove/{id}', [DocumentController::class, 'remove']);
 });
 
+Route::prefix('public')->group(function () {
+    Route::get ('download/{id}'          , [DocumentController::class, 'publicDownload'])->name('publicDownload');
+    //Route::get ('download/{id}/thumbnail', [DocumentController::class, 'publicDownload'])->name('publicDownloadThumbnail');
+});
 
 //Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')->group(function () {
 //    Route::get ('acts'    , [ActController::class, 'index']);

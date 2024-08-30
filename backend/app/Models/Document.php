@@ -32,6 +32,8 @@ class Document extends Model
         'deleted_at',        
         'created_at',
         'updated_at',
+        'can_download_callback',
+        'public',
     ];
     
     /**
@@ -46,12 +48,13 @@ class Document extends Model
     }
     
     private function toLink(/*$value*/){
-        return route('download', ['id' => $this->id]);
+        return route($this->public ? 'publicDownload' : 'privateDownload', ['id' => $this->id]);
     }
     
-    public function toMorph($entity) {
+    public function toMorph($entity, $public = false) {
         $this->documentable_type = get_class($entity);
-        $this->documentable_id = $entity->id;
+        $this->documentable_id   = $entity->id;
+        $this->public            = $public;
         $this->save();
     }
     

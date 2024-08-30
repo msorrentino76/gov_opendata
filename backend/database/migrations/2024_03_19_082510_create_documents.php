@@ -28,6 +28,9 @@ return new class extends Migration
              
             $table->string('description')->nullable();
             
+            $table->boolean('public')->default(false);
+            $table->string('can_download_callback')->nullable();
+            
             $table->foreignIdFor(User::class)->constrained();
             
             $table->timestamps();

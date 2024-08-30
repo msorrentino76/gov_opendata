@@ -30,7 +30,8 @@ class Licence extends Model
     protected $appends = ['user', 'legal', 'expired_days']; 
 
     public function legalEntity() {
-        return LegalEntity::find($this->legal_entity_id);
+        return LegalEntity::with('logo')->where(['legal_entities.id' => $this->legal_entity_id])->first();
+        //return LegalEntity::find($this->legal_entity_id);
     }
     
     public function getUserAttribute() {

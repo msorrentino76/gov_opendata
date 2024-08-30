@@ -51,6 +51,10 @@ class LegalEntity extends Model
  
     protected $appends = ['full_address', 'titolare'];
     
+    public function logo(){
+        return $this->morphMany(Document::class, 'documentable');
+    }
+    
     public function licence() {
         return $this->hasOne(Licence::class);
     }
