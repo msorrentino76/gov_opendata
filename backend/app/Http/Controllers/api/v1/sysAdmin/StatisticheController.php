@@ -43,5 +43,8 @@ class StatisticheController extends Controller
         return response()->json(['xAxis' => $x, 'yAxis' => $y]); 
     }
 
-    
+    public function last() {
+        //return StoricoLogin::orderBy('data_ora', 'desc')->limit(64)->get();
+        return response()->json(StoricoLogin::orderBy('data_ora', 'desc')->limit(64)->get()); 
+    }
 }

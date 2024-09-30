@@ -21,8 +21,14 @@ class StoricoLogin extends Model
         'user_id',
     ];
     
+    protected $appends = ['user'];
+        
     public    $timestamps = false;
         
+    public function getUserAttribute() {
+        return (string)User::find($this->user_id);
+    }
+    
     public static function store($request, $user) {
 
         $now = Carbon::now()->toDateTimeString();

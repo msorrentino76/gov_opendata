@@ -6,6 +6,16 @@
 
       <v-chart :option="stats" style="height: 480px;" autoresize v-loading="loading"></v-chart>
 
+      <h1>Ultimi 64 Login</h1>
+      <el-table :data="last" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato" >
+        <el-table-column prop="data_ora" label="Data"/>
+        <el-table-column prop="user"    label="Utente"/>
+        <el-table-column prop="so"      label="Sistema Operativo"/>
+        <el-table-column prop="browser" label="Browser"/>
+        <el-table-column prop="device"  label="Device"/>
+        <el-table-column prop="ip"      label="IP"/>
+      </el-table>
+
     </el-card>
 
 </template>
@@ -29,7 +39,7 @@
 
   const stats = ref({
         title: {
-          text: 'Accessi di utenti distint negli ultimi 12 mesi',
+          text: 'Accessi di utenti distinti negli ultimi 12 mesi',
           left: 'center',
         },
         tooltip: {
@@ -51,13 +61,20 @@
         ],
     });
 
-  onMounted(async ()=>{
-    loading.value = true;
-    const resp  = await list('sys_admin/accessi');
-    stats.value.xAxis.data     = resp.xAxis;
-    stats.value.series[0].data = resp.yAxis;
-    loading.value = false;
-  });
+    const last = ref([]);
+
+    onMounted(async ()=>{
+      loading.value = true;
+
+      const stats_resp  = await list('sys_admin/accessi');
+      stats.value.xAxis.data     = stats_resp.xAxis;
+      stats.value.series[0].data = stats_resp.yAxis;
+
+      const last_resp  = await list('sys_admin/ultimi');
+      last.value = last_resp;
+
+      loading.value = false;
+    });
 
   defineComponent({
       name: 'AccessiView',

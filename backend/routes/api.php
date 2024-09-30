@@ -108,8 +108,8 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::delete('licence/{id}'    , [LicenseController::class, 'destroy']);    
     Route::get   ('licence_activities/{id}'  , [LicenseController::class, 'licenceActivities']);
     
-    Route::get   ('accessi'        , [StatisticheController::class, 'index']);
-        
+    Route::get   ('accessi'       , [StatisticheController::class, 'index']);
+    Route::get   ('ultimi'        , [StatisticheController::class, 'last']);    
 });
  
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_admin')->group(function () {
