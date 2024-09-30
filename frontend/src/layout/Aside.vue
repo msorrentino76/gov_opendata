@@ -39,6 +39,11 @@
       <template #title>Licenze</template>
     </el-menu-item>
 
+    <el-menu-item index="/sysadmin/accessi" v-if="Auth.state.user.abilities.includes('system:admin')">
+      <el-icon><Histogram /></el-icon>
+      <template #title>Accessi</template>
+    </el-menu-item>
+
     <el-menu-item index="/sysadmin/logs" v-if="Auth.state.user.abilities.includes('system:admin')">
       <el-icon><Cpu /></el-icon>
       <template #title>System Log</template>
@@ -60,7 +65,7 @@
 
   import {defineProps, defineComponent} from 'vue';
 
-  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List} from '@element-plus/icons-vue'
+  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List, Histogram} from '@element-plus/icons-vue'
 
   defineProps({
     collapseMenu: {},

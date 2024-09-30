@@ -18,6 +18,7 @@ import SystemDashboardView  from './views/sysadmin/Dashboard.vue';
 import UsersView            from './views/common/Users.vue';
 import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
 import LicenceView          from './views/sysadmin/Licence.vue';
+import AccessiView          from './views/sysadmin/Accessi.vue';
 import SystemLogView        from './views/sysadmin/SystemLog.vue';
 
 import LeAdminDashboardView  from './views/legaladmin/Dashboard.vue';
@@ -34,6 +35,7 @@ const routes = [
     { path: '/users'                       , component: UsersView },
     { path: '/sysadmin/legal_entity'       , component: LegalEntityView },
     { path: '/sysadmin/licence'            , component: LicenceView },
+    { path: '/sysadmin/accessi'            , component: AccessiView },
     { path: '/sysadmin/logs'               , component: SystemLogView },
 
     { path: '/le_admin'                    , component: LeAdminDashboardView },

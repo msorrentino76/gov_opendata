@@ -14,6 +14,7 @@ use App\Http\Controllers\api\v1\common\UserController;
 
 use App\Http\Controllers\api\v1\sysAdmin\LegalEntityController;
 use App\Http\Controllers\api\v1\sysAdmin\LicenseController;
+use App\Http\Controllers\api\v1\sysAdmin\StatisticheController;
 use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
 use App\Http\Controllers\api\v1\legalEntityAdmin\OrganizationalUnitController;
@@ -106,6 +107,8 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::put   ('licence/{id}'    , [LicenseController::class, 'update']);
     Route::delete('licence/{id}'    , [LicenseController::class, 'destroy']);    
     Route::get   ('licence_activities/{id}'  , [LicenseController::class, 'licenceActivities']);
+    
+    Route::get   ('accessi'        , [StatisticheController::class, 'index']);
         
 });
  
