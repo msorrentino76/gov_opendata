@@ -21,6 +21,8 @@ use App\Notifications\ResetPassword;
 use Illuminate\Validation\Rule;
 use App\Rules\NoSpaces;
 
+use Illuminate\Support\Facades\Response;
+
 class UserController extends Controller
 {
     
@@ -180,6 +182,29 @@ class UserController extends Controller
          * 
          */
         
+    }
+    
+    public function scaricaManuale() {
+        
+        $user = Auth::user();
+        
+        if($user->tokenCan('legal_entity:admin') && $user->tokenCan('ou:user')) {
+            $nome_file = 'adminle_ou.pdf';
+        } else {
+            if($user->tokenCan('legal_entity:admin')){
+                $nome_file = 'adminle.pdf';
+            }
+            if($user->tokenCan('ou:user')){
+                $nome_file = 'ou.pdf';
+            }
+        }
+            
+        $file = public_path("manuali\\$nome_file");
+        
+        return response()->download($file, $nome_file, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment', // Forza il download come allegato
+        ]);
     }
     
     private function getResourceIfOwner($id) {

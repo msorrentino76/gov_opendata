@@ -124,3 +124,9 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::get   ('user_ou_act/{id}', [OuUserController::class, 'ouuserActivities']);
     
 });
+
+Route::middleware(['auth:sanctum', 'ability:legal_entity:admin,ou:user'])->prefix('manuali')->group(function () {
+    
+    Route::get ('/download'   , [UserController::class, 'scaricaManuale'])->withoutMiddleware('api');
+    
+});

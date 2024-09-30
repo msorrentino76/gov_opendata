@@ -17,6 +17,8 @@
 
       <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin') || Auth.state.user.abilities.includes('ou:user')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
       
+      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin') || Auth.state.user.abilities.includes('ou:user')"  @click="download({content: 'manuali\\download', name: 'Manuale.pdf'})"   :icon="Notebook" round>Manuale</el-button>
+
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
       <div v-if="Auth.state.licence !== null" class="centered-img-container">
@@ -64,9 +66,9 @@
 <script setup>
 
   import {ref, defineProps, defineComponent, onMounted, onBeforeUnmount } from 'vue';
-  import {list, revoke} from '../utils/service.js'; 
+  import {list, revoke, download} from '../utils/service.js'; 
 
-  import {/*Expand,*/ UserFilled, BellFilled, HelpFilled, SwitchButton, SuccessFilled, WarnTriangleFilled, WarningFilled } from '@element-plus/icons-vue';
+  import {/*Expand,*/ UserFilled, BellFilled, HelpFilled, SwitchButton, SuccessFilled, WarnTriangleFilled, WarningFilled, Notebook } from '@element-plus/icons-vue';
 
   import ProfiloView from '../views/common/Profilo.vue';
   import NotificheView from '../views/common/Notifiche.vue';
