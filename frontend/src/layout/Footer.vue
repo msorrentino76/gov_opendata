@@ -1,6 +1,6 @@
 <template>
     <footer>
-      <p>@2024 - Gestione Utenti by Numìe</p>
+      <p>@2024 - Gov Opendata by Numìe</p>
     </footer>
   </template>
   

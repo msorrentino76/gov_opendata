@@ -8,7 +8,7 @@ export default createStore({
       user    : null,
       licence : null,
       config: {
-        applicationBaseURL: 'http://localhost/gestione_utenti/backend/public',
+        applicationBaseURL: 'http://localhost/gov_opendata/backend/public',
       }
     },
     mutations: {
