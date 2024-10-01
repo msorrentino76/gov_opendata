@@ -8,6 +8,11 @@ body {
     margin: 0px;
 }
 
+.content {
+    color: #5b5777 !important;
+    padding: 16px 0 16px 0;
+}
+
 .main-header{
     background-color: #cad1e4;
     color: white;
