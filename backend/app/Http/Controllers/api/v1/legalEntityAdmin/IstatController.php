@@ -5,6 +5,8 @@ namespace App\Http\Controllers\api\v1\legalEntityAdmin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Http\Request;
+
 class IstatController extends Controller
 {
 
@@ -71,27 +73,80 @@ class IstatController extends Controller
         return response()->json(['dataflow' => $dataflow, 'categories' => $categories], 200); 
     }
 
-    private function _http($url) {
+    public function datafilter(Request $request){
+        
+        $data = $request->only('id_datastructure', 'flow_ref'); 
+        
+        $url = 'https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data['id_datastructure'];
+        
+        $resp = $this->_http($url, false);
+        
+        if($resp['error']){
+            Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
+            return response()->json('Errore durante l\'interrogazione ISTAT', 500);
+        }
+        
+        $xml = simplexml_load_string($resp['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
+        
+        $data_struct = [];
+        
+        foreach ($xml->xpath('//structure:Dimension') as $dimension) {
+            $position = (string)$dimension['position'];
+            $id = (string)$dimension['id'];
+            $codelist = $dimension->xpath('.//structure:Enumeration/Ref[@class="Codelist"]');
+            $refId = false;
+            if ($codelist) {
+                $refId = (string) $codelist[0]['id'];  // Recupera l'ID del Ref
+            } 
+            $data_struct[] = [
+                'position' => $position,
+                'id' => $id,
+                'codelist_id' => $refId,
+            ];
+        }
+        
+        /**
+         * @todo per ogni elemento in $data_struct avente codelist_id != da false, devo:
+         * 1- chiamare codelist per sapere che valori e che significato puo' assumere $data_struct['id]
+         * 2- availableconstraint/ID_DATAFLOW per sapere quali sono disponibili per il dataflow
+         * VANNO INCROCIATE QUESTE DUE CHIAMATE!!!!
+         */
+        
+        //file_put_contents('output.txt', $resp['content']);
+        
+        return response()->json($data_struct, 200);
+    }
+    
+    private function _http($url, $json = true) {
+        
         $resp = [
             'error'        => false,
             'errorMessage' => '',
             'httpCode'     => 200,
             'content'      => ''
         ];
+        
         $curlSES=curl_init(); 
         curl_setopt($curlSES, CURLOPT_URL, $url);
         curl_setopt($curlSES, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlSES, CURLOPT_HEADER, false);
-        // Imposta l'header per accettare il formato JSON
-        curl_setopt($curlSES, CURLOPT_HTTPHEADER, array('Accept: application/json','Accept-Language: it'));
+        
+        if($json) {
+            // Imposta l'header per accettare il formato JSON
+            curl_setopt($curlSES, CURLOPT_HTTPHEADER, array('Accept: application/json','Accept-Language: it'));
+        }
+        
         curl_setopt($curlSES, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
+        
         $resp['content']  = curl_exec($curlSES);
         $resp['httpCode'] = curl_getinfo($curlSES, CURLINFO_HTTP_CODE);
         if (curl_errno($curlSES)) {
             $resp['error']        = true;
             $resp['errorMessage'] = curl_error($curlSES);
         }
+        
         curl_close($curlSES);
+        
         return $resp;
     }
         

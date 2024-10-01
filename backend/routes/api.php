@@ -127,8 +127,8 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::put   ('user_ou/{id}'    , [OuUserController::class, 'update']);
     Route::get   ('user_ou_act/{id}', [OuUserController::class, 'ouuserActivities']);
     
-    Route::get   ('dataset'       , [IstatController::class, 'index']);
-    
+    Route::get   ('dataset'    , [IstatController::class, 'index']);
+    Route::post  ('datafilter' , [IstatController::class, 'datafilter']);
 });
 
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin,ou:user'])->prefix('manuali')->group(function () {

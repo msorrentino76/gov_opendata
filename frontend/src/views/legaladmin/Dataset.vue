@@ -43,7 +43,18 @@
 
         <el-table-column prop="name"         label="Dati disponibili"/>
 
+        <el-table-column>
+          <template #default="scope">
+            <el-button size="small" type="primary" @click="handleQuery(scope.$index, scope.row)">
+              Interroga
+            </el-button>
+          </template>
+        </el-table-column> 
       </el-table>
+
+      <el-drawer v-model="openDrawer" direction="rtl" size="90%">
+        <DatasetFilterView :flow_name="flow_name" :flow_ref="flow_ref" :id_datastructure="id_datastructure"/>
+      </el-drawer>
 
     </el-card>
 
@@ -55,12 +66,21 @@
 
   import {list} from '../../utils/service.js'
 
+  import DatasetFilterView from './DatasetFilter.vue';
+
   const loading    = ref(false);
   const search     = ref('');
   const dataflow   = ref([]);
   const categories = ref([]);
 
   const filter_by_cat = ref();
+
+  const flow_name        = ref();
+  const flow_ref         = ref();
+  const id_datastructure = ref();
+
+  
+  const openDrawer   = ref(false);
 
     const filterTableData = computed(() =>
       dataflow.value.filter(
@@ -86,6 +106,14 @@
         }
       )
     )
+
+    const handleQuery = (async(i, r) => {
+      //console.log('handleQuery', i, r)
+      flow_name.value = r.name
+      flow_ref.value   = r.id;
+      id_datastructure.value = r.data_struct;      
+      openDrawer.value = true;
+    })
 
     onMounted(async ()=>{
       loading.value = true;
