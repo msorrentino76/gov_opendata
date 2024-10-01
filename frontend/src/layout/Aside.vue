@@ -54,6 +54,11 @@
       <template #title>Utenze Unità Org.</template>
     </el-menu-item>
 
+    <el-menu-item index="/le_admin/dataset" v-if="Auth.state.user.abilities.includes('legal_entity:admin') && Auth.state.licence !== null">
+      <el-icon><DataAnalysis /></el-icon>
+      <template #title>Dataset disponibili</template>
+    </el-menu-item>
+
   </el-menu>
 
 </template>
@@ -65,7 +70,7 @@
 
   import {defineProps, defineComponent} from 'vue';
 
-  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List, Histogram} from '@element-plus/icons-vue'
+  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List, Histogram, DataAnalysis} from '@element-plus/icons-vue'
 
   defineProps({
     collapseMenu: {},

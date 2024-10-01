@@ -24,6 +24,7 @@ import SystemLogView        from './views/sysadmin/SystemLog.vue';
 import LeAdminDashboardView  from './views/legaladmin/Dashboard.vue';
 import OUView                from './views/legaladmin/OU.vue';
 import OUUserView            from './views/legaladmin/OUUser.vue';
+import DatasetView           from './views/legaladmin/Dataset.vue';
 
 import auth from './store/Auth.js'; 
 
@@ -41,6 +42,7 @@ const routes = [
     { path: '/le_admin'                    , component: LeAdminDashboardView },
     { path: '/le_admin/ou'                 , component: OUView },
     { path: '/le_admin/ou_users'           , component: OUUserView },
+    { path: '/le_admin/dataset'            , component: DatasetView },
 
   ];
   

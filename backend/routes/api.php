@@ -19,6 +19,7 @@ use App\Http\Controllers\api\v1\sysAdmin\LogsController;
 
 use App\Http\Controllers\api\v1\legalEntityAdmin\OrganizationalUnitController;
 use App\Http\Controllers\api\v1\legalEntityAdmin\OuUserController;
+use App\Http\Controllers\api\v1\legalEntityAdmin\IstatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,6 +126,8 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::get   ('users_ous'       , [OuUserController::class, 'index']);
     Route::put   ('user_ou/{id}'    , [OuUserController::class, 'update']);
     Route::get   ('user_ou_act/{id}', [OuUserController::class, 'ouuserActivities']);
+    
+    Route::get   ('dataset'       , [IstatController::class, 'index']);
     
 });
 
