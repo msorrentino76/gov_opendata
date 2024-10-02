@@ -181,11 +181,16 @@
 
     const submit = (async() => {
       loadingDrawer.value = true;
-      console.log(selectedfilter.value);
-      let resp = await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': selectedfilter.value}, true);
-      console.log(resp);
+      /*let resp =*/ await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': getFormSelectedfilterObj()}, true);
       loadingDrawer.value = false;
     });
+
+    function getFormSelectedfilterObj(){
+        return Object.keys(selectedfilter.value).reduce((acc, key) => {
+            acc[key] = selectedfilter.value[key];
+            return acc;
+        }, {});
+    }
 
     onMounted(async ()=>{
       loading.value = true;
