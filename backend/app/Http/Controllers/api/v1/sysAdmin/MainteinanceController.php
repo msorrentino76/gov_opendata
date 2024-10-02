@@ -5,9 +5,10 @@ namespace App\Http\Controllers\api\v1\sysAdmin;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Http;
-
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\File;
+
+use App\Models\Codelist;
+use App\Models\Code;
 
 use Carbon\Carbon;
 
@@ -52,14 +53,53 @@ class MainteinanceController extends Controller
             $version     = (string)$codelist['version'];
             $name        = isset($codelist->xpath('.//common:Name[@xml:lang="it"]')[0]) ? (string)($codelist->xpath('.//common:Name[@xml:lang="it"]')[0]) : $id_codelist;
 
-            $this->_l("$id_codelist $urn $version $name");
+            $model_codelist = Codelist::where('codelist', $id_codelist)->first();
+            
+            if(is_null($model_codelist)){
+                // inserisci
+                $model_codelist = Codelist::create([
+                    'codelist' => $id_codelist,
+                    'urn'      => $urn,
+                    'version'  => $version,
+                    'name'     => $name
+                ]);
+                $this->_l("Inserito codelist {$model_codelist->codelist} - id: {$model_codelist->id}");
+            } else {
+                // aggiorna
+                $model_codelist->urn     = $urn;
+                $model_codelist->version = $version;
+                $model_codelist->name    = $name;
+                $model_codelist->save();
+                if($model_codelist->wasChanged()){
+                    $this->_l("Aggiornato codelist {$model_codelist->codelist} - id: {$model_codelist->id}");
+                }
+            }
             
             foreach ($codelist->xpath('.//structure:Code') as $code) {
                 
                 $id_code = (string)$code['id'];
                 $name    = isset($code->xpath('.//common:Name[@xml:lang="it"]')[0]) ? (string)($code->xpath('.//common:Name[@xml:lang="it"]')[0]) : $id_code;
                 
-                $this->_l(" ------------------- $id_code $name");
+                $model_code = Code::where('code', $id_code)->where('codelist', $id_codelist)->first();
+            
+                if(is_null($model_code)){
+                    // inserisci
+                    $model_code = Code::create([
+                        'codelist_id' => $model_codelist->id,
+                        'codelist'    => $model_codelist->codelist,
+                        'code'        => $id_code,
+                        'name'        => $name
+                    ]);
+                    $this->_l("   ->   Inserito code {$model_code->code} - id: {$model_code->id}");
+                } else {
+                    // aggiorna
+                    $model_code->codelist_id = $model_codelist->id;
+                    $model_code->name        = $name;
+                    $model_code->save();
+                    if($model_code->wasChanged()){
+                        $this->_l("   ->   Aggiornato code {$model_code->code} - id: {$model_code->id}");
+                    }
+                }
             }
     
         }

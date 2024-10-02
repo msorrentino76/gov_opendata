@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Http\Request;
 
+use App\Models\Codelist;
+use App\Models\Code;
+
 class IstatController extends Controller
 {
 
@@ -77,6 +80,8 @@ class IstatController extends Controller
         
         $data = $request->only('id_datastructure', 'flow_ref'); 
         
+        // con id_datastructure interrogo datastructure
+        
         $url = 'https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data['id_datastructure'];
         
         $resp = $this->_http($url, false);
@@ -92,29 +97,77 @@ class IstatController extends Controller
         
         foreach ($xml->xpath('//structure:Dimension') as $dimension) {
             $position = (string)$dimension['position'];
-            $id = (string)$dimension['id'];
+            $ds_key = (string)$dimension['id'];
             $codelist = $dimension->xpath('.//structure:Enumeration/Ref[@class="Codelist"]');
             $refId = false;
             if ($codelist) {
                 $refId = (string) $codelist[0]['id'];  // Recupera l'ID del Ref
             } 
-            $data_struct[] = [
+            // LEGO DS_KEY (chiave del datastructure) con CODELIST
+            $data_struct[$ds_key] = [
                 'position' => $position,
-                'id' => $id,
-                'codelist_id' => $refId,
+                'codelist' => $refId,
             ];
         }
         
-        /**
-         * @todo per ogni elemento in $data_struct avente codelist_id != da false, devo:
-         * 1- chiamare codelist per sapere che valori e che significato puo' assumere $data_struct['id]
-         * 2- availableconstraint/ID_DATAFLOW per sapere quali sono disponibili per il dataflow
-         * VANNO INCROCIATE QUESTE DUE CHIAMATE!!!!
-         */
+        // VEDIAMO CHE VALORI CI SONO DISPONIBILI: con flow_ref interrogo availableconstraint
+        
+        $url = 'https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data['flow_ref'];
+        
+        $resp = $this->_http($url, false);
+        
+        if($resp['error']){
+            Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
+            return response()->json('Errore durante l\'interrogazione ISTAT', 500);
+        }
+        
+        $xml = simplexml_load_string($resp['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
+        
+        $availables = [];
+        
+        foreach ($xml->xpath('//common:KeyValue') as $key) {
+            $ds_key = (string) $key['id'];
+            $value  = [];
+            foreach ($key->xpath('.//common:Value') as $v) {
+                $value[] = (string)$v[0];
+            }
+            $availables[$ds_key] = $value;
+        }
+        
+        // A QUESTO PUNTO MI TROVO:
+        // $data_struct ds_key -> codelist
+        // $availables  ds_key -> ARRAY DI OPTIONS
+        
+        // LEGO LE DUE STRUTTURE TRAMITE I MODEL CODELIST E CODE PER LE TRADUZIONI E FORMATTO LE OPTIONS:
+        
+        $filters_json = [];
+        
+        foreach($data_struct as $ds_key => $ds){
+            
+            $codelist = $ds['codelist'];
+
+            $options = [];
+            
+            foreach ($availables[$ds_key] as $key_option){
+                $options[] = [
+                    'value' => $key_option,
+                    'label' => Code::where('code', $key_option)->where('codelist', $codelist)->first()->name,
+                ];
+            }
+            
+            $filters_json[] = [
+                'name'  => 'posix_' . $ds['position'],
+                'label' => Codelist::where('codelist', $codelist)->first()->name,
+                'dsKey' => $ds_key,
+                'type'  => 'checkbox',
+                'options' => $options,
+            ];
+            
+        }
         
         //file_put_contents('output.txt', $resp['content']);
         
-        return response()->json($data_struct, 200);
+        return response()->json($filters_json, 200);
     }
     
     private function _http($url, $json = true) {
