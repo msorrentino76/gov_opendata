@@ -52,8 +52,48 @@
         </el-table-column> 
       </el-table>
 
-      <el-drawer v-model="openDrawer" direction="rtl" size="90%">
-        <DatasetFilterView :flow_name="flow_name" :flow_ref="flow_ref" :id_datastructure="id_datastructure"/>
+      <el-drawer v-model="openDrawer" :title="flow_name" direction="rtl" size="90%">
+       
+        <!-- DatasetFilterView :flow_name="flow_name" :flow_ref="flow_ref" :id_datastructure="id_datastructure"/-->
+       
+        <!--el-alert title="Se non viene selezionato il valore di un filtro esso verrà escluso" show-icon type="info" /-->
+
+        <el-row v-loading="loadingDrawer">
+
+          <el-col :span="4">
+          
+            <b>Filtri di ricerca applicabili:</b>
+
+            <div v-for="posix in datafilter" :key="posix.name">
+              <p>{{ posix.label }}</p>
+              <el-select  
+                v-if="posix.type == 'select'"          
+                v-model="selectedfilter[posix.name]"
+                multiple
+                filterable
+                placeholder="Seleziona"
+                style="width: 100%"            
+              >
+                <el-option
+                  v-for="item in posix.options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+          
+            </div>
+
+          </el-col>
+          
+          <el-col :span="20">
+
+            <el-button type="success" @click="submit">Invia richiesta</el-button>
+
+          </el-col>
+
+        </el-row>
+
       </el-drawer>
 
     </el-card>
@@ -64,9 +104,9 @@
 
   import {defineComponent, onMounted, ref, computed} from 'vue';
 
-  import {list} from '../../utils/service.js'
+  import {list, create} from '../../utils/service.js'
 
-  import DatasetFilterView from './DatasetFilter.vue';
+  //import DatasetFilterView from './DatasetFilter.vue';
 
   const loading    = ref(false);
   const search     = ref('');
@@ -80,7 +120,14 @@
   const id_datastructure = ref();
 
   
-  const openDrawer   = ref(false);
+  const openDrawer    = ref(false);
+  const loadingDrawer = ref(false);
+  
+  const datafilter     = ref([]);
+  const selectedfilter = ref([]);
+
+  const nPos                  = ref(0);
+  const availableForCurrentLe = ref(false);
 
     const filterTableData = computed(() =>
       dataflow.value.filter(
@@ -108,12 +155,37 @@
     )
 
     const handleQuery = (async(i, r) => {
-      //console.log('handleQuery', i, r)
+      // Conervo i dati
       flow_name.value = r.name
       flow_ref.value   = r.id;
       id_datastructure.value = r.data_struct;      
+
+      // inizializzo
+      datafilter.value            = [];
+      nPos.value                  = 0;
+      availableForCurrentLe.value = false;
+      selectedfilter.value        = [];
+
       openDrawer.value = true;
+      loadingDrawer.value = true;
+
+      let resp = await create('le_admin/datafilter', {'id_datastructure': id_datastructure.value, 'flow_ref': flow_ref.value}, true);
+
+      datafilter.value            = resp.filtersJson
+      nPos.value                  = resp.nPos;
+      availableForCurrentLe.value = resp.availableForCurrentLe;
+
+      loadingDrawer.value = false;
+
     })
+
+    const submit = (async() => {
+      loadingDrawer.value = true;
+      console.log(selectedfilter.value);
+      let resp = await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': selectedfilter.value}, true);
+      console.log(resp);
+      loadingDrawer.value = false;
+    });
 
     onMounted(async ()=>{
       loading.value = true;

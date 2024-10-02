@@ -144,6 +144,22 @@ class IstatController extends Controller
         
         foreach($data_struct as $ds_key => $ds){
             
+            $availableForCurrentLe = false;
+            
+            // CHECK TERRITORIO: E SE CI SONO AREE NON IDENTICHE AL COMUNE?
+            /*
+            if($ds_key == 'ITTER107'){
+                
+                // cerco il codice istat dell'Ente licenziato tra quelli disponibili:
+                $array_codice_istat_available = $availables['ITTER107'];
+                Auth::user()->notExpiredLicenceFor();
+                if(!in_array($array_codice_istat_available)){
+                    
+                }
+                
+            }
+            */
+                
             $codelist = $ds['codelist'];
 
             $options = [];
@@ -155,19 +171,40 @@ class IstatController extends Controller
                 ];
             }
             
-            $filters_json[] = [
-                'name'  => 'posix_' . $ds['position'],
-                'label' => Codelist::where('codelist', $codelist)->first()->name,
-                'dsKey' => $ds_key,
-                'type'  => 'checkbox',
-                'options' => $options,
-            ];
-            
+            usort($options, function($a, $b) {
+                return strcmp($a['label'], $b['label']);
+            });
+        
+            /*
+             * NON HA SENSO FILTRARE PER UN CAMPO CHE HA SOLO UNA OPTION
+             */
+            if(count($options) > 1) {
+                $filters_json[] = [
+                    'name'  => 'posix_' . $ds['position'],
+                    'label' => Codelist::where('codelist', $codelist)->first()->name,
+                    //'dsKey' => $ds_key,
+                    //'codeList' => $codelist,
+                    'type'  => 'select',
+                    'options' => $options,
+                ];
+            }
         }
         
         //file_put_contents('output.txt', $resp['content']);
         
-        return response()->json($filters_json, 200);
+        return response()->json([
+            'nPos'                  => count($data_struct),
+            'filtersJson'           => $filters_json,
+            'availableForCurrentLe' => $availableForCurrentLe,
+            ], 200);
+    }
+    
+    public function dataquery(Request $request){
+        
+        $data = $request->only('nPos', 'flow_ref', 'selectedfilter');
+        
+        return response()->json(['loopback' => true, 'submit' => $data], 200);
+        
     }
     
     private function _http($url, $json = true) {

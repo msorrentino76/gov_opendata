@@ -134,6 +134,8 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     
     Route::get   ('dataset'    , [IstatController::class, 'index']);
     Route::post  ('datafilter' , [IstatController::class, 'datafilter']);
+    Route::post  ('dataquery'  , [IstatController::class, 'dataquery']);
+    
 });
 
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin,ou:user'])->prefix('manuali')->group(function () {
