@@ -16,6 +16,7 @@ use App\Http\Controllers\api\v1\sysAdmin\LegalEntityController;
 use App\Http\Controllers\api\v1\sysAdmin\LicenseController;
 use App\Http\Controllers\api\v1\sysAdmin\StatisticheController;
 use App\Http\Controllers\api\v1\sysAdmin\LogsController;
+use App\Http\Controllers\api\v1\sysAdmin\MainteinanceController;
 
 use App\Http\Controllers\api\v1\legalEntityAdmin\OrganizationalUnitController;
 use App\Http\Controllers\api\v1\legalEntityAdmin\OuUserController;
@@ -111,6 +112,10 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     
     Route::get   ('accessi'       , [StatisticheController::class, 'index']);
     Route::get   ('ultimi'        , [StatisticheController::class, 'last']);    
+    
+    Route::prefix('manteinance')->group(function () {
+        Route::get('codelist'     , [MainteinanceController::class, 'codelist']);
+    });
 });
  
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_admin')->group(function () {

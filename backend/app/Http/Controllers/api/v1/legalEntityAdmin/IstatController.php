@@ -131,10 +131,12 @@ class IstatController extends Controller
         curl_setopt($curlSES, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlSES, CURLOPT_HEADER, false);
         
+        $headers = ['Accept-Language: it'];        
         if($json) {
             // Imposta l'header per accettare il formato JSON
-            curl_setopt($curlSES, CURLOPT_HTTPHEADER, array('Accept: application/json','Accept-Language: it'));
+            $headers[] = 'Accept: application/json';
         }
+        curl_setopt($curlSES, CURLOPT_HTTPHEADER, $headers);
         
         curl_setopt($curlSES, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36");
         
