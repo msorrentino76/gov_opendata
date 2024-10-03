@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 
 use App\Models\Codelist;
 use App\Models\Code;
+use App\Models\Dataflow;
+use App\Models\Categories;
 
 use Carbon\Carbon;
 
@@ -108,15 +110,127 @@ class MainteinanceController extends Controller
         
         // se l'elaborazione va a buon fine rinomino e archivio il file:
         $p = explode('.', $name_file);
-        //Storage::move($path_file . $name_file, $path_file . $p[0] . '_' . Carbon::now()->format('Ymd') . '.' . $p[1]);
+        Storage::move($path_file . $name_file, $path_file . $p[0] . '_' . Carbon::now()->format('Ymd') . '.' . $p[1]);
         
         $this->_l("File $name_file archiviato");
         
         return response()->json($this->status, 200); 
     }
 
+    public function dataflow() {
+        
+        set_time_limit(0);
+        
+        $path_file = 'manteinance/dataflow/';
+        $name_file = 'dataflow.json';
+        
+        if (Storage::disk('local')->exists($path_file . $name_file)) {
+            $this->_l("File $name_file esistente");
+        } else {
+            $this->_l("File $name_file non presente: avvio il download...");
+            $contents = Http::withHeaders([
+                            'Accept'          => 'application/json',
+                            'Accept-Language' => 'it'
+                        ])->timeout(0)->get('https://sdmx.istat.it/SDMXWS/rest/dataflow/IT1');
+            $i = strpos($contents, '{');
+            $contents = substr($contents, $i);
+            Storage::disk('local')->put($path_file . $name_file, $contents);
+            $this->_l('Download completato');
+        }
+        
+        $this->_l('Inizio elaborazione...');
+        
+        $json = Storage::disk('local')->get($path_file . $name_file);
+        $array = json_decode($json);
+
+        $dataflow = [];
+        
+        foreach($array->references as $reference){
+            $id            = $reference->id;
+            $name          = ucfirst($reference->name);
+            $version       = $reference->version;
+            $is_final      = $reference->isFinal;
+            $structure_urn = $reference->structure->urn;
+            $data_struct   = $this->removeTextBetweenParentheses(explode(':', $structure_urn)[3]);
+            $category      = explode('_', $reference->id)[0];
+            
+            $df = Dataflow::where('flow_ref', $id)->first();
+            
+            if(is_null($df)){
+                
+                // inserisci
+                $df = Dataflow::create([
+                    'flow_ref'    => $id,
+                    'category'    => $category,
+                    'data_struct' => $data_struct,
+                    'is_final'    => $is_final,
+                    'name'        => $name,
+                    'version'     => $version, 
+                ]);
+                
+                $this->_l("Inserito dataflow {$df->codelist} - id: {$df->id}");
+                
+            } else {
+                
+                // aggiorna
+                $df->category    = $category;
+                $df->data_struct = $data_struct;
+                $df->is_final    = $is_final;
+                $df->name        = $name;
+                $df->version     = $version; 
+                $df->save();
+                
+                if($df->wasChanged()){
+                    $this->_l("Aggiornato dataflow {$df->codelist} - id: {$df->id}");
+                }
+            }
+
+        }
+        
+        $this->_l('Fine elaborazione...');
+        
+        // se l'elaborazione va a buon fine rinomino e archivio il file:
+        $p = explode('.', $name_file);
+        Storage::move($path_file . $name_file, $path_file . $p[0] . '_' . Carbon::now()->format('Ymd') . '.' . $p[1]);
+        
+        $this->_l("File $name_file archiviato");
+        
+        return response()->json($this->status, 200); 
+    }
+    
+    public function categories() {
+        
+        set_time_limit(0);
+
+        $path_file = Categories::PATH_FILE;
+        $name_file = Categories::NAME_FILE;
+        
+        if (Storage::disk('local')->exists($path_file . $name_file)) {
+            $p = explode('.', $name_file);
+            Storage::move($path_file . $name_file, $path_file . $p[0] . '_' . Carbon::now()->format('Ymd') . '.' . $p[1]);
+            $this->_l("File precedente $name_file archiviato");
+        }
+        
+        $this->_l("File $name_file: avvio il download...");
+        $contents = Http::withHeaders([
+                        'Accept'          => 'application/json',
+                        'Accept-Language' => 'it'
+                    ])->timeout(0)->get(Categories::DOWNLOAD_URL);
+        $i = strpos($contents, '{');
+        $contents = substr($contents, $i);
+        Storage::disk('local')->put($path_file . $name_file, $contents);
+        $this->_l('Download completato');
+                       
+        return response()->json($this->status, 200); 
+        
+    }
+    
     private function _l($msg) {
         $this->status[] = ['timestamp' => Carbon::now(), 'message' => $msg ];
+    }
+    
+    private function removeTextBetweenParentheses($string) {
+        return preg_replace('/\s*\(.*?\)\s*/', '', $string);
     }
     
 }

@@ -114,7 +114,9 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::get   ('ultimi'        , [StatisticheController::class, 'last']);    
     
     Route::prefix('manteinance')->group(function () {
-        Route::get('codelist'     , [MainteinanceController::class, 'codelist']);
+        Route::get('codelist'     , [MainteinanceController::class, 'codelist'  ]);
+        Route::get('dataflow'     , [MainteinanceController::class, 'dataflow'  ]);
+        Route::get('categories'   , [MainteinanceController::class, 'categories']);
     });
 });
  

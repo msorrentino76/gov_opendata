@@ -42,6 +42,7 @@
         -->
 
         <el-table-column prop="name"         label="Dati disponibili"/>
+        <el-table-column prop="version"      label="Versione"/>
 
         <el-table-column>
           <template #default="scope">
@@ -156,8 +157,8 @@
 
     const handleQuery = (async(i, r) => {
       // Conervo i dati
-      flow_name.value = r.name
-      flow_ref.value   = r.id;
+      flow_name.value  = r.name
+      flow_ref.value   = r.flow_ref;
       id_datastructure.value = r.data_struct;      
 
       // inizializzo
