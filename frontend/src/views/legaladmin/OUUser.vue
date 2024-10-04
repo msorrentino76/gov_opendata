@@ -141,8 +141,10 @@
 
     import {User, CreditCard} from '@element-plus/icons-vue'
 
-    import Auth from '../../store/Auth.js';
-
+    //import Auth from '../../store/Store.js';
+    import { useStore } from 'vuex';
+    const store = useStore();
+    
     const ous      = ref([]);
     const users    = ref([]);
     const usersopt = ref([]);
@@ -285,14 +287,14 @@
         usersopt.value = [];
         if(resp1 && !resp1.errors){
             users.value = resp1;
-            users.value.push(Auth.state.user);
+            users.value.push(store.state.login.user);
             resp1.map((u) => {                 
                 usersopt.value.push({key: u.id, label: u.name + ' ' + u.surname, disabled: false});
                 users_email.value.push(u.email);
             })
         }
         
-        //usersopt.value.push({key: Auth.state.user.id, label: Auth.state.user.name + ' ' + Auth.state.user.surname, disabled: false});
+        //usersopt.value.push({key: store.state.login.user.id, label: store.state.login.user.name + ' ' + store.state.login.user.surname, disabled: false});
 
         let resp2 = await list('le_admin/users_ous');
         checked.value = [];

@@ -102,7 +102,7 @@
 
   import {list, create, read, update, del} from '../../utils/service.js';
 
-  //import Auth from '../../store/Auth.js';
+  //import Auth from '../../store/Store.js';
 
 const drawerTitles = {
   onCreate: '',

@@ -15,29 +15,29 @@
 
       <el-button @click="setMode('profile')"      :icon="UserFilled" round>Profilo</el-button>
 
-      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin') || Auth.state.user.abilities.includes('ou:user')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
+      <el-button v-if="store.state.login.user.abilities.includes('legal_entity:admin') || store.state.login.user.abilities.includes('ou:user')"  @click="setMode('assistance')"   :icon="HelpFilled" round>Assistenza</el-button>
       
-      <el-button v-if="Auth.state.user.abilities.includes('legal_entity:admin') || Auth.state.user.abilities.includes('ou:user')"  @click="download({content: 'manuali\\download', name: 'Manuale.pdf'})"   :icon="Notebook" round>Manuale</el-button>
+      <el-button v-if="store.state.login.user.abilities.includes('legal_entity:admin') || store.state.login.user.abilities.includes('ou:user')"  @click="download({content: 'manuali\\download', name: 'Manuale.pdf'})"   :icon="Notebook" round>Manuale</el-button>
 
       <el-button @click="logout()" :icon="SwitchButton" round>Logout</el-button>
 
-      <div v-if="Auth.state.licence !== null" class="centered-img-container">
-        <span v-if="Auth.state.licence.logo[0]" :src="Auth.state.licence.logo[0].content">
-          <img :src="Auth.state.licence.logo[0].content" style="max-height: 46px; margin: 1px 5px auto 0px;" >
+      <div v-if="store.state.login.licence !== null" class="centered-img-container">
+        <span v-if="store.state.login.licence.logo[0]" :src="store.state.login.licence.logo[0].content">
+          <img :src="store.state.login.licence.logo[0].content" style="max-height: 46px; margin: 1px 5px auto 0px;" >
         </span>
       </div>
 
-      <div v-if="Auth.state.licence !== null" class="centered-text-container">
+      <div v-if="store.state.login.licence !== null" class="centered-text-container">
 
-        <span class="centered-text"><b>{{ Auth.state.licence.des_amm }}</b>&nbsp;&nbsp;
+        <span class="centered-text"><b>{{ store.state.login.licence.des_amm }}</b>&nbsp;&nbsp;
 
-          <el-tooltip v-if="Auth.state.user.licence.expired_days > 30" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni`" placement="top-start">
+          <el-tooltip v-if="store.state.login.user.licence.expired_days > 30" class="box-item" effect="dark" :content="`La licenza scadrà tra ${store.state.login.user.licence.expired_days} giorni`" placement="top-start">
             <el-button type="success" :icon="SuccessFilled" circle size="small"/>
           </el-tooltip>
-          <el-tooltip v-if="Auth.state.user.licence.expired_days <= 30 && Auth.state.user.licence.expired_days > 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
+          <el-tooltip v-if="store.state.login.user.licence.expired_days <= 30 && store.state.login.user.licence.expired_days > 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${store.state.login.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
             <el-button type="warning" :icon="WarnTriangleFilled" circle size="small"/>
           </el-tooltip>
-          <el-tooltip v-if="Auth.state.user.licence.expired_days <= 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${Auth.state.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
+          <el-tooltip v-if="store.state.login.user.licence.expired_days <= 10" class="box-item" effect="dark" :content="`La licenza scadrà tra ${store.state.login.user.licence.expired_days} giorni. Contattare l'Assistenza per rinnovare.`" placement="top-start">
             <el-button type="danger" :icon="WarningFilled" circle size="small"/>
           </el-tooltip> 
 
@@ -74,8 +74,10 @@
   import NotificheView from '../views/common/Notifiche.vue';
   import AssistenzaView from '../views/common/Assistenza.vue';
 
-  import Auth from '../store/Auth.js';
-
+  //import Auth from '../store/Store.js';
+  import { useStore } from 'vuex';
+  const store = useStore();
+  
   import { useRouter } from 'vue-router';
 
   const router = useRouter();

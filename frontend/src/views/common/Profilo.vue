@@ -4,7 +4,7 @@
 
   <br>
 
-  <FormEl :formModel="formModel" :rules="rules" :errors="errorsForm" :formData="Auth.state.user" :action="[]" :formLoading="formLoading"/>
+  <FormEl :formModel="formModel" :rules="rules" :errors="errorsForm" :formData="store.state.login.user" :action="[]" :formLoading="formLoading"/>
 
   <br><br><br>
 
@@ -18,12 +18,15 @@
 
 <script setup>
 
-  import Auth from '@/store/Auth';
+  //import Auth from '@/store/Store';
+  import { useStore } from 'vuex';
 
   import {defineComponent, ref} from 'vue';
   import FormEl from '../../components/Form.vue';
 
   import {update} from '../../utils/service.js';
+
+  const store = useStore();
 
   const errorsForm     = ref([]);
   const errorsFormPass = ref([]);
@@ -201,14 +204,14 @@
 
       formLoading.value = true;
       
-      data = {...data, id: Auth.state.user.id};
+      data = {...data, id: store.state.login.user.id};
 
       let resp = await update('profile/account', data);
       if(resp){ 
         if(resp.errors){
           errorsForm.value = resp.errors;
         } else {
-          Auth.commit('updateUser', resp);
+          store.commit('login/updateUser', resp);
         }
       }
 
@@ -230,14 +233,14 @@
 
       formPassLoading.value = true;
 
-      data = {...data, id: Auth.state.user.id};
+      data = {...data, id: store.state.login.user.id};
 
       let resp = await update('profile/password', data);
       if(resp){ 
         if(resp.errors){
           errorsFormPass.value = resp.errors;
         } else {
-          Auth.commit('updateUser', resp);
+          store.commit('login/updateUser', resp);
         }
       }
 

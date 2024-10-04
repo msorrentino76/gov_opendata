@@ -1,6 +1,6 @@
 <template>
 
-    <h3>{{Auth.state.user.abilities.includes('system:admin') ? 'Amministratori di Ente' : 'Utenti'}}</h3>
+    <h3>{{store.state.login.user.abilities.includes('system:admin') ? 'Amministratori di Ente' : 'Utenti'}}</h3>
 
     <el-card class="box-card">
 
@@ -155,7 +155,9 @@
 
   import {list, create, read, update, del} from '../../utils/service.js';
 
-  import Auth from '../../store/Auth.js';
+  //import Auth from '../../store/Store.js';
+  import { useStore } from 'vuex';
+  const store = useStore();
 
 const users = ref([]);
 
@@ -221,7 +223,7 @@ const tableRowClassName = ({row}) => {
 
 const handleCreate = (() => {
   openDrawer.value   = true;
-  drawerTitle.value  = 'Aggiungi ' + (Auth.state.user.abilities.includes('system:admin') ? 'Amministratore di Ente' : 'Utente');
+  drawerTitle.value  = 'Aggiungi ' + (store.state.login.user.abilities.includes('system:admin') ? 'Amministratore di Ente' : 'Utente');
   form_disable.value = false;
   form_action.value  = 'create';
   form_error.value   = {};

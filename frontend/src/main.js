@@ -26,23 +26,23 @@ import OUView                from './views/legaladmin/OU.vue';
 import OUUserView            from './views/legaladmin/OUUser.vue';
 import DatasetView           from './views/legaladmin/Dataset.vue';
 
-import auth from './store/Auth.js'; 
+import store from './store/Store.js'; 
 
 const routes = [
 
-    { path: '/'                            , component: DispatcherView },
+    { path: '/'                            , meta: { transition: 'slide-left' }, component: DispatcherView },
 
-    { path: '/sysadmin'                    , component: SystemDashboardView },
-    { path: '/users'                       , component: UsersView },
-    { path: '/sysadmin/legal_entity'       , component: LegalEntityView },
-    { path: '/sysadmin/licence'            , component: LicenceView },
-    { path: '/sysadmin/accessi'            , component: AccessiView },
-    { path: '/sysadmin/logs'               , component: SystemLogView },
+    { path: '/sysadmin'                    , meta: { transition: 'slide-left' }, component: SystemDashboardView },
+    { path: '/users'                       , meta: { transition: 'slide-left' }, component: UsersView },
+    { path: '/sysadmin/legal_entity'       , meta: { transition: 'slide-left' }, component: LegalEntityView },
+    { path: '/sysadmin/licence'            , meta: { transition: 'slide-left' }, component: LicenceView },
+    { path: '/sysadmin/accessi'            , meta: { transition: 'slide-left' }, component: AccessiView },
+    { path: '/sysadmin/logs'               , meta: { transition: 'slide-left' }, component: SystemLogView },
 
-    { path: '/le_admin'                    , component: LeAdminDashboardView },
-    { path: '/le_admin/ou'                 , component: OUView },
-    { path: '/le_admin/ou_users'           , component: OUUserView },
-    { path: '/le_admin/dataset'            , component: DatasetView },
+    { path: '/le_admin'                    , meta: { transition: 'slide-left' }, component: LeAdminDashboardView },
+    { path: '/le_admin/ou'                 , meta: { transition: 'slide-left' }, component: OUView },
+    { path: '/le_admin/ou_users'           , meta: { transition: 'slide-left' }, component: OUUserView },
+    { path: '/le_admin/dataset'            , meta: { transition: 'slide-left' }, component: DatasetView },
 
   ];
   
@@ -57,6 +57,6 @@ const routes = [
     locale: it,
   })
   app.use(router);
-  app.use(auth);
+  app.use(store);
 
   app.mount('#app');

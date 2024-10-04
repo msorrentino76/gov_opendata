@@ -100,7 +100,7 @@
           <el-col :span="12">      
             <el-form-item label="Logo" :prop="logo_img" :error="form_error.logo_img">                                            
               <el-upload ref="upload"
-                :action="Auth.state.config.applicationBaseURL + '/api' + logoUploader.uploadEndpoint"
+                :action="store.state.config.applicationBaseURL + '/api' + logoUploader.uploadEndpoint"
                 :headers="uploadHeader"
                 :accept="logoUploader.accept.mime"
                 list-type="picture"
@@ -314,7 +314,9 @@ import { Delete, Edit, Search, Plus, Location, Place, User, Monitor, OfficeBuild
 
 import {list, create, read, update, del} from '../../utils/service.js';
 
-import Auth from '../../store/Auth.js';
+//import Auth from '../../store/Store.js';
+import { useStore } from 'vuex';
+const store = useStore();
 
 const legal_entities = ref([]);
 
@@ -522,7 +524,7 @@ onMounted(async ()=>{
 onUnmounted(()=>{});
 
 const uploadHeader ={
-  'Authorization': `Bearer ${ Auth.state.token }`
+  'Authorization': `Bearer ${ store.state.login.token }`
 };
 
 const removeFile = (async(ep, uid) => {

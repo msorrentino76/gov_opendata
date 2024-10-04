@@ -6,7 +6,23 @@
   
   <script setup>
 
-  import {defineComponent} from 'vue';
+  import {list} from '../utils/service.js'
+
+  import {defineComponent, onMounted} from 'vue';
+
+  import { useStore } from 'vuex';
+  const store = useStore();
+
+  onMounted(async() => {
+        // lo stub NON per admin
+        if(store.state.login.logged && store.state.login.user.abilities.includes('legal_entity:admin')) {
+          let dataset = await list('le_admin/dataset');
+          store.commit('stub/setStub', {
+            'dataflow'  : dataset.dataflow,
+            'categories': dataset.categories
+          });    
+        }    
+  })
 
   defineComponent({
       name: 'MainComponent',

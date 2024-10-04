@@ -4,7 +4,7 @@
 
     <el-card class="box-card">
 
-      <div style="min-height: 600px" v-if="Auth.state.licence === null" >
+      <div style="min-height: 600px" v-if="store.state.login.licence === null" >
         <el-alert title="Non sono disponibili licenze attive. Contattare l'Assistenza per un nuovo acquisto o rinnovo" type="error" :closable="false" />
       </div>
 
@@ -16,10 +16,13 @@
 
   import {defineComponent} from 'vue';
 
-  import Auth from '../../store/Auth.js';
-
+  //import Auth from '../../store/Store.js';
+  import { useStore } from 'vuex';
+  const store = useStore();
+  
   defineComponent({
       name: 'LeAdminDashboardView',
   })
 
 </script>
+../

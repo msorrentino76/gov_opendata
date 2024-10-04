@@ -7,17 +7,19 @@
 
     import {defineComponent, onMounted, } from 'vue';
 
-    import Auth from '../../store/Auth.js';
+    //import Auth from '../../store/Store.js';
+    import { useStore } from 'vuex';
+    const store = useStore();
 
     import { useRouter } from 'vue-router';
 
     const router = useRouter();
 
     onMounted(()=>{
-        if(Auth.state.user.abilities.includes('system:admin')){
+        if(store.state.login.user.abilities.includes('system:admin')){
             router.push('/sysadmin');
         }
-        if(Auth.state.user.abilities.includes('legal_entity:admin')){
+        if(store.state.login.user.abilities.includes('legal_entity:admin')){
             router.push('/le_admin');
         }
     });

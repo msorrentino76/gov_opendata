@@ -4,9 +4,14 @@ import {ElMessage, ElNotification } from 'element-plus';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 
-import auth  from '../store/Auth.js'; 
+import store  from '../store/Store.js'; 
 
-const applicationBaseURL = auth.state.config.applicationBaseURL;
+/* Dentro un file JS NON POSSO USARE useStore ma devo importare direttamente */
+
+//import { useStore } from 'vuex';
+//const store = useStore();
+
+const applicationBaseURL = store.state.config.applicationBaseURL;
                             
 const axiosInstance = axios.create({
   baseURL: applicationBaseURL + '/api/',
@@ -19,7 +24,7 @@ axiosInstance.interceptors.request.use(req => {
 
   req.headers.Accept          = 'application/json';
   req.headers['Content-Type'] = 'application/json';
-  req.headers.Authorization   = 'Bearer ' + auth.state.token;
+  req.headers.Authorization   = 'Bearer ' + store.state.login.token;
 
   return req;
 });
@@ -68,10 +73,7 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
         await axiosInstance.get(applicationBaseURL + '/sanctum/csrf-cookie');
 
         const response = await axiosInstance.post(endpoint, data);
-        auth.commit('login', response.data);
-
-        //const stub = await axiosInstance.get('/user/stub');
-        //auth.commit('setStub', stub.data);        
+        store.commit('login/login', response.data);
 
         return await response.data;
     } catch (error) {
@@ -82,7 +84,7 @@ export const elNotifyError = (text = 'Si è verificato un errore. Contattare l\'
   export const revoke = async (endpoint) => {     
     try {
         await axiosInstance.delete(endpoint);
-        auth.commit('logout');
+        store.commit('login/logout');
         return await true;
     } catch (error) {
         return errorHandler(error, 'revoke');
@@ -166,7 +168,7 @@ const errorHandler = ((error, api_call) => {
   // Handler del non autenticato
   if(error.response && error.response.status == 401){
       if(api_call != 'token') {
-        auth.commit('logout');
+        store.commit('login/logout');
         ElMessage({
           showClose: true,
           message: 'Sessione scaduta o non valida. Procedere nuovamente con il login',

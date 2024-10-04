@@ -191,7 +191,7 @@
                     >                                            
                             <el-upload                      
                                 ref="upload"
-                                :action="Auth.state.config.applicationBaseURL + '/api' + field.uploadEndpoint"
+                                :action="store.state.config.applicationBaseURL + '/api' + field.uploadEndpoint"
                                 :headers="uploadHeader"
                                 :accept="field.accept.mime"
                                 multiple
@@ -251,7 +251,9 @@
 
 <script setup>
 
-import Auth from '@/store/Auth';
+//import Auth from '@/store/Store';
+import { useStore } from 'vuex';
+const store = useStore();
 
 import {ref, defineProps, defineComponent, onUpdated, onMounted} from 'vue';
 import { del, download  } from '../utils/service.js';
@@ -261,7 +263,7 @@ import PasswordMeter from 'vue-simple-password-meter';
 import IconEl from './Icon.vue'; 
 
     const uploadHeader ={
-        'Authorization': `Bearer ${ Auth.state.token }` // Assicurati di modificare questo in base al tuo metodo di autenticazione
+        'Authorization': `Bearer ${ store.state.login.token }` // Assicurati di modificare questo in base al tuo metodo di autenticazione
     };
 
     const removeFile = (async(ep, uid) => {

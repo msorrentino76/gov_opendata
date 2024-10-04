@@ -1,7 +1,7 @@
 
 <template>
 
-    <el-container v-if="$store.state.logged">
+    <el-container v-if="store.state.login.logged">
 
         <el-aside :class="classMenu">
           <AsideComponent :collapseMenu="collapseMenu" :menuToggle="menuToggle"/>
@@ -21,7 +21,7 @@
       
     </el-container>
     
-    <el-container v-if="!$store.state.logged">
+    <el-container v-if="!store.state.login.logged">
       <LoginView />
     </el-container>
     
@@ -46,6 +46,9 @@ import FooterComponent from './layout/Footer.vue';
 import LoginView from './views/auth/Login.vue';
 
 import { ref } from 'vue';
+
+import { useStore } from 'vuex';
+const store = useStore();
 
 const collapseMenu = ref(true);
 const classMenu    = ref('start-menu');

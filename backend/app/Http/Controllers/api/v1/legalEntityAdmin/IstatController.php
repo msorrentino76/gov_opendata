@@ -89,20 +89,6 @@ class IstatController extends Controller
             
             $availableForCurrentLe = false;
             
-            // CHECK TERRITORIO: E SE CI SONO AREE NON IDENTICHE AL COMUNE?
-            /*
-            if($ds_key == 'ITTER107'){
-                
-                // cerco il codice istat dell'Ente licenziato tra quelli disponibili:
-                $array_codice_istat_available = $availables['ITTER107'];
-                Auth::user()->notExpiredLicenceFor();
-                if(!in_array($array_codice_istat_available)){
-                    
-                }
-                
-            }
-            */
-                
             $codelist = $ds['codelist'];
 
             $options = [];

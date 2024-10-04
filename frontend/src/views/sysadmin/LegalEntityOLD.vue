@@ -163,7 +163,7 @@
 
 <script setup>
 
-//import Auth from '@/store/Auth';
+//import Auth from '@/store/Store';
 
 import {defineComponent, ref, onMounted, onUnmounted} from 'vue';
 

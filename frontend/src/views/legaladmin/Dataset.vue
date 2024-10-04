@@ -105,12 +105,17 @@
 
   import {defineComponent, onMounted, ref, computed} from 'vue';
 
-  import {list, create} from '../../utils/service.js'
+  import {/*list, */create} from '../../utils/service.js'
 
   //import DatasetFilterView from './DatasetFilter.vue';
 
+  //import Auth from '../../store/Store.js';
+  import { useStore } from 'vuex';
+  const store = useStore();
+
   const loading    = ref(false);
   const search     = ref('');
+
   const dataflow   = ref([]);
   const categories = ref([]);
 
@@ -194,13 +199,20 @@
     }
 
     onMounted(async ()=>{
+      
       loading.value = true;
 
+      dataflow.value   = store.state.stub.dataflow;
+      categories.value = store.state.stub.categories;
+      
+      /*
       let dataset = await list('le_admin/dataset');
       dataflow.value   = dataset.dataflow;
       categories.value = dataset.categories;
+      */
 
       loading.value = false;
+      
     });
 
   defineComponent({
