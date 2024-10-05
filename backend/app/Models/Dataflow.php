@@ -9,7 +9,7 @@ class Dataflow extends Model
 {
     use HasFactory;
     
-    protected $table = 'dataflow';
+    protected $table = 'dataflows';
     
     protected $fillable = ['flow_ref', 'category', 'data_struct', 'is_final', 'name', 'version'];
     

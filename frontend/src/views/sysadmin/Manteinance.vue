@@ -15,10 +15,10 @@
         
         <el-tab-pane label="Role">Role</el-tab-pane>
         
-        <el-tab-pane label="Available Constraint">
+        <el-tab-pane label="Available Constraint" height="640" >
           <el-button @click="process" type="primary" :loading="processing">Inizia importazione</el-button>
           <div v-if="true" class="process-screen">
-            Processing: {{  processed }} / {{ total_row }}
+            Processing: {{  processed }} / {{ total_row }} - Errori: {{ processed_err }}
             <br><br>
             <el-progress type="circle" :percentage="progress_percent" />
           </div>
@@ -47,7 +47,7 @@
 <script setup>
 
   import {ref, computed, onMounted, defineComponent} from 'vue';
-  import {list} from '../../utils/service.js'
+  import {list, read} from '../../utils/service.js'
 
   import {Check, Loading, Close} from '@element-plus/icons-vue';
 
@@ -55,6 +55,7 @@
 
   const processing  = ref(false);
   const processed   = ref(0);
+  const processed_err = ref(0);
   const total_row   = ref(1); //così non ottengo NaN dividendo per 0
   const progress_percent = computed(() => {
     return ((processed.value / total_row.value) * 100).toFixed(2);
@@ -66,8 +67,10 @@
   const process = (async() => {
     processing.value = true;
     for (const current of dataflow.value) {
+      if(processed.value == 3) continue;
       setStatus(current.id, 'processing');
-      let resp = await list('sys_admin/manteinance/available_process');
+      let resp = await read('sys_admin/manteinance/available_process', current.id);
+      if(resp == 'error') processed_err.value++;
       setStatus(current.id, resp);
       processed.value++;
     }    
@@ -92,10 +95,10 @@
   });
 
   onMounted(async ()=>{      
-      loading.value = true;
-      let dataset = await list('sys_admin/manteinance/available_dataflow');
-      dataflow.value   = dataset;
-      loading.value = false;  
+      loading.value  = true;
+      let dataset    = await list('sys_admin/manteinance/available_dataflow');
+      dataflow.value = dataset;
+      loading.value  = false;  
       dataflow_index_status.value = dataflow.value.map((d) => ({'id': d.id, 'status': 'ready'}));
       total_row.value = dataflow_index_status.value.length;
     });

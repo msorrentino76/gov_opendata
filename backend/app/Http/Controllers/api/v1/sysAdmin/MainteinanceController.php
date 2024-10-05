@@ -14,6 +14,9 @@ use App\Models\Categories;
 
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 class MainteinanceController extends Controller
 {
 
@@ -229,9 +232,49 @@ class MainteinanceController extends Controller
         return response()->json(Dataflow::orderBy('id')->get(), 200); 
     }
     
-    public function availableProcess() {
-        sleep(1);
-        return response()->json(rand(1, 100)%2 == 0 ? 'ok' : 'error', 200); 
+    public function availableProcess($id) {
+        
+        $data_flow = Dataflow::find($id);
+        
+        $availableconstraint = Http::timeout(0)->get('https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data_flow->flow_ref);
+        
+        $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
+        
+        if(is_null($xml)){
+            Log::error("MainteinanceController:availableProcess - XML null");
+            return response()->json('error', 200);
+        }
+
+        foreach ($xml->xpath('//common:KeyValue') as $key) {
+
+            foreach ($key->xpath('.//common:Value') as $v) {
+                $value[] = (string)$v[0];
+            }
+            
+            try {
+                DB::table('available_constraints')->updateOrInsert(
+                    [
+                        'dataflow_id' => $data_flow->id,
+                        'key'         => (string) $key['id'], 
+                    ],
+                    [
+                        'dataflow_id' => $data_flow->id,
+                        'flow_ref'    => $data_flow->flow_ref,
+                        'data_struct' => $data_flow->data_struct,
+                        'key'         => (string) $key['id'],
+                        'json_value'  => json_encode($value),    
+                    ]
+                );
+            } catch (\Exception $e) {
+                Log::error("MainteinanceController:availableProcess - Id data_flow: " . $data_flow->id . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                return response()->json('error', 200);
+            }
+            
+        }
+        
+        Log::info($data_flow->id . ' ' . $data_flow->flow_ref . ' : OK');
+        
+        return response()->json('ok', 200); 
     }
     
     private function _l($msg) {

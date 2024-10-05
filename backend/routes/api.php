@@ -117,8 +117,8 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
         Route::get('codelist'     , [MainteinanceController::class, 'codelist'  ]);
         Route::get('dataflow'     , [MainteinanceController::class, 'dataflow'  ]);
         Route::get('categories'   , [MainteinanceController::class, 'categories']);
-        Route::get('available_dataflow' , [MainteinanceController::class, 'availableDataflow']);
-        Route::get('available_process'  , [MainteinanceController::class, 'availableProcess']);
+        Route::get('available_dataflow'     , [MainteinanceController::class, 'availableDataflow']);
+        Route::get('available_process/{id}' , [MainteinanceController::class, 'availableProcess']);
     });
 });
  
