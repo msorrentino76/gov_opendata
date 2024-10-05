@@ -16,7 +16,7 @@ class IstatController extends Controller
 {
 
     public function index(){
-        return response()->json(['dataflow' => Dataflow::all(), 'categories' => Categories::getAll()], 200); 
+        return response()->json(['dataflow' => Dataflow::orderBy('name')->get(), 'categories' => Categories::getAll()], 200); 
     }
 
     public function datafilter(Request $request){

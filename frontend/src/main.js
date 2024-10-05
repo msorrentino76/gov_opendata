@@ -19,6 +19,7 @@ import UsersView            from './views/common/Users.vue';
 import LegalEntityView      from './views/sysadmin/LegalEntity.vue';
 import LicenceView          from './views/sysadmin/Licence.vue';
 import AccessiView          from './views/sysadmin/Accessi.vue';
+import ManteinanceView      from './views/sysadmin/Manteinance.vue';
 import SystemLogView        from './views/sysadmin/SystemLog.vue';
 
 import LeAdminDashboardView  from './views/legaladmin/Dashboard.vue';
@@ -37,6 +38,7 @@ const routes = [
     { path: '/sysadmin/legal_entity'       , meta: { transition: 'slide-left' }, component: LegalEntityView },
     { path: '/sysadmin/licence'            , meta: { transition: 'slide-left' }, component: LicenceView },
     { path: '/sysadmin/accessi'            , meta: { transition: 'slide-left' }, component: AccessiView },
+    { path: '/sysadmin/manteinance'        , meta: { transition: 'slide-left' }, component: ManteinanceView },
     { path: '/sysadmin/logs'               , meta: { transition: 'slide-left' }, component: SystemLogView },
 
     { path: '/le_admin'                    , meta: { transition: 'slide-left' }, component: LeAdminDashboardView },

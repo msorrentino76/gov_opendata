@@ -32,8 +32,9 @@
 
       <div class="content">Risultati: {{ filterTableData.length }}</div>
 
-      <el-table :data="filterTableData" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato" :default-sort="{ prop: 'name', order: 'asc' }" >
-
+      <!-- el-table :data="filterTableData" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato" :default-sort="{ prop: 'name', order: 'asc' }" -->
+      <el-table :data="filterTableData" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato">
+ 
         <!--
         <el-table-column prop="id"           label="id"/>
         <el-table-column prop="category"     label="Categoria"/>

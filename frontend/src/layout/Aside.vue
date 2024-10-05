@@ -44,6 +44,11 @@
       <template #title>Accessi</template>
     </el-menu-item>
 
+    <el-menu-item index="/sysadmin/manteinance" v-if="store.state.login.user.abilities.includes('system:admin')">
+      <el-icon><SetUp /></el-icon>
+      <template #title>Aggiornamento sistema</template>
+    </el-menu-item>
+
     <el-menu-item index="/sysadmin/logs" v-if="store.state.login.user.abilities.includes('system:admin')">
       <el-icon><Cpu /></el-icon>
       <template #title>System Log</template>
@@ -72,7 +77,7 @@
   
   import {defineProps, defineComponent} from 'vue';
 
-  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List, Histogram, DataAnalysis} from '@element-plus/icons-vue'
+  import { Expand, Fold, Odometer, User, OfficeBuilding, Management, Cpu, List, Histogram, DataAnalysis, SetUp} from '@element-plus/icons-vue'
 
   defineProps({
     collapseMenu: {},

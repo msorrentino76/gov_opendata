@@ -225,6 +225,10 @@ class MainteinanceController extends Controller
         
     }
     
+    public function dataflowToAvailable() {
+        return response()->json(Dataflow::orderBy('id')->get(), 200); 
+    }
+    
     private function _l($msg) {
         $this->status[] = ['timestamp' => Carbon::now(), 'message' => $msg ];
     }
