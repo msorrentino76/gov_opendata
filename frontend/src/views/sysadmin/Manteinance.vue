@@ -67,7 +67,6 @@
   const process = (async() => {
     processing.value = true;
     for (const current of dataflow.value) {
-      if(processed.value == 3) continue;
       setStatus(current.id, 'processing');
       let resp = await read('sys_admin/manteinance/available_process', current.id);
       if(resp == 'error') processed_err.value++;
