@@ -225,8 +225,13 @@ class MainteinanceController extends Controller
         
     }
     
-    public function dataflowToAvailable() {
+    public function availableDataflow() {
         return response()->json(Dataflow::orderBy('id')->get(), 200); 
+    }
+    
+    public function availableProcess() {
+        sleep(1);
+        return response()->json(rand(1, 100)%2 == 0 ? 'ok' : 'error', 200); 
     }
     
     private function _l($msg) {

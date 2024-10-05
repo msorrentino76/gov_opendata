@@ -5,13 +5,17 @@
     <el-card class="box-card">
 
       <!--el-tabs type="border-card" tab-position="left"-->
-      <el-tabs type="border-card">  
-        <el-tab-pane label="User">User</el-tab-pane>
+      <el-tabs type="border-card">
+
+        <el-tab-pane label="User">
+          
+        </el-tab-pane>
+
         <el-tab-pane label="Config">Config</el-tab-pane>
+        
         <el-tab-pane label="Role">Role</el-tab-pane>
         
         <el-tab-pane label="Available Constraint">
-
           <el-button @click="process" type="primary" :loading="processing">Inizia importazione</el-button>
           <div v-if="true" class="process-screen">
             Processing: {{  processed }} / {{ total_row }}
@@ -23,7 +27,10 @@
             <el-table-column prop="name" label="Dataflow"/>
             <el-table-column label="Stato">
               <template v-slot="scope">
-                <span>{{ getStatus(scope.row.id) }}</span>
+                <span    v-if="getStatus(scope.row.id) == 'ready'">ready...   </span>
+                <el-icon v-if="getStatus(scope.row.id) == 'processing'" class="is-loading"><Loading /></el-icon>
+                <el-icon v-if="getStatus(scope.row.id) == 'ok'"    color="#67C23A" class="no-inherit"><Check /></el-icon>                
+                <el-icon v-if="getStatus(scope.row.id) == 'error'" color="#F56C6C" class="no-inherit"><Close /></el-icon>
               </template>
             </el-table-column>
 
@@ -42,11 +49,13 @@
   import {ref, computed, onMounted, defineComponent} from 'vue';
   import {list} from '../../utils/service.js'
 
+  import {Check, Loading, Close} from '@element-plus/icons-vue';
+
   const loading     = ref(false);
 
   const processing  = ref(false);
   const processed   = ref(0);
-  const total_row   = ref(0);
+  const total_row   = ref(1); //così non ottengo NaN dividendo per 0
   const progress_percent = computed(() => {
     return ((processed.value / total_row.value) * 100).toFixed(2);
   });
@@ -58,13 +67,20 @@
     processing.value = true;
     for (const current of dataflow.value) {
       setStatus(current.id, 'processing');
-      /*let resp =*/ await list('sys_admin/manteinance/dataflow_to_available');
-      setStatus(current.id, 'ok');
+      let resp = await list('sys_admin/manteinance/available_process');
+      setStatus(current.id, resp);
       processed.value++;
     }    
     processing.value = false;    
   });
 
+  /*
+  status:
+  - ready
+  - processing
+  - ok
+  - error
+  */
   const getStatus =((dataflow_id) => {
     let local_status = dataflow_index_status.value.find(item => item.id === dataflow_id);
     return local_status.status;
@@ -77,7 +93,7 @@
 
   onMounted(async ()=>{      
       loading.value = true;
-      let dataset = await list('sys_admin/manteinance/dataflow_to_available');
+      let dataset = await list('sys_admin/manteinance/available_dataflow');
       dataflow.value   = dataset;
       loading.value = false;  
       dataflow_index_status.value = dataflow.value.map((d) => ({'id': d.id, 'status': 'ready'}));
