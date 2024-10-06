@@ -17,6 +17,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\AvailableConstraints;
+use App\Models\AvailableConstraintErrors;
+
 class MainteinanceController extends Controller
 {
 
@@ -228,31 +231,84 @@ class MainteinanceController extends Controller
         
     }
     
-    public function availableDataflow() {
-        return response()->json(Dataflow::orderBy('id')->get(), 200); 
+    public function availableDataflow($type) {
+        
+        $type = in_array($type, ['all', 'new', 'err']) ? $type : 'all';
+        
+        switch ($type) {
+            case 'all':
+                $dataflow = Dataflow::orderBy('id')->get();
+                break;
+            case 'new':                
+                $dataflow = Dataflow::whereNotIn('id', 
+                        array_merge(
+                                AvailableConstraints::pluck('dataflow_id')->toArray(),
+                                AvailableConstraintErrors::pluck('dataflow_id')->toArray())
+                        )->orderBy('id')->get();
+                break;
+            case 'err':
+                $dataflow = Dataflow::
+                    join('available_constraint_errors', 'dataflows.id', '=', 'available_constraint_errors.dataflow_id')
+                    ->select('dataflows.*', 'available_constraint_errors.error_msg')
+                    ->orderBy('id')
+                    ->get();
+                break;
+        }
+        return response()->json($dataflow, 200); 
     }
+    
+    private $data_flow;
+    private $http_status = '-';
     
     public function availableProcess($id) {
         
         $data_flow = Dataflow::find($id);
         
-        $availableconstraint = Http::timeout(0)->get('https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data_flow->flow_ref);
+        $this->data_flow = $data_flow;
         
-        $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
+        try {
+            $availableconstraint = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data_flow->flow_ref);
+            $this->http_status   = $availableconstraint->status();
+        }catch (\Exception $e) {
+            Log::error(
+                        "MainteinanceController:Http request - Data_flow Ref: " . 
+                        $data_flow->flow_ref . 
+                        ' - ' .  
+                        $e->getMessage()
+                    );
+            $this->trackError($e->getMessage());
+            return response()->json('error', 200);
+        }
+        
+        try {
+            $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
+        }catch (\Exception $e) {
+            Log::error(
+                        "MainteinanceController:XMLParsing - Data_flow Ref: " . 
+                        $data_flow->flow_ref . 
+                        ' - ' .  
+                        $e->getMessage() . 
+                        "\n --------------\n Contains: \n\n $availableconstraint"
+                    );
+            $this->trackError($e->getMessage());
+            return response()->json('error', 200);
+        }
         
         if(is_null($xml)){
-            Log::error("MainteinanceController:availableProcess - XML null");
+            Log::error("MainteinanceController:XMLParsing - XML null");
+            $this->trackError('XML null');
             return response()->json('error', 200);
         }
 
         foreach ($xml->xpath('//common:KeyValue') as $key) {
 
             foreach ($key->xpath('.//common:Value') as $v) {
-                $value[] = (string)$v[0];
+                $value[] = isset($v[0]) ? (string)$v[0] : '?';
             }
             
             try {
-                DB::table('available_constraints')->updateOrInsert(
+                //DB::table('available_constraints')->updateOrInsert(
+                AvailableConstraints::updateOrCreate(        
                     [
                         'dataflow_id' => $data_flow->id,
                         'key'         => (string) $key['id'], 
@@ -264,16 +320,20 @@ class MainteinanceController extends Controller
                         'key'         => (string) $key['id'],
                         'json_value'  => json_encode($value),    
                     ]
-                );
+                )->touch();
             } catch (\Exception $e) {
-                Log::error("MainteinanceController:availableProcess - Id data_flow: " . $data_flow->id . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                Log::error("MainteinanceController:SavaConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                $this->trackError($e->getMessage());
                 return response()->json('error', 200);
             }
             
         }
         
-        Log::info($data_flow->id . ' ' . $data_flow->flow_ref . ' : OK');
+        Log::info('Id Data flow: ' . $data_flow->id . ' - Data_flow Ref: ' . $data_flow->flow_ref . ' : OK');
         
+        // se c'è un success lo rimuovo dagli errori (se c'era stato in passato)
+        AvailableConstraintErrors::where('dataflow_id', $data_flow->id)->delete();
+
         return response()->json('ok', 200); 
     }
     
@@ -283,6 +343,24 @@ class MainteinanceController extends Controller
     
     private function removeTextBetweenParentheses($string) {
         return preg_replace('/\s*\(.*?\)\s*/', '', $string);
+    }
+    
+    private function trackError($error_msg){
+        
+        $error_msg = 'HTTP Response Status: ' . $this->http_status . ' - ' . $error_msg;
+        
+        //DB::table('available_constraint_errors')->updateOrInsert(
+        AvailableConstraintErrors::updateOrCreate(
+            [
+                'dataflow_id' => $this->data_flow->id,
+            ],
+            [
+                'dataflow_id' => $this->data_flow->id,
+                'flow_ref'    => $this->data_flow->flow_ref,
+                'error_msg'   => $error_msg,   
+            ]
+        )->touch();
+                
     }
     
 }

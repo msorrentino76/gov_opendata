@@ -15,15 +15,22 @@
         
         <el-tab-pane label="Role">Role</el-tab-pane>
         
-        <el-tab-pane label="Available Constraint" height="640" >
-          <el-button @click="process" type="primary" :loading="processing">Inizia importazione</el-button>
+        <el-tab-pane label="Available Constraint">
+          
+          <el-button @click="getDataflow('all')" type="primary" :loading="processing" :disabled="processing">Analizza tutti i dataflow</el-button>
+          <el-button @click="getDataflow('new')" type="success" :loading="processing" :disabled="processing">Analizza i nuovi dataflow</el-button>
+          <el-button @click="getDataflow('err')" type="danger"  :loading="processing" :disabled="processing">Analizza i dataflow in errore</el-button>
+
           <div v-if="true" class="process-screen">
             Processing: {{  processed }} / {{ total_row }} - Errori: {{ processed_err }}
             <br><br>
             <el-progress type="circle" :percentage="progress_percent" />
           </div>
-          <el-table :data="dataflow" style="width: 50%" v-loading="loading" empty-text="Nessun risultato trovato">
-            <el-table-column prop="id"   label="ID"/>
+
+          <el-button @click="process" type="primary" :loading="processing" :disabled="dataflow.length == 0">Inizia importazione</el-button>
+
+          <el-table :data="dataflow" style="width: 75%" v-loading="loading" empty-text="Nessun risultato trovato"  height="600" >
+            <el-table-column prop="id"   label="ID" width="48" />
             <el-table-column prop="name" label="Dataflow"/>
             <el-table-column label="Stato">
               <template v-slot="scope">
@@ -33,7 +40,7 @@
                 <el-icon v-if="getStatus(scope.row.id) == 'error'" color="#F56C6C" class="no-inherit"><Close /></el-icon>
               </template>
             </el-table-column>
-
+            <el-table-column prop="error_msg" label="Messaggio d'errore"/>
           </el-table>
 
         </el-tab-pane>
@@ -56,9 +63,9 @@
   const processing  = ref(false);
   const processed   = ref(0);
   const processed_err = ref(0);
-  const total_row   = ref(1); //così non ottengo NaN dividendo per 0
+  const total_row     = ref(0); //così non ottengo NaN dividendo per 0
   const progress_percent = computed(() => {
-    return ((processed.value / total_row.value) * 100).toFixed(2);
+    return total_row.value == 0 ? 0 : Number(((processed.value / total_row.value) * 100).toFixed(2));
   });
 
   const dataflow    = ref([]);
@@ -93,13 +100,26 @@
     local_status.status = status;
   });
 
-  onMounted(async ()=>{      
+  const getDataflow = (async (type)=>{   
+      processed_err.value = 0; 
+      processed.value = 0;  
       loading.value  = true;
-      let dataset    = await list('sys_admin/manteinance/available_dataflow');
+      let dataset    = await list('sys_admin/manteinance/available_dataflow/' + type);
       dataflow.value = dataset;
       loading.value  = false;  
       dataflow_index_status.value = dataflow.value.map((d) => ({'id': d.id, 'status': 'ready'}));
       total_row.value = dataflow_index_status.value.length;
+    });
+
+  onMounted(async ()=>{  
+    /*    
+      loading.value  = true;
+      let dataset    = await list('sys_admin/manteinance/available_dataflow/all');
+      dataflow.value = dataset;
+      loading.value  = false;  
+      dataflow_index_status.value = dataflow.value.map((d) => ({'id': d.id, 'status': 'ready'}));
+      total_row.value = dataflow_index_status.value.length;
+      */
     });
 
   defineComponent({
