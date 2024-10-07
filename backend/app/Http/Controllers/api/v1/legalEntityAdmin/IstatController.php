@@ -12,11 +12,21 @@ use App\Models\Code;
 use App\Models\Dataflow;
 use App\Models\Categories;
 
+use App\Models\AvailableConstraints;
+
 class IstatController extends Controller
 {
 
+    /**
+     * STUB!!!!!!
+     * @return type
+     */
     public function index(){
-        return response()->json(['dataflow' => Dataflow::orderBy('name')->get(), 'categories' => Categories::getAll()], 200); 
+        return response()->json(
+                [
+                    'dataflow'   => Dataflow::orderBy('name')->get(),
+                    'categories' => Categories::getAll(),
+                ], 200); 
     }
 
     public function datafilter(Request $request){
@@ -77,6 +87,11 @@ class IstatController extends Controller
             $availables[$ds_key] = $value;
         }
         
+        $availables1 = [];
+        foreach(AvailableConstraints::where('flow_ref', $data['flow_ref'])->get() as $avc){
+            $availables1[$avc->key] = json_decode($avc->json_value);
+        }
+        $d = 0;
         // A QUESTO PUNTO MI TROVO:
         // $data_struct ds_key -> codelist
         // $availables  ds_key -> ARRAY DI OPTIONS

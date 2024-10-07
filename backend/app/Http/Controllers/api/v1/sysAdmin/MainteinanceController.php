@@ -302,6 +302,8 @@ class MainteinanceController extends Controller
 
         foreach ($xml->xpath('//common:KeyValue') as $key) {
 
+            $value  = [];
+            
             foreach ($key->xpath('.//common:Value') as $v) {
                 $value[] = isset($v[0]) ? (string)$v[0] : '?';
             }

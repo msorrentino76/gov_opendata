@@ -72,12 +72,24 @@ class AuthController extends Controller
             
             $user->tokens()->delete();
          
-            if($user->enabled)
+            if($user->enabled) {
             
-            return [
-                'user' => $user,
-                'licence_for' => $user->notExpiredLicenceFor(),
-                'token' => $user->createToken($request->username, json_decode($user->abilities))->plainTextToken];
+                $abilities = json_decode($user->abilities);
+                
+                // Chiaramente per ragioni di sicurezza il token per un 'system:admin' dovrebbe scadere prima possibile
+                // Tuttavia questo ruolo prevede elaborazioni molto impegnative e lunghe, per cui...
+                if(in_array('system:admin', $abilities)){
+                    $token = $user->createToken($request->username, $abilities, now()->addWeek())->plainTextToken;
+                } else {
+                    $token = $user->createToken($request->username, $abilities)->plainTextToken;
+                }
+                
+                return [
+                    'user'        => $user,
+                    'licence_for' => $user->notExpiredLicenceFor(),
+                    'token'       => $token,
+                    ];
+                }
             
         }
 
