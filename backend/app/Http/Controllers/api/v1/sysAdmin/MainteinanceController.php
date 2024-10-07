@@ -20,10 +20,15 @@ use Illuminate\Support\Facades\Log;
 use App\Models\AvailableConstraints;
 use App\Models\AvailableConstraintErrors;
 
+use App\Models\DataStructure;
+use App\Models\DataStructureErrors;
+
 class MainteinanceController extends Controller
 {
 
     private $status;
+    private $data_flow;
+    private $http_status = '-';
     
     public function codelist() {
         
@@ -256,10 +261,7 @@ class MainteinanceController extends Controller
         }
         return response()->json($dataflow, 200); 
     }
-    
-    private $data_flow;
-    private $http_status = '-';
-    
+     
     public function availableProcess($id) {
         
         $data_flow = Dataflow::find($id);
@@ -271,12 +273,12 @@ class MainteinanceController extends Controller
             $this->http_status   = $availableconstraint->status();
         }catch (\Exception $e) {
             Log::error(
-                        "MainteinanceController:Http request - Data_flow Ref: " . 
+                        "MainteinanceController:availableProcess:Http request - Data_flow Ref: " . 
                         $data_flow->flow_ref . 
                         ' - ' .  
                         $e->getMessage()
                     );
-            $this->trackError($e->getMessage());
+            $this->trackError($e->getMessage(), AvailableConstraintErrors::class);
             return response()->json('error', 200);
         }
         
@@ -284,19 +286,19 @@ class MainteinanceController extends Controller
             $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
         }catch (\Exception $e) {
             Log::error(
-                        "MainteinanceController:XMLParsing - Data_flow Ref: " . 
+                        "MainteinanceController:availableProcess:XMLParsing - Data_flow Ref: " . 
                         $data_flow->flow_ref . 
                         ' - ' .  
                         $e->getMessage() . 
                         "\n --------------\n Contains: \n\n $availableconstraint"
                     );
-            $this->trackError($e->getMessage());
+            $this->trackError($e->getMessage(), AvailableConstraintErrors::class);
             return response()->json('error', 200);
         }
         
         if(is_null($xml)){
-            Log::error("MainteinanceController:XMLParsing - XML null");
-            $this->trackError('XML null');
+            Log::error("MainteinanceController:availableProcess:XMLParsing - XML null");
+            $this->trackError('XML null', AvailableConstraintErrors::class);
             return response()->json('error', 200);
         }
 
@@ -324,14 +326,119 @@ class MainteinanceController extends Controller
                     ]
                 )->touch();
             } catch (\Exception $e) {
-                Log::error("MainteinanceController:SavaConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
-                $this->trackError($e->getMessage());
+                Log::error("MainteinanceController:availableProcess:SaveConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                $this->trackError($e->getMessage(), AvailableConstraintErrors::class);
                 return response()->json('error', 200);
             }
             
         }
         
-        Log::info('Id Data flow: ' . $data_flow->id . ' - Data_flow Ref: ' . $data_flow->flow_ref . ' : OK');
+        Log::info(':availableProcess - Id Data flow: ' . $data_flow->id . ' - Data_flow Ref: ' . $data_flow->flow_ref . ' : OK');
+        
+        // se c'è un success lo rimuovo dagli errori (se c'era stato in passato)
+        AvailableConstraintErrors::where('dataflow_id', $data_flow->id)->delete();
+
+        return response()->json('ok', 200); 
+    }
+    
+    public function dataStructureDataflow($type) {
+        
+        $type = in_array($type, ['all', 'new', 'err']) ? $type : 'all';
+        
+        switch ($type) {
+            case 'all':
+                $dataflow = Dataflow::orderBy('id')->get();
+                break;
+            case 'new':                
+                $dataflow = Dataflow::whereNotIn('id', 
+                        array_merge(
+                                DataStructure::pluck('dataflow_id')->toArray(),
+                                DataStructureErrors::pluck('dataflow_id')->toArray())
+                        )->orderBy('id')->get();
+                break;
+            case 'err':
+                $dataflow = Dataflow::
+                    join('data_structure_errors', 'dataflows.id', '=', 'data_structure_errors.dataflow_id')
+                    ->select('dataflows.*', 'data_structure_errors.error_msg')
+                    ->orderBy('id')
+                    ->get();
+                break;
+        }
+        return response()->json($dataflow, 200); 
+    }
+     
+    public function dataStructureProcess($id) {
+        
+        $data_flow = Dataflow::find($id);
+        
+        $this->data_flow = $data_flow;
+        
+        try {
+            $availableconstraint = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data_flow->flow_ref);
+            $this->http_status   = $availableconstraint->status();
+        }catch (\Exception $e) {
+            Log::error(
+                        "MainteinanceController:dataStructureProcess:Http request - Data_flow Ref: " . 
+                        $data_flow->flow_ref . 
+                        ' - ' .  
+                        $e->getMessage()
+                    );
+            $this->trackError($e->getMessage(), DataStructureErrors::class);
+            return response()->json('error', 200);
+        }
+        
+        try {
+            $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
+        }catch (\Exception $e) {
+            Log::error(
+                        "MainteinanceController:dataStructureProcess:XMLParsing - Data_flow Ref: " . 
+                        $data_flow->flow_ref . 
+                        ' - ' .  
+                        $e->getMessage() . 
+                        "\n --------------\n Contains: \n\n $availableconstraint"
+                    );
+            $this->trackError($e->getMessage(), DataStructureErrors::class);
+            return response()->json('error', 200);
+        }
+        
+        if(is_null($xml)){
+            Log::error("MainteinanceController:dataStructureProcess:XMLParsing - XML null");
+            $this->trackError('XML null', DataStructureErrors::class);
+            return response()->json('error', 200);
+        }
+
+        foreach ($xml->xpath('//common:KeyValue') as $key) {
+
+            $value  = [];
+            
+            foreach ($key->xpath('.//common:Value') as $v) {
+                $value[] = isset($v[0]) ? (string)$v[0] : '?';
+            }
+            
+            try {
+                //DB::table('available_constraints')->updateOrInsert(
+                AvailableConstraints::updateOrCreate(        
+                    [
+                        'dataflow_id' => $data_flow->id,
+                        'key'         => (string) $key['id'], 
+                    ],
+                    [
+                        'dataflow_id' => $data_flow->id,
+                        'flow_ref'    => $data_flow->flow_ref,
+                        'data_struct' => $data_flow->data_struct,
+                        'key'         => (string) $key['id'],
+                        'json_value'  => json_encode($value),    
+                    ]
+                )->touch();
+            } catch (\Exception $e) {
+                Log::error("MainteinanceController:dataStructureProcess:SaveConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                $this->trackError($e->getMessage(), DataStructureErrors::class);
+                return response()->json('error', 200);
+            }
+            
+        }
+        
+        Log::info(':dataStructureProcess - Id Data flow: ' . $data_flow->id . ' - Data_flow Ref: ' . $data_flow->flow_ref . ' : OK');
         
         // se c'è un success lo rimuovo dagli errori (se c'era stato in passato)
         AvailableConstraintErrors::where('dataflow_id', $data_flow->id)->delete();
@@ -347,12 +454,12 @@ class MainteinanceController extends Controller
         return preg_replace('/\s*\(.*?\)\s*/', '', $string);
     }
     
-    private function trackError($error_msg){
+    private function trackError($error_msg, $model){
         
         $error_msg = 'HTTP Response Status: ' . $this->http_status . ' - ' . $error_msg;
         
         //DB::table('available_constraint_errors')->updateOrInsert(
-        AvailableConstraintErrors::updateOrCreate(
+        $model::updateOrCreate(
             [
                 'dataflow_id' => $this->data_flow->id,
             ],

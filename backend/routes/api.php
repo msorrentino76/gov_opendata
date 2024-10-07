@@ -119,6 +119,8 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
         Route::get('categories'   , [MainteinanceController::class, 'categories']);
         Route::get('available_dataflow/{type}', [MainteinanceController::class, 'availableDataflow']);
         Route::get('available_process/{id}'   , [MainteinanceController::class, 'availableProcess']);
+        Route::get('datastructure_dataflow/{type}', [MainteinanceController::class, 'dataStructureDataflow']);
+        Route::get('datastructure_process/{id}'   , [MainteinanceController::class, 'dataStructureProcess']);
     });
 });
  

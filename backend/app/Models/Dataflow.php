@@ -19,6 +19,10 @@ class Dataflow extends Model
         return $this->hasMany(AvailableConstraints::class);
     }
     
+    public function dataStructures(){
+        return $this->hasMany(DataStructure::class);
+    }
+    
     public function available_territory() {
         return $this->hasOne(AvailableConstraints::class)->where('key', 'ITTER107')->select(['dataflow_id', 'json_value']);
     }

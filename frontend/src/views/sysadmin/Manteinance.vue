@@ -17,6 +17,10 @@
           <AvailableConstraintView />
         </el-tab-pane>
 
+        <el-tab-pane label="Data Structure">
+          <DataStructureView />
+        </el-tab-pane>
+
       </el-tabs>
 
     </el-card>
@@ -27,6 +31,7 @@
 
   import {defineComponent} from 'vue';
   import AvailableConstraintView from './manteinance_modules/AvailableConstraint.vue';
+  import DataStructureView       from './manteinance_modules/DataStructure.vue';
 
   defineComponent({
       name: 'ManteinanceView',
