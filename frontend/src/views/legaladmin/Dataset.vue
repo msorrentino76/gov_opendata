@@ -30,20 +30,23 @@
 
         <el-col :span="12">
           <div class="content">Filtra per disponibilità sul Territorio:</div>
-          <!--el-select  
+          <el-select  
                 v-model="filter_by_territory"
                 multiple
                 filterable
+                remote
+                reserve-keyword
                 placeholder="Seleziona"
-                style="width: 100%"            
+                style="width: 100%"   
+                :remote-method="remoteMethod"                                        
               >
                 <el-option
-                  v-for="item in available_territory_filter"
+                  v-for="item in options"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 />
-          </el-select-->
+          </el-select>
         </el-col>
 
       <el-row :gutter="20">
@@ -141,15 +144,15 @@
 
   const dataflow   = computed(() => store.state.stub.dataflow);
   const categories = computed(() => store.state.stub.categories);
-  //const available_territory_filter = computed(() => store.state.stub.available_territory_filter);
-  //const available_territory_filter = ref([{'value': 'ALT', 'label': 'Altofonte'}]);
 
-  const filter_by_cat       = ref();
-  //const filter_by_territory = ref();
+  const available_territory_filter = computed(() => store.state.stub.available_territory_filter);
+
+  const filter_by_cat       = ref([]);
+  const filter_by_territory = ref([]);
   
-  const flow_name        = ref();
-  const flow_ref         = ref();
-  const id_datastructure = ref();
+  const flow_name        = ref('');
+  const flow_ref         = ref('');
+  const id_datastructure = ref('');
 
   
   const openDrawer    = ref(false);
@@ -167,8 +170,21 @@
           (!search.value                   || data.name.toLowerCase().includes(search.value.toLowerCase()) )
           &&
           (filter_by_cat.value.length == 0 || filter_by_cat.value.includes(data.category))
+          &&
+          (filter_by_territory.value.length == 0 || filter_by_territory.value.some( item => data.available_territory && data.available_territory.json_value.includes(item)))
         )
     )
+
+    const options = ref([]);
+    const remoteMethod = (query) => {
+      if (query && query.length > 2) {
+          options.value = available_territory_filter.value.filter((item) => {
+            return item.label.toLowerCase().includes(query.toLowerCase())
+          })
+      } else {
+        options.value = []
+      }
+    }
 
     const handleQuery = (async(i, r) => {
       // Conervo i dati

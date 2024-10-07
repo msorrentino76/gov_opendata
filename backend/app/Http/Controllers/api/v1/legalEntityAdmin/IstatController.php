@@ -28,14 +28,20 @@ class IstatController extends Controller
         
         $available_territory_constrains = [];
         foreach (AvailableConstraints::where('key', $territory_key)->get() as $avc){
-            $available_territory_constrains = array_unique( array_merge($available_territory_constrains, json_decode($avc->json_value)) );
+            $available_territory_constrains = array_unique( array_merge($available_territory_constrains, $avc->json_value) );
         }
         
         $code = Code::select('code as value', 'name as label')->where('codelist', $territory_codelist)->whereIn('code', $available_territory_constrains)->get()->toArray();
 
+            usort($code, function($a, $b) {
+                return strcmp($a['label'], $b['label']);
+            });
+            
+        /* available_territory_filter ha 11.000 righe... pesante per lo stub */
+ 
         return response()->json(
                 [
-                    'dataflow'   => Dataflow::orderBy('name')->get(),
+                    'dataflow'   => Dataflow::with('available_territory')->orderBy('name')->get(), /* Dataflow::with('availableConstraints')->orderBy('name')->get(),*/
                     'categories' => Categories::getAll(),
                     'available_territory_filter' => $code,
                 ], 200); 
@@ -79,7 +85,7 @@ class IstatController extends Controller
         
         $availables = [];
         foreach(AvailableConstraints::where('flow_ref', $data['flow_ref'])->get() as $avc){
-            $availables[$avc->key] = json_decode($avc->json_value);
+            $availables[$avc->key] = $avc->json_value;
         }
 
         // A QUESTO PUNTO MI TROVO:

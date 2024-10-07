@@ -13,4 +13,13 @@ class Dataflow extends Model
     
     protected $fillable = ['flow_ref', 'category', 'data_struct', 'is_final', 'name', 'version'];
     
+    protected $hidden = ['created_at', 'updated_at'];
+    
+    public function availableConstraints(){
+        return $this->hasMany(AvailableConstraints::class);
+    }
+    
+    public function available_territory() {
+        return $this->hasOne(AvailableConstraints::class)->where('key', 'ITTER107')->select(['dataflow_id', 'json_value']);
+    }
 }
