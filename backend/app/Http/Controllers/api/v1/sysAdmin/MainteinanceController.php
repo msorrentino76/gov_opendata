@@ -374,7 +374,7 @@ class MainteinanceController extends Controller
         $this->data_flow = $data_flow;
         
         try {
-            $data_structure = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data_flow->flow_ref);
+            $data_structure = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data_flow->data_struct);
             $this->http_status   = $data_structure->status();
         }catch (\Exception $e) {
             Log::error(
@@ -407,31 +407,38 @@ class MainteinanceController extends Controller
             return response()->json('error', 200);
         }
 
-        foreach ($xml->xpath('//common:KeyValue') as $key) {
-
-            $value  = [];
+        foreach ($xml->xpath('//structure:Dimension') as $dimension) {
             
-            foreach ($key->xpath('.//common:Value') as $v) {
-                $value[] = isset($v[0]) ? (string)$v[0] : '?';
-            }
+            $ds_key   = (string)$dimension['id'];
+            $position = (string)$dimension['position'];            
+            $codelist = $dimension->xpath('.//structure:Enumeration/Ref[@class="Codelist"]');
+            $refId = false;
+            if ($codelist) {
+                $refId = (string) $codelist[0]['id'];  // Recupera l'ID del Ref
+            } 
+            // LEGO DS_KEY (chiave del datastructure) con CODELIST
+            $data_struct[$ds_key] = [
+                'position' => $position,
+                'codelist' => $refId,
+            ];
             
             try {
                 //DB::table('available_constraints')->updateOrInsert(
-                AvailableConstraints::updateOrCreate(        
+                DataStructure::updateOrCreate(        
                     [
                         'dataflow_id' => $data_flow->id,
-                        'key'         => (string) $key['id'], 
+                        'data_struct' => $ds_key, 
                     ],
                     [
                         'dataflow_id' => $data_flow->id,
                         'flow_ref'    => $data_flow->flow_ref,
-                        'data_struct' => $data_flow->data_struct,
-                        'key'         => (string) $key['id'],
-                        'json_value'  => json_encode($value),    
+                        'data_struct' => $ds_key,
+                        'position' => $position, 
+                        'codelist' => $refId,
                     ]
                 )->touch();
             } catch (\Exception $e) {
-                Log::error("MainteinanceController:dataStructureProcess:SaveConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Key: ' . (string) $key['id'] . ' - ' .  $e->getMessage() );
+                Log::error("MainteinanceController:dataStructureProcess:SaveConstrains - Data_flow Ref: " . $data_flow->flow_ref . ' - Data Structure Key: ' . $ds_key . ' - ' .  $e->getMessage() );
                 $this->trackError($e->getMessage(), DataStructureErrors::class);
                 return response()->json('error', 200);
             }
@@ -441,7 +448,7 @@ class MainteinanceController extends Controller
         Log::info(':dataStructureProcess - Id Data flow: ' . $data_flow->id . ' - Data_flow Ref: ' . $data_flow->flow_ref . ' : OK');
         
         // se c'è un success lo rimuovo dagli errori (se c'era stato in passato)
-        AvailableConstraintErrors::where('dataflow_id', $data_flow->id)->delete();
+        DataStructureErrors::where('dataflow_id', $data_flow->id)->delete();
 
         return response()->json('ok', 200); 
     }

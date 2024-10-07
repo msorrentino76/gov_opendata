@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(Dataflow::class)->constrained();
             $table->string('flow_ref');
-            $table->string('error_msg');
+            $table->string('error_msg', 4096);
             $table->timestamps();
         });
     }

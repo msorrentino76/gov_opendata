@@ -162,7 +162,6 @@
   const selectedfilter = ref([]);
 
   const nPos                  = ref(0);
-  const availableForCurrentLe = ref(false);
 
     const filterTableData = computed(() =>
       dataflow.value.filter(
@@ -195,7 +194,7 @@
       // inizializzo
       datafilter.value            = [];
       nPos.value                  = 0;
-      availableForCurrentLe.value = false;
+
       selectedfilter.value        = [];
 
       openDrawer.value = true;
@@ -205,7 +204,6 @@
 
       datafilter.value            = resp.filtersJson
       nPos.value                  = resp.nPos;
-      availableForCurrentLe.value = resp.availableForCurrentLe;
 
       loadingDrawer.value = false;
 

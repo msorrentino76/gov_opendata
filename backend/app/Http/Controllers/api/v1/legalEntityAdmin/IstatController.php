@@ -12,6 +12,7 @@ use App\Models\Code;
 use App\Models\Dataflow;
 use App\Models\Categories;
 
+use App\Models\DataStructure;
 use App\Models\AvailableConstraints;
 
 class IstatController extends Controller
@@ -51,36 +52,6 @@ class IstatController extends Controller
         
         $data = $request->only('id_datastructure', 'flow_ref'); 
         
-        // con id_datastructure interrogo datastructure
-        
-        $url = 'https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data['id_datastructure'];
-        
-        $resp = $this->_http($url, false);
-        
-        if($resp['error']){
-            Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
-            return response()->json('Errore durante l\'interrogazione ISTAT', 500);
-        }
-        
-        $xml = simplexml_load_string($resp['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
-        
-        $data_struct = [];
-        
-        foreach ($xml->xpath('//structure:Dimension') as $dimension) {
-            $position = (string)$dimension['position'];
-            $ds_key = (string)$dimension['id'];
-            $codelist = $dimension->xpath('.//structure:Enumeration/Ref[@class="Codelist"]');
-            $refId = false;
-            if ($codelist) {
-                $refId = (string) $codelist[0]['id'];  // Recupera l'ID del Ref
-            } 
-            // LEGO DS_KEY (chiave del datastructure) con CODELIST
-            $data_struct[$ds_key] = [
-                'position' => $position,
-                'codelist' => $refId,
-            ];
-        }
-        
         // VEDIAMO CHE VALORI CI SONO DISPONIBILI: con flow_ref interrogo availableconstraint
         
         $availables = [];
@@ -88,20 +59,23 @@ class IstatController extends Controller
             $availables[$avc->key] = $avc->json_value;
         }
 
-        // A QUESTO PUNTO MI TROVO:
-        // $data_struct ds_key -> codelist
-        // $availables  ds_key -> ARRAY DI OPTIONS
         
         // LEGO LE DUE STRUTTURE TRAMITE I MODEL CODELIST E CODE PER LE TRADUZIONI E FORMATTO LE OPTIONS:
         
+        $data_struct  = [];
         $filters_json = [];
         
-        foreach($data_struct as $ds_key => $ds){
+        foreach(DataStructure::where('flow_ref', $data['flow_ref'])->get() as $ds){
             
-            $availableForCurrentLe = false;
+            $ds_key   = $ds->data_struct;
+            $codelist = $ds->codelist;
+            $position = $ds->position;
+                    
+            $data_struct[$ds_key] = [
+                'position' => $position,
+                'codelist' => $codelist,
+            ];
             
-            $codelist = $ds['codelist'];
-
             $options = [];
             
             if(isset($availables[$ds_key])){
@@ -122,7 +96,7 @@ class IstatController extends Controller
              */
             if(count($options) > 1) {
                 $filters_json[] = [
-                    'name'  => 'posix_' . $ds['position'],
+                    'name'  => 'posix_' . $position,
                     'label' => Codelist::where('codelist', $codelist)->first()->name,
                     //'dsKey' => $ds_key,
                     //'codeList' => $codelist,
@@ -137,7 +111,6 @@ class IstatController extends Controller
         return response()->json([
             'nPos'                  => count($data_struct),
             'filtersJson'           => $filters_json,
-            'availableForCurrentLe' => $availableForCurrentLe,
             ], 200);
     }
     
