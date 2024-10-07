@@ -28,12 +28,34 @@
 
       </el-row>
 
+        <el-col :span="12">
+          <div class="content">Filtra per disponibilità sul Territorio:</div>
+          <!--el-select  
+                v-model="filter_by_territory"
+                multiple
+                filterable
+                placeholder="Seleziona"
+                style="width: 100%"            
+              >
+                <el-option
+                  v-for="item in available_territory_filter"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+          </el-select-->
+        </el-col>
+
+      <el-row :gutter="20">
+
+      </el-row>
+            
       <br><br>
 
       <div class="content">Risultati: {{ filterTableData.length }}</div>
 
       <!-- el-table :data="filterTableData" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato" :default-sort="{ prop: 'name', order: 'asc' }" -->
-      <el-table :data="filterTableData" style="width: 100%" v-loading="loading" empty-text="Nessun risultato trovato">
+      <el-table :data="filterTableData" style="width: 100%" v-loading="dataflow.length == 0" empty-text="Attendere...">
  
         <!--
         <el-table-column prop="id"           label="id"/>
@@ -114,14 +136,17 @@
   import { useStore } from 'vuex';
   const store = useStore();
 
-  const loading    = ref(false);
+  //const loading    = ref(false);
   const search     = ref('');
 
-  const dataflow   = ref([]);
-  const categories = ref([]);
+  const dataflow   = computed(() => store.state.stub.dataflow);
+  const categories = computed(() => store.state.stub.categories);
+  //const available_territory_filter = computed(() => store.state.stub.available_territory_filter);
+  //const available_territory_filter = ref([{'value': 'ALT', 'label': 'Altofonte'}]);
 
-  const filter_by_cat = ref();
-
+  const filter_by_cat       = ref();
+  //const filter_by_territory = ref();
+  
   const flow_name        = ref();
   const flow_ref         = ref();
   const id_datastructure = ref();
@@ -138,27 +163,11 @@
 
     const filterTableData = computed(() =>
       dataflow.value.filter(
-        (data) => {
-          if (!search.value && filter_by_cat.value.length == 0) {
-            return data;
-          }
-          if (search.value && filter_by_cat.value.length != 0) {
-            if (data.name.toLowerCase().includes(search.value.toLowerCase()) && filter_by_cat.value.includes(data.category) ){
-              return data;
-            }
-          }
-          if (search.value && filter_by_cat.value.length == 0) {
-            if (data.name.toLowerCase().includes(search.value.toLowerCase())){
-              return data;
-            }
-          }
-          if (!search.value && filter_by_cat.value.length != 0) {
-            if (filter_by_cat.value.includes(data.category) ){
-              return data;
-            }
-          }
-        }
-      )
+        (data) => 
+          (!search.value                   || data.name.toLowerCase().includes(search.value.toLowerCase()) )
+          &&
+          (filter_by_cat.value.length == 0 || filter_by_cat.value.includes(data.category))
+        )
     )
 
     const handleQuery = (async(i, r) => {
@@ -200,19 +209,19 @@
     }
 
     onMounted(async ()=>{
-      
-      loading.value = true;
 
+      /*      
+      loading.value = true;
+      
       dataflow.value   = store.state.stub.dataflow;
       categories.value = store.state.stub.categories;
       
-      /*
       let dataset = await list('le_admin/dataset');
       dataflow.value   = dataset.dataflow;
       categories.value = dataset.categories;
-      */
 
       loading.value = false;
+      */
       
     });
 

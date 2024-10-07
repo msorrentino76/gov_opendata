@@ -22,10 +22,22 @@ class IstatController extends Controller
      * @return type
      */
     public function index(){
+        
+        $territory_key      = 'ITTER107';
+        $territory_codelist = 'CL_ITTER107';
+        
+        $available_territory_constrains = [];
+        foreach (AvailableConstraints::where('key', $territory_key)->get() as $avc){
+            $available_territory_constrains = array_unique( array_merge($available_territory_constrains, json_decode($avc->json_value)) );
+        }
+        
+        $code = Code::select('code as value', 'name as label')->where('codelist', $territory_codelist)->whereIn('code', $available_territory_constrains)->get()->toArray();
+
         return response()->json(
                 [
                     'dataflow'   => Dataflow::orderBy('name')->get(),
                     'categories' => Categories::getAll(),
+                    'available_territory_filter' => $code,
                 ], 200); 
     }
 
@@ -65,33 +77,11 @@ class IstatController extends Controller
         
         // VEDIAMO CHE VALORI CI SONO DISPONIBILI: con flow_ref interrogo availableconstraint
         
-        $url = 'https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data['flow_ref'];
-        
-        $resp = $this->_http($url, false);
-        
-        if($resp['error']){
-            Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
-            return response()->json('Errore durante l\'interrogazione ISTAT', 500);
-        }
-        
-        $xml = simplexml_load_string($resp['content'], 'SimpleXMLElement', LIBXML_NOCDATA);
-        
         $availables = [];
-        
-        foreach ($xml->xpath('//common:KeyValue') as $key) {
-            $ds_key = (string) $key['id'];
-            $value  = [];
-            foreach ($key->xpath('.//common:Value') as $v) {
-                $value[] = (string)$v[0];
-            }
-            $availables[$ds_key] = $value;
-        }
-        
-        $availables1 = [];
         foreach(AvailableConstraints::where('flow_ref', $data['flow_ref'])->get() as $avc){
-            $availables1[$avc->key] = json_decode($avc->json_value);
+            $availables[$avc->key] = json_decode($avc->json_value);
         }
-        $d = 0;
+
         // A QUESTO PUNTO MI TROVO:
         // $data_struct ds_key -> codelist
         // $availables  ds_key -> ARRAY DI OPTIONS

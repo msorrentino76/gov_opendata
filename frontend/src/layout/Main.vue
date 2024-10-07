@@ -19,7 +19,8 @@
           let dataset = await list('le_admin/dataset');
           store.commit('stub/setStub', {
             'dataflow'  : dataset.dataflow,
-            'categories': dataset.categories
+            'categories': dataset.categories,
+            'available_territory_filter': dataset.available_territory_filter
           });    
         }    
   })

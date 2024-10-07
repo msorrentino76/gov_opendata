@@ -7,10 +7,6 @@
       <!--el-tabs type="border-card" tab-position="left"-->
       <el-tabs type="border-card">
 
-        <el-tab-pane label="User">
-          
-        </el-tab-pane>
-
         <el-tab-pane label="Codelist"></el-tab-pane>
 
         <el-tab-pane label="Category"></el-tab-pane>

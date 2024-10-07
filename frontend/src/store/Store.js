@@ -48,13 +48,15 @@ const store = createStore({
     stub: {
       namespaced: true, // con questa opzione devo usare store.commit('stub/setStub', response.data); altrimenti store.commit('setStub', response.data);
       state: {
-        dataflow  : [],
-        categories: [],
+        dataflow                  : [],
+        categories                : [],
+        available_territory_filter: [],
       },
       mutations: {
         setStub(state, stub) {
-          state.dataflow   = stub.dataflow;
-          state.categories = stub.categories;
+          state.dataflow                   = stub.dataflow;
+          state.categories                 = stub.categories;
+          state.available_territory_filter = stub.available_territory_filter;
         }
       }
     }
