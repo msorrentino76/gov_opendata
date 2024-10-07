@@ -374,8 +374,8 @@ class MainteinanceController extends Controller
         $this->data_flow = $data_flow;
         
         try {
-            $availableconstraint = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/availableconstraint/' . $data_flow->flow_ref);
-            $this->http_status   = $availableconstraint->status();
+            $data_structure = Http::timeout(300)->get('https://sdmx.istat.it/SDMXWS/rest/datastructure/IT1/' . $data_flow->flow_ref);
+            $this->http_status   = $data_structure->status();
         }catch (\Exception $e) {
             Log::error(
                         "MainteinanceController:dataStructureProcess:Http request - Data_flow Ref: " . 
@@ -388,14 +388,14 @@ class MainteinanceController extends Controller
         }
         
         try {
-            $xml = simplexml_load_string($availableconstraint, 'SimpleXMLElement', LIBXML_NOCDATA);
+            $xml = simplexml_load_string($data_structure, 'SimpleXMLElement', LIBXML_NOCDATA);
         }catch (\Exception $e) {
             Log::error(
                         "MainteinanceController:dataStructureProcess:XMLParsing - Data_flow Ref: " . 
                         $data_flow->flow_ref . 
                         ' - ' .  
                         $e->getMessage() . 
-                        "\n --------------\n Contains: \n\n $availableconstraint"
+                        "\n --------------\n Contains: \n\n $data_structure"
                     );
             $this->trackError($e->getMessage(), DataStructureErrors::class);
             return response()->json('error', 200);
