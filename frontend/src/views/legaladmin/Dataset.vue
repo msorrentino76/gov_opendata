@@ -131,7 +131,7 @@
 
   import {defineComponent, onMounted, ref, computed} from 'vue';
 
-  import {/*list, */create} from '../../utils/service.js'
+  import {create, read} from '../../utils/service.js'
 
   //import DatasetFilterView from './DatasetFilter.vue';
 
@@ -200,7 +200,7 @@
       openDrawer.value = true;
       loadingDrawer.value = true;
 
-      let resp = await create('le_admin/datafilter', {'id_datastructure': id_datastructure.value, 'flow_ref': flow_ref.value}, true);
+      let resp = await read('le_admin/datafilter', flow_ref.value, true);
 
       datafilter.value            = resp.filtersJson
       nPos.value                  = resp.nPos;

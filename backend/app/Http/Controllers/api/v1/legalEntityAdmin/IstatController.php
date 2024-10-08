@@ -15,6 +15,8 @@ use App\Models\Categories;
 use App\Models\DataStructure;
 use App\Models\AvailableConstraints;
 
+use Illuminate\Support\Facades\DB;
+
 class IstatController extends Controller
 {
 
@@ -48,6 +50,8 @@ class IstatController extends Controller
                 ], 200); 
     }
 
+    /* OLD SOLUTION */
+    /*
     public function datafilter(Request $request){
         
         $data = $request->only('id_datastructure', 'flow_ref'); 
@@ -91,9 +95,7 @@ class IstatController extends Controller
                 return strcmp($a['label'], $b['label']);
             });
         
-            /*
-             * NON HA SENSO FILTRARE PER UN CAMPO CHE HA SOLO UNA OPTION
-             */
+            // NON HA SENSO FILTRARE PER UN CAMPO CHE HA SOLO UNA OPTION
             if(count($options) > 1) {
                 $filters_json[] = [
                     'name'  => 'posix_' . $position,
@@ -112,6 +114,76 @@ class IstatController extends Controller
             'nPos'                  => count($data_struct),
             'filtersJson'           => $filters_json,
             ], 200);
+    }
+    */
+    
+    public function datafilter($flow_ref){        
+        
+        $results = DB::select("
+                    SELECT
+                    CONCAT('posix_', ds.position) as name,
+                    cl.name as label,
+                    ac.json_value as available_options,
+                    T.code_options
+                    FROM data_structures ds
+                    JOIN codelists cl on cl.codelist = ds.codelist
+                    JOIN available_constraints ac on ac.key = ds.data_struct and ac.flow_ref = ds.flow_ref
+                    JOIN (
+                                    SELECT
+                                            codes.codelist_id,
+                                            JSON_ARRAYAGG(
+                                                    #JSON_OBJECT( 'value', code,'label', name)
+                                                    JSON_OBJECT( 
+                                                        'code', code,
+                                                        'name', name
+                                                        )
+                                    ) AS code_options FROM codes GROUP BY codes.codelist_id
+                        )T on T.codelist_id = cl.id
+                    where ds.flow_ref = '$flow_ref'"
+                );
+        
+        $filters_json = [];
+        
+        foreach($results as $r){
+            
+            $available_options = json_decode($r->available_options);
+            $code_options      = json_decode($r->code_options);
+            
+            $code_to_name = [];
+            
+            foreach ($code_options as $c) {
+                $code_to_name[$c->code] = $c->name;
+            }
+            
+            $options = [];
+            
+            // combino $available_options e $available_options
+            foreach ($available_options as $ao) {
+                $options[] = [
+                    'value' => $ao,
+                    'label' => $code_to_name[$ao],
+                ];
+            }
+            
+            usort($options, function($a, $b) {
+                return strcmp($a['label'], $b['label']);
+            });
+            
+            if(count($options) > 1){
+                $filters_json[] = [
+                    'name'  => $r->name,
+                    'label' => $r->label,
+                    'type'  => 'select',
+                    'options' => $options,
+                ];
+            }
+        }
+
+        return response()->json([
+            'nPos'                  => count($results),
+            'filtersJson'           => $filters_json,
+            ], 200);
+        
     }
     
     public function dataquery(Request $request){

@@ -138,9 +138,9 @@ Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_ad
     Route::put   ('user_ou/{id}'    , [OuUserController::class, 'update']);
     Route::get   ('user_ou_act/{id}', [OuUserController::class, 'ouuserActivities']);
     
-    Route::get   ('dataset'    , [IstatController::class, 'index']);
-    Route::post  ('datafilter' , [IstatController::class, 'datafilter']);
-    Route::post  ('dataquery'  , [IstatController::class, 'dataquery']);
+    Route::get   ('dataset'               , [IstatController::class, 'index']);
+    Route::get   ('datafilter/{flow_ref}' , [IstatController::class, 'datafilter']);
+    Route::post  ('dataquery'             , [IstatController::class, 'dataquery']);
     
 });
 
