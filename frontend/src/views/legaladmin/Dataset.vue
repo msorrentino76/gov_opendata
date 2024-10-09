@@ -67,8 +67,9 @@
         <el-table-column prop="is_final"     label="Finale"/>
         -->
 
-        <el-table-column prop="name"         label="Dati disponibili"/>
-        <el-table-column prop="version"      label="Versione"/>
+        <el-table-column prop="version"      width="120" align="right" label="Versione"/>
+        <el-table-column prop="name"                                   label="Dati disponibili"/>
+        <el-table-column prop="filter_count"             align="right" label="Filtri di ricerca applicabili"/>
 
         <el-table-column>
           <template #default="scope">
@@ -278,7 +279,7 @@
       let territory_opts = resp.filtersJson.filter((filter) => filter.type == 'territory');
           territory_opts = territory_opts[0] ? territory_opts[0].options : false;
 
-      available_territory_query_filter.value = store.state.stub.available_territory_filter.filter(obj => territory_opts.includes(obj.value));
+      available_territory_query_filter.value = territory_opts ? store.state.stub.available_territory_filter.filter(obj => territory_opts.includes(obj.value)) : [];
 
       loadingDrawer.value = false;
 

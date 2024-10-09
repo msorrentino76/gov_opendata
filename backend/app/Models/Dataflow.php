@@ -15,6 +15,12 @@ class Dataflow extends Model
     
     protected $hidden = ['created_at', 'updated_at'];
     
+    protected $appends = ['filter_count'];
+        
+    public function getFilterCountAttribute() {
+        return $this->dataStructures()->count();
+    }
+    
     public function availableConstraints(){
         return $this->hasMany(AvailableConstraints::class);
     }

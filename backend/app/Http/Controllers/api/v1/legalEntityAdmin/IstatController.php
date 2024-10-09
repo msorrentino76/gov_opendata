@@ -170,14 +170,14 @@ class IstatController extends Controller
                 return strcmp($a['label'], $b['label']);
             });
             
-            if(count($options) > 1){
+            //if(count($options) > 1){
                 $filters_json[] = [
                     'name'    => $r->name,
                     'label'   => $r->label,
                     'type'    => $r->data_struct == 'ITTER107' ? 'territory'        : 'select',
                     'options' => $r->data_struct == 'ITTER107' ? $available_options : $options,
                 ];
-            }
+            //}
         }
 
         return response()->json([
@@ -211,14 +211,82 @@ class IstatController extends Controller
         //return response()->json(['loopback' => true, 'submit' => $data, 'filter' => $filter_query], 200);
         $url = "https://sdmx.istat.it/SDMXWS/rest/data/{$data['flow_ref']}/$filter_query";
         
-        $resp = $this->_http($url, false);
+        $resp = $this->_http($url);
         
         if($resp['error']){
             Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
             return response()->json('Errore durante l\'interrogazione ISTAT', 500);
+        }   
+        
+        file_put_contents('resp.json', $resp['content']);
+        
+        $series_transcod = [];
+        
+        if($resp['httpCode'] != 200) {
+            
+            $empty = true;
+            
+        } else {
+        
+            $empty = false;
+            
+            $content = json_decode($resp['content']);
+
+            $dataSets   = $content->dataSets;
+            $structures = $content->structure->dimensions->series;
+
+            $series = $dataSets[0] ? $dataSets[0]->series : [];            
+
+            $filter_name  = [];
+            $filter_value = [];        
+            
+            foreach ($structures as $s) {                
+                $values = [];
+                foreach($s->values as $v) {
+                    $values[] = $v->name;
+                }
+                // notare come tutto sia posizionale! questo è essenziale per lo split della
+                // key di $series.
+                // P.Es. 0:0:1:2 => posizione 0 -> valore "0"; posizione 1 -> valore "0"; posizione 2 -> valore "1"; posizione 3 -> valore "2"
+                
+                $filter_name[$s->keyPosition]  = $s->name;
+                $filter_value[$s->keyPosition] = $values;
+            }
+            
+            foreach($series as $k => $v){
+                
+                // $k va transcodificato tramite $structure come da commento precedente!
+                // per ottenere i title che sarà un oggetto del tipo:
+                // [ {'label': label, 'value': value}, {'label': label, 'value': value}, ... ]
+                // Es:
+                // [ {'label': 'Territorio', 'value': 'Altofonte'}, ... ]
+                
+                $title = [];
+                foreach (explode(':', $k) as $position => $value){
+                    $title[] = [
+                        'label' => $filter_name[$position], 
+                        'value' => $filter_value[$position][$value],
+                    ];
+                }
+                
+                $series_transcod[] = [
+                    'title' => $title,
+                    'observations' => $v->observations,
+                    'annotations'  => $v->annotations,
+                    'attributes'   => $v->attributes,
+                ];
+            }
+        
         }
         
-        return response()->json($resp, 200);
+        $datasets = [
+            'empty'    => $empty,
+            'status'   => $resp['httpCode'],
+            'isTest'   => $empty ? null : $content->header->test,            
+            'datasets' => $series_transcod,
+        ];        
+        
+        return response()->json($datasets, 200);
         
     }
     
