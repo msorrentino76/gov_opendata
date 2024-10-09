@@ -36,9 +36,9 @@
                 filterable
                 remote
                 reserve-keyword
-                placeholder="Seleziona"
+                placeholder="Digitare almeno 3 caratteri..."
                 style="width: 100%"   
-                :remote-method="remoteMethod"                                        
+                :remote-method="searchDataflowByTerritory"                                        
               >
                 <el-option
                   v-for="item in options"
@@ -92,7 +92,10 @@
             <b>Filtri di ricerca applicabili:</b>
 
             <div v-for="posix in datafilter" :key="posix.name">
+              
               <p>{{ posix.label }}</p>
+
+              <!-- SELECT SEMPLICE -->
               <el-select  
                 v-if="posix.type == 'select'"          
                 v-model="selectedfilter[posix.name]"
@@ -109,6 +112,43 @@
                 />
               </el-select>
           
+              <!-- SELECT TERRITORIALE CON POCHI RISULTATI -->
+              <el-select  
+                v-if="posix.type == 'territory' && available_territory_query_filter.length < 64"          
+                v-model="selectedfilter[posix.name]"
+                multiple
+                filterable
+                placeholder="Seleziona"
+                style="width: 100%"            
+              >
+                <el-option
+                  v-for="item in available_territory_query_filter"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+
+              <!-- SELECT TERRITORIALE CON MOLTISSIMI RISULTATI -->
+              <el-select  
+                v-if="posix.type == 'territory' && available_territory_query_filter.length >= 64"          
+                v-model="selectedfilter[posix.name]"
+                multiple
+                filterable
+                placeholder="Digitare almeno 3 caratteri..."
+                style="width: 100%"                      
+                remote
+                reserve-keyword
+                :remote-method="queryFilterTerritory"   
+              >
+                <el-option
+                  v-for="item in query_filter_options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+
             </div>
 
           </el-col>
@@ -161,6 +201,19 @@
   const datafilter     = ref([]);
   const selectedfilter = ref([]);
 
+  const available_territory_query_filter = ref([]);
+
+  const query_filter_options = ref([]);
+  const queryFilterTerritory = (query) => {
+      if (query && query.length > 2) {
+          query_filter_options.value = available_territory_query_filter.value.filter((item) => {
+            return item.label.toLowerCase().includes(query.toLowerCase())
+          })
+      } else {
+        query_filter_options.value = []
+      }
+    }
+
   const nPos                  = ref(0);
 
     const filterTableData = computed(() =>
@@ -175,7 +228,7 @@
     )
 
     const options = ref([]);
-    const remoteMethod = (query) => {
+    const searchDataflowByTerritory = (query) => {
       if (query && query.length > 2) {
           options.value = available_territory_filter.value.filter((item) => {
             return item.label.toLowerCase().includes(query.toLowerCase())
@@ -192,6 +245,7 @@
       id_datastructure.value = r.data_struct;      
 
       // inizializzo
+      available_territory_query_filter.value = [];
       datafilter.value            = [];
       nPos.value                  = 0;
 
@@ -204,6 +258,12 @@
 
       datafilter.value            = resp.filtersJson
       nPos.value                  = resp.nPos;
+
+      // I dati territoriali li ho già transcodificati negli stub... perchè reinviare tutto? invio solo il codice e transcodifico qui
+      let territory_opts = resp.filtersJson.filter((filter) => filter.type == 'territory');
+          territory_opts = territory_opts[0] ? territory_opts[0].options : false;
+
+      available_territory_query_filter.value = store.state.stub.available_territory_filter.filter(obj => territory_opts.includes(obj.value));
 
       loadingDrawer.value = false;
 

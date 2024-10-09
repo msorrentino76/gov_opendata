@@ -124,7 +124,8 @@ class IstatController extends Controller
                     CONCAT('posix_', ds.position) as name,
                     cl.name as label,
                     ac.json_value as available_options,
-                    T.code_options
+                    T.code_options,
+                    ds.data_struct
                     FROM data_structures ds
                     JOIN codelists cl on cl.codelist = ds.codelist
                     JOIN available_constraints ac on ac.key = ds.data_struct and ac.flow_ref = ds.flow_ref
@@ -171,10 +172,10 @@ class IstatController extends Controller
             
             if(count($options) > 1){
                 $filters_json[] = [
-                    'name'  => $r->name,
-                    'label' => $r->label,
-                    'type'  => 'select',
-                    'options' => $options,
+                    'name'    => $r->name,
+                    'label'   => $r->label,
+                    'type'    => $r->data_struct == 'ITTER107' ? 'territory'        : 'select',
+                    'options' => $r->data_struct == 'ITTER107' ? $available_options : $options,
                 ];
             }
         }
