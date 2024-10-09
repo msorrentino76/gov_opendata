@@ -113,15 +113,23 @@ Route::middleware(['auth:sanctum', 'ability:system:admin'])->prefix('sys_admin')
     Route::get   ('accessi'       , [StatisticheController::class, 'index']);
     Route::get   ('ultimi'        , [StatisticheController::class, 'last']);    
     
-    Route::prefix('manteinance')->group(function () {
-        Route::get('codelist'     , [MainteinanceController::class, 'codelist'  ]);
-        Route::get('dataflow'     , [MainteinanceController::class, 'dataflow'  ]);
-        Route::get('categories'   , [MainteinanceController::class, 'categories']);
-        Route::get('available_dataflow/{type}', [MainteinanceController::class, 'availableDataflow']);
-        Route::get('available_process/{id}'   , [MainteinanceController::class, 'availableProcess']);
-        Route::get('datastructure_dataflow/{type}', [MainteinanceController::class, 'dataStructureDataflow']);
-        Route::get('datastructure_process/{id}'   , [MainteinanceController::class, 'dataStructureProcess']);
-    });
+        Route::prefix('manteinance')->group(function () {
+
+            Route::get   ('files/{type}'            , [MainteinanceController::class, 'filesList'    ]);
+            Route::delete('files/{type}/{filename}' , [MainteinanceController::class, 'deleteFile'   ]);
+            Route::get   ('dwnld/{type}/{filename}' , [MainteinanceController::class, 'downloadeFile']);
+
+            Route::get('codelist'     , [MainteinanceController::class, 'codelist'  ]);
+            Route::get('dataflow'     , [MainteinanceController::class, 'dataflow'  ]);
+            Route::get('categories'   , [MainteinanceController::class, 'categories']);
+
+            Route::get('available_dataflow/{type}', [MainteinanceController::class, 'availableDataflow']);
+            Route::get('available_process/{id}'   , [MainteinanceController::class, 'availableProcess']);
+
+            Route::get('datastructure_dataflow/{type}', [MainteinanceController::class, 'dataStructureDataflow']);
+            Route::get('datastructure_process/{id}'   , [MainteinanceController::class, 'dataStructureProcess']);
+
+        });
 });
  
 Route::middleware(['auth:sanctum', 'ability:legal_entity:admin'])->prefix('le_admin')->group(function () {

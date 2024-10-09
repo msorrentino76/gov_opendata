@@ -78,7 +78,7 @@
     if(resp){
       logsFile.value = logsFile.value.filter((obj) => obj.filename !== row.filename);
     }
-    loadingList .value = false;
+    loadingList.value = false;
   });
 
   onMounted(async ()=>{

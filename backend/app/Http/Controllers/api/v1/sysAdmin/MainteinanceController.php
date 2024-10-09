@@ -16,6 +16,7 @@ use Carbon\Carbon;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 
 use App\Models\AvailableConstraints;
 use App\Models\AvailableConstraintErrors;
@@ -29,6 +30,37 @@ class MainteinanceController extends Controller
     private $status;
     private $data_flow;
     private $http_status = '-';
+    
+    public function filesList($type) {
+        $logs = File::files(storage_path('app\manteinance\\' . $type));
+        $resp = [];
+        foreach($logs as $log){
+            $resp[] = ['filename' =>$log->getFilename()];
+        }
+        return response()->json($resp);
+    }
+    
+    public function deleteFile($type, $filename){
+        $path_file =  storage_path('app\manteinance\\' . $type) . '\\' . $filename;
+        unlink($path_file);
+        return response(null, 200);
+    }
+    
+    public function downloadeFile($type, $filename){
+        
+        $path_file =  storage_path('app\manteinance\\' . $type) . '\\' . $filename;
+
+        $content = file_get_contents($path_file);
+        $size    = strlen($content);
+
+        return response($content)
+                        ->withHeaders([
+                            'Content-Transfer-Encoding' => 'binary',
+                            'Content-Disposition' => sprintf('attachment; filename="%s"', $filename),
+                            'Content-Length' => $size,
+                            'Accept-Ranges' => 'bytes',
+                        ]);
+    }
     
     public function codelist() {
         
