@@ -85,7 +85,7 @@
        
         <!--el-alert title="Se non viene selezionato il valore di un filtro esso verrà escluso" show-icon type="info" /-->
 
-        <el-row v-loading="loadingDrawer">
+        <el-row :gutter="20" v-loading="loadingDrawer">
 
           <el-col :span="4">
           
@@ -155,7 +155,20 @@
           
           <el-col :span="20">
 
-            <el-button type="success" @click="submit">Invia richiesta</el-button>
+            <el-text class="mx-1" size="default" v-if="filter_by_territory.length > 0">
+              Vuoi settare 
+              <el-tag type="info" v-for="i in filter_by_territory" :key="i">
+                {{ valueToLabelTerritory(i) }} 
+              </el-tag>
+              anche su questo filtro "Territorio"?
+              <el-button type="primary" size="small" @click="presetFiltro">SI</el-button>
+            </el-text>
+
+            <br><br><br>
+
+            <!--div style="text-align: center;"-->
+              <el-button type="success" @click="submit">Invia richiesta</el-button>
+            <!--/div-->
 
           </el-col>
 
@@ -204,6 +217,7 @@
   const available_territory_query_filter = ref([]);
 
   const query_filter_options = ref([]);
+
   const queryFilterTerritory = (query) => {
       if (query && query.length > 2) {
           query_filter_options.value = available_territory_query_filter.value.filter((item) => {
@@ -228,6 +242,7 @@
     )
 
     const options = ref([]);
+
     const searchDataflowByTerritory = (query) => {
       if (query && query.length > 2) {
           options.value = available_territory_filter.value.filter((item) => {
@@ -276,11 +291,33 @@
     });
 
     function getFormSelectedfilterObj(){
+      console.log(selectedfilter.value)
         return Object.keys(selectedfilter.value).reduce((acc, key) => {
             acc[key] = selectedfilter.value[key];
             return acc;
         }, {});
     }
+
+    const valueToLabelTerritory = (
+      (code_territory) => {
+        let fil = store.state.stub.available_territory_filter.filter(obj => obj.value == code_territory );
+        return fil[0] ? fil[0].label : '';
+      }
+    );
+
+    const presetFiltro = (() => {
+
+      query_filter_options.value = available_territory_query_filter.value.filter((item) => {
+        return filter_by_territory.value.includes(item.value);
+      });
+
+      datafilter.value.map((d) => {
+        if(d.type == 'territory'){
+          selectedfilter.value[d.name] = filter_by_territory.value;
+        }
+      });
+
+    });
 
     onMounted(async ()=>{
 
