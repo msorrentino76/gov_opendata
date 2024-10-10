@@ -215,7 +215,7 @@ class IstatController extends Controller
         
         if($resp['error']){
             Log::error("IstatController:index - $url - " . $resp['httpCode'] . ' ' . $resp['errorMessage'] );
-            return response()->json('Errore durante l\'interrogazione ISTAT', 500);
+            return response()->json(['error' =>'Errore durante l\'interrogazione ISTAT. Riprovare più tardi'], 200);
         }   
         
         file_put_contents('resp.json', $resp['content']);
@@ -261,17 +261,17 @@ class IstatController extends Controller
                 // Es:
                 // [ {'label': 'Territorio', 'value': 'Altofonte'}, ... ]
                 
-                $title = [];
+                $titles = [];
                 foreach (explode(':', $k) as $position => $value){
-                    $title[] = [
+                    $titles[] = [
                         'label' => $filter_name[$position], 
                         'value' => $filter_value[$position][$value],
                     ];
                 }
                 
                 $series_transcod[] = [
-                    'title' => $title,
-                    'observations' => $v->observations,
+                    'titles'       => $titles,
+                    'observations' => $this->observationsToMultidimensionaAxis($v->observations),
                     'annotations'  => $v->annotations,
                     'attributes'   => $v->attributes,
                 ];
@@ -280,6 +280,7 @@ class IstatController extends Controller
         }
         
         $datasets = [
+            'url'      => $resp['url'],
             'empty'    => $empty,
             'status'   => $resp['httpCode'],
             'isTest'   => $empty ? null : $content->header->test,            
@@ -345,4 +346,23 @@ class IstatController extends Controller
 
     }        
 
+    
+    private function observationsToMultidimensionaAxis($observations) {
+        
+        $axis = [];
+        
+        foreach ($observations as $x => $y_values){
+            
+            $y_axis = [];
+            
+            foreach ($y_values as $k => $y){
+                $y_axis['y_' . $k] = $y;
+            }
+            
+            $axis[] = array_merge(['x' => $x], $y_axis);
+        }
+        
+        return $axis;
+        
+    }
 }

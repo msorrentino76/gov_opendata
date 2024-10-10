@@ -167,9 +167,23 @@
 
             <br><br><br>
 
+            <el-table :data="filter_count" style="width: 64%">
+                <el-table-column prop="nome_filtro"      label="Nome filtro"/>
+                <el-table-column prop="count_selected"   label="Valori selezionati"/>
+                <el-table-column prop="count_selectable" label="Valori selezionabili"/>
+            </el-table>
+
+            {{ NUM_SERIES }}
+            
+            <br><br><br>
+
             <!--div style="text-align: center;"-->
               <el-button type="success" @click="submit">Invia richiesta</el-button>
             <!--/div-->
+
+            <br><br><br>
+
+            <DatasetsViewerView v-if="query_resp.length != 0" :datasets="query_resp"/>
 
           </el-col>
 
@@ -187,7 +201,9 @@
 
   import {create, read} from '../../utils/service.js'
 
+  /* UNUSED */
   //import DatasetFilterView from './DatasetFilter.vue';
+  import DatasetsViewerView from './DatasetsViewer.vue';
 
   //import Auth from '../../store/Store.js';
   import { useStore } from 'vuex';
@@ -198,6 +214,26 @@
 
   const dataflow   = computed(() => store.state.stub.dataflow);
   const categories = computed(() => store.state.stub.categories);
+
+
+  const NUM_SERIES = computed(() => {
+    let co = 1;
+    filter_count.value.forEach(fc => {
+      co = co * (fc.count_selected > 0 ? fc.count_selected : fc.count_selectable)
+    });
+    return co;
+  });
+  
+
+  const filter_count = computed(() => 
+    datafilter.value.map((f) => {
+      return {
+        'nome_filtro'     : f.label,
+        'count_selected'  : selectedfilter.value[f.name].length,
+        'count_selectable': f.options.length,
+      }
+    })
+  );
 
   const available_territory_filter = computed(() => store.state.stub.available_territory_filter);
 
@@ -218,7 +254,8 @@
   const available_territory_query_filter = ref([]);
 
   const query_filter_options = ref([]);
-
+  const query_resp = ref([]);
+  
   const queryFilterTerritory = (query) => {
       if (query && query.length > 2) {
           query_filter_options.value = available_territory_query_filter.value.filter((item) => {
@@ -265,6 +302,8 @@
       datafilter.value            = [];
       nPos.value                  = 0;
 
+      query_resp.value            = [];
+
       selectedfilter.value        = [];
 
       openDrawer.value = true;
@@ -287,7 +326,7 @@
 
     const submit = (async() => {
       loadingDrawer.value = true;
-      /*let resp =*/ await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': getFormSelectedfilterObj()}, true);
+      query_resp.value = await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': getFormSelectedfilterObj()}, true);
       loadingDrawer.value = false;
     });
 
