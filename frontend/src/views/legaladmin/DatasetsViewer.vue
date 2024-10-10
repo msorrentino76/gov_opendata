@@ -9,7 +9,7 @@
 
         <span v-for="(dataset, dataset_index) in props.datasets.datasets" :key="dataset_index">
         
-            <el-descriptions border  title="Criteri" :column="3">
+            <el-descriptions border :title="`Criteri Serie N° ${dataset_index + 1}`" :column="3">
                 <el-descriptions-item v-for="(title, title_index) in dataset.titles" :key="title_index" :label="title.label">{{ title.value }}</el-descriptions-item>
             </el-descriptions>
 

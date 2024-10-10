@@ -173,23 +173,47 @@
                 <el-table-column prop="count_selectable" label="Valori selezionabili"/>
             </el-table>
 
-            {{ NUM_SERIES }}
+            <el-alert 
+              :title="`Massimo numero di serie previste per questa estrazione: ${NUM_SERIES}`"
+              description="L'estrazione produrrà tante serie dati quante tutte le possibili combinazioni di valori dei filtri impostati. Se un filtro non viene impostato, le combinazioni saranno prodotte tenendo conto di tutti i suoi valori possibili."
+              type="warning"
+              :closable="false"
+              show-icon
+            />
             
             <br><br><br>
 
             <!--div style="text-align: center;"-->
-              <el-button type="success" @click="submit">Invia richiesta</el-button>
+              <el-button type="success" @click="dialogVisible = true">Esegui estrazione dati</el-button>
             <!--/div-->
 
             <br><br><br>
 
+            <el-dialog
+              v-model="dialogVisible"
+              title="Nota"
+            >
+              <span>Questa estrazione potrebbe produrre <b>circa</b> {{ NUM_SERIES }} serie di dati.</span>
+              <template #footer>
+                <div class="dialog-footer">
+                  <el-button                @click="dialogVisible = false">
+                    Cancella
+                  </el-button>
+                  <el-button type="primary" @click="submit">
+                    Procedi
+                  </el-button>
+                </div>
+              </template>
+            </el-dialog>
             <DatasetsViewerView v-if="query_resp.length != 0" :datasets="query_resp"/>
 
           </el-col>
 
-        </el-row>
+        </el-row>        
 
       </el-drawer>
+
+      <el-backtop :right="100" :bottom="100" />
 
     </el-card>
 
@@ -215,13 +239,14 @@
   const dataflow   = computed(() => store.state.stub.dataflow);
   const categories = computed(() => store.state.stub.categories);
 
+  const dialogVisible = ref(false)
 
   const NUM_SERIES = computed(() => {
     let co = 1;
     filter_count.value.forEach(fc => {
       co = co * (fc.count_selected > 0 ? fc.count_selected : fc.count_selectable)
     });
-    return co;
+    return new Intl.NumberFormat('it-IT').format(co);
   });
   
 
@@ -325,6 +350,7 @@
     })
 
     const submit = (async() => {
+      dialogVisible.value = false;
       loadingDrawer.value = true;
       query_resp.value = await create('le_admin/dataquery', {'nPos': nPos.value, 'flow_ref': flow_ref.value, 'selectedfilter': getFormSelectedfilterObj()}, true);
       loadingDrawer.value = false;
